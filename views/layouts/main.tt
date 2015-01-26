@@ -39,8 +39,8 @@
                         </div>
                         <div class="collapse navbar-collapse">
                             <ul class="nav navbar-nav">
-                                <li><a href="#about">About</a></li>
-                                <li><a href="#contact">Contact</a></li>
+                                <li><a href="/upload">Upload</a></li>
+                                <li><a href="/myip">My IP address</a></li>
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
 

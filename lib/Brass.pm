@@ -30,7 +30,19 @@ hook before => sub {
     session 'messages' => ();
 };
 
-any '/' => sub {
+hook before_template => sub {
+    my $tokens = shift;
+    $tokens->{messages} = session('messages');
+    session 'messages' => [];
+};
+
+get '/' => sub {
+    template 'index' => {
+        page        => 'index'
+    };
+};
+
+any '/upload' => sub {
 
     if (param 'submit')
     {
@@ -39,21 +51,17 @@ any '/' => sub {
         forwardHome({ success => "Thank you, the file has been sent"});
     }
 
-    my $output  = template 'index' => {
-        messages    => session('messages'),
-        user        => var('user'),
-        page        => 'index'
+    template 'upload' => {
+        page        => 'upload'
     };
-    session 'messages' => [];
-    $output;
 };
 
-any '/view' => sub {
+get '/myip' => sub {
 
-    my $output  = template 'view' => {
+    my $output  = template 'myip' => {
         messages    => session('messages'),
-        user        => var('user'),
-        page        => 'view'
+        address     => request->address,
+        page        => 'myip',
     };
     session 'messages' => [];
     $output;

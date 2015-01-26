@@ -1,11 +1,1 @@
-<h2>Upload a file</h2>
-
-<form role="form" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label for="file">File input</label>
-        <input type="file" id="file" name="file">
-        <p class="help-block">The file will be sent securely to Ctrl O</p>
-    </div>
-    <button type="submit" class="btn btn-default" name="submit" value="submit">Submit</button>
-</form>
-
+<p>Welcome to Brass</p>
