@@ -71,6 +71,12 @@ __PACKAGE__->table("user");
   datetime_undef_if_invalid: 1
   is_nullable: 1
 
+=head2 password
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 128
+
 =head2 pwchanged
 
   data_type: 'datetime'
@@ -108,6 +114,8 @@ __PACKAGE__->add_columns(
     datetime_undef_if_invalid => 1,
     is_nullable => 1,
   },
+  "password",
+  { data_type => "varchar", is_nullable => 1, size => 128 },
   "pwchanged",
   {
     data_type => "datetime",
@@ -199,8 +207,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 21:39:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nJWTL6xFvQQN3wlz54RzrA
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 22:30:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kpzO2fTYTNUPmcI+5TUiMA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
