@@ -171,9 +171,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 user_permissions
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 20:14:31
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+f4J3ZogPBKd6eCvAG4t8A
+Type: has_many
+
+Related object: L<Brass::Schema::Result::UserPermission>
+
+=cut
+
+__PACKAGE__->has_many(
+  "user_permissions",
+  "Brass::Schema::Result::UserPermission",
+  { "foreign.user" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 21:36:30
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RiWPSV53P6LGud87y0rVcQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
