@@ -1,12 +1,12 @@
 use utf8;
-package Brass::Schema::Result::Type;
+package Brass::Schema::Result::Project;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-Brass::Schema::Result::Type
+Brass::Schema::Result::Project
 
 =cut
 
@@ -27,11 +27,11 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<type>
+=head1 TABLE: C<project>
 
 =cut
 
-__PACKAGE__->table("type");
+__PACKAGE__->table("project");
 
 =head1 ACCESSORS
 
@@ -81,13 +81,13 @@ Related object: L<Brass::Schema::Result::Issue>
 __PACKAGE__->has_many(
   "issues",
   "Brass::Schema::Result::Issue",
-  { "foreign.type" => "self.id" },
+  { "foreign.project" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
 # Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 20:14:31
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:msyQMf+fK2SKEKqoWho4fw
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:R466AtjAPyGin33fKxVw9w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

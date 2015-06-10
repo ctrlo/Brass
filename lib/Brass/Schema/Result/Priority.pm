@@ -45,7 +45,7 @@ __PACKAGE__->table("priority");
 
   data_type: 'varchar'
   is_nullable: 1
-  size: 45
+  size: 128
 
 =cut
 
@@ -53,7 +53,7 @@ __PACKAGE__->add_columns(
   "id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "name",
-  { data_type => "varchar", is_nullable => 1, size => 45 },
+  { data_type => "varchar", is_nullable => 1, size => 128 },
 );
 
 =head1 PRIMARY KEY
@@ -81,13 +81,13 @@ Related object: L<Brass::Schema::Result::Issue>
 __PACKAGE__->has_many(
   "issues",
   "Brass::Schema::Result::Issue",
-  { "foreign.priority_id" => "self.id" },
+  { "foreign.priority" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07039 @ 2014-10-01 11:03:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:l/p90hQAPoq4Yl5qKVOuIQ
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 20:14:31
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:e71nyWiLfDJ7BtNwmmzq1A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

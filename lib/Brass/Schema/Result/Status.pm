@@ -70,24 +70,24 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 issues
+=head2 issue_statuses
 
 Type: has_many
 
-Related object: L<Brass::Schema::Result::Issue>
+Related object: L<Brass::Schema::Result::IssueStatus>
 
 =cut
 
 __PACKAGE__->has_many(
-  "issues",
-  "Brass::Schema::Result::Issue",
-  { "foreign.status_id" => "self.id" },
+  "issue_statuses",
+  "Brass::Schema::Result::IssueStatus",
+  { "foreign.status" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07039 @ 2014-10-01 11:03:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:X8gd0/VnKPe0LG9NAMb/ig
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 20:14:31
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Y8Bcctvp+pUillDBF4BW/A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

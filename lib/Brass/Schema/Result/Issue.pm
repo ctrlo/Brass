@@ -52,19 +52,13 @@ __PACKAGE__->table("issue");
   data_type: 'text'
   is_nullable: 1
 
-=head2 type_id
+=head2 type
 
   data_type: 'integer'
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 status_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
-
-=head2 priority_id
+=head2 priority
 
   data_type: 'integer'
   is_foreign_key: 1
@@ -82,23 +76,17 @@ __PACKAGE__->table("issue");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 approver
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
-
-=head2 software
+=head2 reference
 
   data_type: 'varchar'
   is_nullable: 1
   size: 128
 
-=head2 reference
+=head2 project
 
-  data_type: 'varchar'
+  data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 1
-  size: 45
 
 =cut
 
@@ -109,22 +97,18 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 256 },
   "description",
   { data_type => "text", is_nullable => 1 },
-  "type_id",
+  "type",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "status_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "priority_id",
+  "priority",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "author",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "owner",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "approver",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "software",
-  { data_type => "varchar", is_nullable => 1, size => 128 },
   "reference",
-  { data_type => "varchar", is_nullable => 1, size => 45 },
+  { data_type => "varchar", is_nullable => 1, size => 128 },
+  "project",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -141,37 +125,17 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 approver
-
-Type: belongs_to
-
-Related object: L<Brass::Schema::Result::Person>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "approver",
-  "Brass::Schema::Result::Person",
-  { id => "approver" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "NO ACTION",
-    on_update     => "NO ACTION",
-  },
-);
-
 =head2 author
 
 Type: belongs_to
 
-Related object: L<Brass::Schema::Result::Person>
+Related object: L<Brass::Schema::Result::User>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "author",
-  "Brass::Schema::Result::Person",
+  "Brass::Schema::Result::User",
   { id => "author" },
   {
     is_deferrable => 1,
@@ -196,17 +160,32 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 issue_statuses
+
+Type: has_many
+
+Related object: L<Brass::Schema::Result::IssueStatus>
+
+=cut
+
+__PACKAGE__->has_many(
+  "issue_statuses",
+  "Brass::Schema::Result::IssueStatus",
+  { "foreign.issue" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 owner
 
 Type: belongs_to
 
-Related object: L<Brass::Schema::Result::Person>
+Related object: L<Brass::Schema::Result::User>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "owner",
-  "Brass::Schema::Result::Person",
+  "Brass::Schema::Result::User",
   { id => "owner" },
   {
     is_deferrable => 1,
@@ -227,7 +206,7 @@ Related object: L<Brass::Schema::Result::Priority>
 __PACKAGE__->belongs_to(
   "priority",
   "Brass::Schema::Result::Priority",
-  { id => "priority_id" },
+  { id => "priority" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
@@ -236,18 +215,18 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 status
+=head2 project
 
 Type: belongs_to
 
-Related object: L<Brass::Schema::Result::Status>
+Related object: L<Brass::Schema::Result::Project>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "status",
-  "Brass::Schema::Result::Status",
-  { id => "status_id" },
+  "project",
+  "Brass::Schema::Result::Project",
+  { id => "project" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
@@ -267,7 +246,7 @@ Related object: L<Brass::Schema::Result::Type>
 __PACKAGE__->belongs_to(
   "type",
   "Brass::Schema::Result::Type",
-  { id => "type_id" },
+  { id => "type" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
@@ -277,8 +256,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07039 @ 2014-10-01 11:03:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BP+PJUbOrKhd4CTvfYN6xg
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 20:14:31
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HVqi3yzOB7SjrIzIDZd9sA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
