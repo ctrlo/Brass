@@ -83,6 +83,12 @@ __PACKAGE__->table("user");
   is_nullable: 1
   size: 32
 
+=head2 lastlogin
+
+  data_type: 'datetime'
+  datetime_undef_if_invalid: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -110,6 +116,12 @@ __PACKAGE__->add_columns(
   },
   "pwresetcode",
   { data_type => "char", is_nullable => 1, size => 32 },
+  "lastlogin",
+  {
+    data_type => "datetime",
+    datetime_undef_if_invalid => 1,
+    is_nullable => 1,
+  },
 );
 
 =head1 PRIMARY KEY
@@ -187,8 +199,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 21:36:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RiWPSV53P6LGud87y0rVcQ
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 21:39:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nJWTL6xFvQQN3wlz54RzrA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
