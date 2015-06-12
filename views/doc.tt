@@ -1,0 +1,27 @@
+<table class="table table-striped">
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Draft</th>
+        <th>Published</th>
+        <th>Latest published</th>
+    </tr>
+    [% FOREACH doc IN docs %]
+        [% latest_published = "" %][% latest_draft = "" %]
+        [% FOREACH version IN doc.versions %]
+            [% IF version.record %][% latest_published = version %][% END %]
+            [% IF NOT version.record %][% latest_draft = version %][% END %]
+        [% END %]
+        <tr>
+            <td>[% doc.id %]</td>
+            <td>[% doc.title %]</td>
+            <td>[% latest_draft.created %]</td>
+            <td>[% latest_published.created %]</td>
+            <td>
+                [% IF latest_published %]
+                    <a href="/doc/latest/[% latest_published.doc.id %]">Latest published</a>
+                [% END %]
+            </td>
+        </tr>
+    [% END %]
+</table>
