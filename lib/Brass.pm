@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =cut
 
 package Brass;
+
+use Brass::Docs;
 use Brass::DocDB;
 use Brass::User;
 use File::Slurp;
@@ -81,18 +83,10 @@ get '/myip' => sub {
 
 get '/doc' => require_role doc => sub {
 
-    my $schema = schema('doc');
-    my @docs = $schema->resultset('Doc')->search([
-        'latest_published.created' => undef,
-        'latest_draft.created'     => undef,
-    ],{
-        prefetch => [
-            { versions => 'latest_published' },
-            { versions => 'latest_draft' },
-        ],
-    })->all;
+    my $schema  = schema('doc');
+    my $docs    = Brass::Docs->new(schema => $schema);
     my $output  = template 'doc' => {
-        docs        => \@docs,
+        docs        => $docs->all,
         messages    => session('messages'),
         page        => 'doc',
     };

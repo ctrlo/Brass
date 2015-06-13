@@ -41,7 +41,7 @@ sub setup
             return {
                 "$args->{foreign_alias}.doc_id"  => { -ident => "$args->{self_alias}.doc_id" },
                 "$args->{foreign_alias}.created" => undef,
-                "$args->{foreign_alias}.record"  => 1,
+                "$args->{foreign_alias}.minor"   => 0,
             };
         }
     );
@@ -57,7 +57,7 @@ sub setup
             return {
                 "$args->{foreign_alias}.doc_id"  => { -ident => "$args->{self_alias}.doc_id" },
                 "$args->{foreign_alias}.created" => undef,
-                "$args->{foreign_alias}.record"  => 0,
+                "$args->{foreign_alias}.minor"   => { '!=' => 0 },
             };
         }
     );

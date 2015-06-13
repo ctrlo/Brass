@@ -2,23 +2,25 @@
     <tr>
         <th>ID</th>
         <th>Title</th>
-        <th>Draft</th>
-        <th>Published</th>
+        <th>Review due</th>
         <th>Latest published</th>
     </tr>
     [% FOREACH doc IN docs %]
-        [% latest_published = "" %][% latest_draft = "" %]
-        [% FOREACH version IN doc.versions %]
-            [% IF version.record %][% latest_published = version %][% END %]
-            [% IF NOT version.record %][% latest_draft = version %][% END %]
-        [% END %]
         <tr>
+            [% IF doc.review_due_warning == "red" %]
+                [% warn = "danger" %]
+            [% ELSIF doc.review_due_warning == "amber" %]
+                [% warn = "warning" %]
+            [% ELSIF doc.review_due_warning == "green" %]
+                [% warn = "success" %]
+            [% ELSE %]
+                [% warn = "" %]
+            [% END %]
             <td>[% doc.id %]</td>
             <td>[% doc.title %]</td>
-            <td>[% latest_draft.created %]</td>
-            <td>[% latest_published.created %]</td>
+            <td><span class="text-[% warn %]">[% doc.review_due.ymd %]</span></td>
             <td>
-                [% IF latest_published %]
+                [% IF doc.published %]
                     <a href="/doc/latest/[% latest_published.doc.id %]">Latest published</a>
                 [% END %]
             </td>
