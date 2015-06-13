@@ -89,18 +89,14 @@
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
         <script src="/js/bootstrap.min.js"></script>
-        [% IF page == "record" %]
-            <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
-            <script type="text/javascript">
-                $(document).ready(function() {
-                    $('.datepicker').datepicker({format: "yyyy-mm-dd"});
-                });
-            </script>
-        [% END %]
         [% IF page == "login" %]
             <script type="text/javascript" src="/js/login.js"></script>
         [% END %]
-
+        <script type="text/javascript">
+            if (typeof jscode != 'undefined') {
+                eval(jscode);
+            }
+        </script>
     </body>
 </html>
 

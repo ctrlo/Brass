@@ -113,7 +113,17 @@ any '/doc/edit/:id' => require_role doc => sub {
 
     if (param 'submit')
     {
-        $doc->file_add(request->upload('file'));
+        if (param 'doctype' eq 'binary')
+        {
+            $doc->file_add(request->upload('file'));
+        }
+        elsif (param 'doctype' eq 'plain')
+        {
+            $doc->plain_add(param 'text_content');
+        }
+        else {
+            $doc->tex_add(param 'text_content');
+        }
     }
 
     template 'doc_edit' => {

@@ -70,6 +70,10 @@ has draft => (
     is => 'lazy',
 );
 
+has latest => (
+    is => 'lazy',
+);
+
 sub _build_review_due
 {   my $self = shift;
     $self->published && $self->published->created->clone->add(years => 1);
@@ -119,6 +123,16 @@ sub _build_draft
     $draft;
 }
 
+sub _build_latest
+{   my $self = shift;
+    my $draft = $self->draft;
+    my $published = $self->published;
+    return $draft || $published if $draft xor $published; # Only one exists
+    DateTime->compare($draft->created, $published->created) > 0
+    ? $draft
+    : $published;
+}
+
 sub _build_draft_for_review
 {   my $self = shift;
     $self->published && $self->draft
@@ -126,8 +140,8 @@ sub _build_draft_for_review
     DateTime->compare($self->draft->created, $self->published->created) > 0;
 }
 
-sub file_add
-{   my ($self, $file) = @_;
+sub _version_add
+{   my ($self, %options) = @_;
     # Start transaction
     my $guard = $self->schema->txn_scope_guard;
     my ($latest) = $self->schema->resultset('Version')->search({
@@ -136,8 +150,23 @@ sub file_add
         rows     => 1,
         order_by => { -desc => [qw/major minor revision/] },
     });
-    $file->basename =~ /.*\.([a-z0-9]+)/i;
-    my $ext = $1;
+
+    my ($mimetype, $ext, $content, $content_blob);
+    if ($options{text})
+    {
+        $options{content} =~ s/\r\n/\n/g;
+        $options{content} =~ s/\r/\n/g;
+        return if $options{content} eq $latest->version_content->content;
+        $mimetype = $options{tex} ? 'application/x-tex' : 'text/plain';
+        $content  = $options{content};
+    }
+    else {
+        $mimetype     = $options{file}->type;
+        $content_blob = $options{file}->content;
+        $options{file}->basename =~ /.*\.([a-z0-9]+)/i;
+        $ext = $1;
+    }
+
     my $version = $self->schema->resultset('Version')->create({
         doc_id   => $self->id,
         major    => $latest->major,
@@ -145,13 +174,41 @@ sub file_add
         revision => 0,
         created  => DateTime->now,
         blobext  => $ext,
-        mimetype => $file->type,
+        mimetype => $mimetype,
     });
     $self->schema->resultset('VersionContent')->create({
         id           => $version->id,
-        content_blob => $file->content,
+        content      => $content,
+        content_blob => $content_blob,
     });
     $guard->commit;
+}
+
+sub file_add
+{   my ($self, $file) = @_;
+    my %options = (
+        file => $file,
+    );
+    $self->_version_add(%options);
+}
+
+sub plain_add
+{   my ($self, $text) = @_;
+    my %options = (
+        text    => 1,
+        content => $text,
+    );
+    $self->_version_add(%options);
+}
+
+sub tex_add
+{   my ($self, $text) = @_;
+    my %options = (
+        tex     => 1,
+        text    => 1,
+        content => $text,
+    );
+    $self->_version_add(%options);
 }
 
 sub as_string
