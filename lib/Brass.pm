@@ -124,19 +124,14 @@ any '/doc/edit/:id' => require_role doc => sub {
 
 get '/doc/latest/:id' => require_role doc => sub {
 
+    my $id     = param 'id';
     my $schema = schema('doc');
-    my ($doc) = $schema->resultset('Doc')->search({
-        'me.id'                    => param('id'),
-        'latest_published.created' => undef,
-        'versions.record'          => 1,
-    },{
-        prefetch => [
-            { versions => 'latest_published' },
-        ],
-    })->all;
-    my ($version) = $doc->versions->all;
+    my $doc    = Brass::Doc->new(
+        id     => $id,
+        schema => $schema,
+    );
 
-    redirect "/version/".$version->id;
+    redirect "/version/".$doc->published->id;
 };
 
 get '/version/:id' => require_role doc => sub {

@@ -85,14 +85,7 @@ sub _build_review_due_warning
 sub _build__rset
 {   my $self = shift;
     my ($doc) = $self->schema->resultset('Doc')->search({
-        'me.id'                    => $self->id,
-        'latest_published.created' => undef,
-        'latest_draft.created'     => undef,
-    },{
-        prefetch => [
-            { versions => 'latest_published' },
-            { versions => 'latest_draft' },
-        ],
+        'me.id' => $self->id,
     })->all;
     $doc;
 }
@@ -100,13 +93,25 @@ sub _build__rset
 # Should only be 2 versions in the resultset: one published and one draft
 sub _build_published
 {   my $self = shift;
-    my ($published) = grep { $_->minor == 0 } $self->_rset->versions->all;
+    my ($published) = $self->schema->resultset('Version')->search({
+        doc_id => $self->id,
+        minor  => 0,
+    },{
+        rows     => 1,
+        order_by => { -desc => 'major' },
+    })->all;
     $published;
 }
 
 sub _build_draft
 {   my $self = shift;
-    my ($draft) = grep { $_->minor != 0 } $self->_rset->versions->all;
+    my ($draft) = $self->schema->resultset('Version')->search({
+        doc_id => $self->id,
+        minor  => { '!=' => 0 },
+    },{
+        rows     => 1,
+        order_by => { -desc => [qw/major minor/] },
+    })->all;
     $draft;
 }
 

@@ -21,7 +21,7 @@
             <td><span class="text-[% warn %]">[% doc.review_due.ymd %]</span></td>
             <td>
                 [% IF doc.published %]
-                    <a href="/doc/latest/[% latest_published.doc.id %]">Latest published</a>
+                    <a href="/doc/latest/[% doc.id %]">Latest published</a>
                 [% END %]
             </td>
         </tr>
