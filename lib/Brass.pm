@@ -187,10 +187,9 @@ get '/version/:id' => require_role doc => sub {
             # Delete all temp files
             unlink glob("$texdir/$vinfo.*");
             return send_file(
-                $file_full,
+                \$version->version_content->content_blob,
                 content_type => 'application/pdf',
                 filename     => $filename,
-                system_path  => 1,
             );
         }
         else
