@@ -1,0 +1,8 @@
+<h2>[% doc.title %]</h2>
+<form method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="file">Upload new file as draft</label>
+        <input type="file" id="file" name="file">
+    </div>
+    <button type="submit" name="submit" value="submit" class="btn btn-default">Submit</button>
+</form>

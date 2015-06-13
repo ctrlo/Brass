@@ -110,6 +110,34 @@ sub _build_draft
     $draft;
 }
 
+sub file_add
+{   my ($self, $file) = @_;
+    # Start transaction
+    my $guard = $self->schema->txn_scope_guard;
+    my ($latest) = $self->schema->resultset('Version')->search({
+        doc_id => $self->id,
+    },{
+        rows     => 1,
+        order_by => { -desc => [qw/major minor revision/] },
+    });
+    $file->basename =~ /.*\.([a-z0-9]+)/i;
+    my $ext = $1;
+    my $version = $self->schema->resultset('Version')->create({
+        doc_id   => $self->id,
+        major    => $latest->major,
+        minor    => $latest->minor + 1,
+        revision => 0,
+        created  => DateTime->now,
+        blobext  => $ext,
+        mimetype => $file->type,
+    });
+    $self->schema->resultset('VersionContent')->create({
+        id           => $version->id,
+        content_blob => $file->content,
+    });
+    $guard->commit;
+}
+
 sub as_string
 {   my $self = shift;
     $self->surname.", ".$self->firstname;

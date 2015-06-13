@@ -72,26 +72,54 @@ any '/upload' => sub {
 
 get '/myip' => sub {
 
-    my $output  = template 'myip' => {
-        messages    => session('messages'),
+    template 'myip' => {
         address     => request->address,
         page        => 'myip',
     };
-    session 'messages' => [];
-    $output;
 };
 
 get '/doc' => require_role doc => sub {
 
     my $schema  = schema('doc');
     my $docs    = Brass::Docs->new(schema => $schema);
-    my $output  = template 'doc' => {
+    template 'doc' => {
         docs        => $docs->all,
-        messages    => session('messages'),
         page        => 'doc',
     };
-    session 'messages' => [];
-    $output;
+};
+
+get '/doc/view/:id' => require_role doc => sub {
+
+    my $id     = param 'id';
+    my $schema = schema('doc');
+    my $doc    = Brass::Doc->new(
+        id     => $id,
+        schema => $schema,
+    );
+    template 'doc_view' => {
+        doc  => $doc,
+        page => 'doc_view',
+    };
+};
+
+any '/doc/edit/:id' => require_role doc => sub {
+
+    my $id     = param 'id';
+    my $schema = schema('doc');
+    my $doc    = Brass::Doc->new(
+        id     => $id,
+        schema => $schema,
+    );
+
+    if (param 'submit')
+    {
+        $doc->file_add(request->upload('file'));
+    }
+
+    template 'doc_edit' => {
+        doc  => $doc,
+        page => 'doc_edit',
+    };
 };
 
 get '/doc/latest/:id' => require_role doc => sub {

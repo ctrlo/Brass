@@ -17,7 +17,7 @@
                 [% warn = "" %]
             [% END %]
             <td>[% doc.id %]</td>
-            <td>[% doc.title %]</td>
+            <td><a href="/doc/view/[% doc.id %]">[% doc.title %]</a></td>
             <td><span class="text-[% warn %]">[% doc.review_due.ymd %]</span></td>
             <td>
                 [% IF doc.published %]
