@@ -2,6 +2,7 @@
     <tr>
         <th>ID</th>
         <th>Title</th>
+        <th>Awaiting review?</th>
         <th>Review due</th>
         <th>Latest published</th>
     </tr>
@@ -18,6 +19,9 @@
             [% END %]
             <td>[% doc.id %]</td>
             <td><a href="/doc/view/[% doc.id %]">[% doc.title %]</a></td>
+            <td>
+                [% IF doc.draft_for_review %]Yes[% ELSE %]No[% END %]
+            </td>
             <td><span class="text-[% warn %]">[% doc.review_due.ymd %]</span></td>
             <td>
                 [% IF doc.published %]

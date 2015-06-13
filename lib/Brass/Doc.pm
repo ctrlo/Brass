@@ -58,6 +58,10 @@ has review_due_warning => (
     is => 'lazy',
 );
 
+has draft_for_review => (
+    is => 'lazy',
+);
+
 has published => (
     is => 'lazy',
 );
@@ -113,6 +117,13 @@ sub _build_draft
         order_by => { -desc => [qw/major minor/] },
     })->all;
     $draft;
+}
+
+sub _build_draft_for_review
+{   my $self = shift;
+    $self->published && $self->draft
+        or return;
+    DateTime->compare($self->draft->created, $self->published->created) > 0;
 }
 
 sub file_add
