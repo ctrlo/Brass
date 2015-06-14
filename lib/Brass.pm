@@ -111,18 +111,32 @@ any '/doc/edit/:id' => require_role doc => sub {
         schema => $schema,
     );
 
-    if (param 'submit')
+    if (my $submit = param 'submit')
     {
-        if (param 'doctype' eq 'binary')
+        my $doctype = param 'doctype';
+
+        # Always create new version on publish
+        my $publish = $submit eq 'publish' ? 1 : 0;
+        $submit = 'draft' if $publish;
+
+        $submit eq 'save' && $doctype eq 'binary'
+        ? $doc->file_save(request->upload('file'))
+        : $submit eq 'save' && $doctype eq 'plain'
+        ? $doc->plain_save(param 'text_content')
+        : $submit eq 'save' && $doctype eq 'tex'
+        ? $doc->tex_save(param 'text_content')
+        : $submit eq 'draft' && $doctype eq 'binary'
+        ? $doc->file_add(param 'text_content')
+        : $submit eq 'draft' && $doctype eq 'plain'
+        ? $doc->plain_add(param 'text_content')
+        : $submit eq 'draft' && $doctype eq 'tex'
+        ? $doc->tex_add(param 'text_content')
+        : die "Invalid request";
+
+        if ($publish)
         {
-            $doc->file_add(request->upload('file'));
-        }
-        elsif (param 'doctype' eq 'plain')
-        {
-            $doc->plain_add(param 'text_content');
-        }
-        else {
-            $doc->tex_add(param 'text_content');
+            my $user = Brass::User->new(schema => schema, id => logged_in_user->{id});
+            $doc->publish_latest($user);
         }
     }
 

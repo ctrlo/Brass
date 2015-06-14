@@ -60,19 +60,23 @@ has review_due_warning => (
 );
 
 has draft_for_review => (
-    is => 'lazy',
+    is      => 'lazy',
+    clearer => 1,
 );
 
 has published => (
-    is => 'lazy',
+    is      => 'lazy',
+    clearer => 1,
 );
 
 has draft => (
-    is => 'lazy',
+    is      => 'lazy',
+    clearer => 1,
 );
 
 has latest => (
-    is => 'lazy',
+    is      => 'lazy',
+    clearer => 1,
 );
 
 # Diff between latest draft and latest published
@@ -134,7 +138,7 @@ sub _build_latest
     my $draft = $self->draft;
     my $published = $self->published;
     return $draft || $published if $draft xor $published; # Only one exists
-    DateTime->compare($draft->created, $published->created) > 0
+    _version_compare($draft, $published) > 0
     ? $draft
     : $published;
 }
@@ -143,7 +147,7 @@ sub _build_draft_for_review
 {   my $self = shift;
     $self->published && $self->draft
         or return;
-    DateTime->compare($self->draft->created, $self->published->created) > 0;
+    _version_compare($self->draft, $self->published) > 0;
 }
 
 sub _build_diff
@@ -156,23 +160,30 @@ sub _build_diff
     Text::Diff::diff(\$published, \$draft);
 }
 
-sub _version_add
-{   my ($self, %options) = @_;
-    # Start transaction
-    my $guard = $self->schema->txn_scope_guard;
+sub _latest
+{   my $self = shift;
     my ($latest) = $self->schema->resultset('Version')->search({
         doc_id => $self->id,
     },{
         rows     => 1,
         order_by => { -desc => [qw/major minor revision/] },
     });
+    $latest;
+}
+
+sub _version_add
+{   my ($self, %options) = @_;
+    # Start transaction
+    my $guard = $self->schema->txn_scope_guard;
+    my $latest = $self->_latest;
 
     my ($mimetype, $ext, $content, $content_blob);
     if ($options{text})
     {
         $options{content} =~ s/\r\n/\n/g;
         $options{content} =~ s/\r/\n/g;
-        return if $options{content} eq $latest->version_content->content;
+        # Do not create new version if content hasn't changed
+        $options{new} = 0 if $options{content} eq $latest->version_content->content;
         $mimetype = $options{tex} ? 'application/x-tex' : 'text/plain';
         $content  = $options{content};
     }
@@ -183,27 +194,92 @@ sub _version_add
         $ext = $1;
     }
 
-    my $version = $self->schema->resultset('Version')->create({
-        doc_id   => $self->id,
-        major    => $latest->major,
-        minor    => $latest->minor + 1,
+    # Never save over a published document. draft_for_review
+    # will be false if the latest document is published.published
+    $options{new} = 1 if !$self->draft_for_review;
+
+    if ($options{new})
+    {
+        my $version = $self->schema->resultset('Version')->create({
+            doc_id   => $self->id,
+            major    => $latest->major,
+            minor    => $latest->minor + 1,
+            revision => 0,
+            created  => DateTime->now,
+            blobext  => $ext,
+            mimetype => $mimetype,
+        });
+        $self->schema->resultset('VersionContent')->create({
+            id           => $version->id,
+            content      => $content,
+            content_blob => $content_blob,
+        });
+    }
+    else {
+        $latest->update({
+            created => DateTime->now,
+        });
+        $latest->version_content->update({
+            content      => $content,
+            content_blob => $content_blob,
+        });
+    }
+
+    # Force rebuild
+    $self->clear_draft_for_review;
+    $self->clear_published;
+    $self->clear_draft;
+    $self->clear_latest;
+
+    $guard->commit;
+}
+
+sub publish_latest
+{   my ($self, $user) = @_;
+    my $guard = $self->schema->txn_scope_guard;
+    my $latest = $self->_latest;
+    $latest->update({
+        major    => $latest->major + 1,
+        minor    => 0,
         revision => 0,
-        created  => DateTime->now,
-        blobext  => $ext,
-        mimetype => $mimetype,
-    });
-    $self->schema->resultset('VersionContent')->create({
-        id           => $version->id,
-        content      => $content,
-        content_blob => $content_blob,
+        reviewer => $user->id,
+        approver => $user->id,
     });
     $guard->commit;
+}
+
+sub file_save
+{   my ($self, $file) = @_;
+    my %options = (
+        file => $file,
+    );
+    $self->_version_add(%options);
+}
+
+sub plain_save
+{   my ($self, $text) = @_;
+    my %options = (
+        text    => 1,
+        content => $text,
+    );
+    $self->_version_add(%options);
+}
+
+sub tex_save
+{   my ($self, $text) = @_;
+    my %options = (
+        tex     => 1,
+        text    => 1,
+        content => $text,
+    );
+    $self->_version_add(%options);
 }
 
 sub file_add
 {   my ($self, $file) = @_;
     my %options = (
         file => $file,
+        new  => 1,
     );
     $self->_version_add(%options);
 }
@@ -213,6 +289,7 @@ sub plain_add
     my %options = (
         text    => 1,
         content => $text,
+        new     => 1,
     );
     $self->_version_add(%options);
 }
@@ -223,6 +300,7 @@ sub tex_add
         tex     => 1,
         text    => 1,
         content => $text,
+        new     => 1,
     );
     $self->_version_add(%options);
 }
@@ -235,6 +313,19 @@ sub as_string
 sub as_integer
 {   my $self = shift;
     $self->id;
+}
+
+sub _version_compare
+{   my ($a, $b) = @_;
+    return 0
+        if $a->major == $b->major
+        && $a->minor == $b->minor
+        && $a->revision == $b->revision;
+    return 1
+        if $a->major > $b->major
+        || ($a->major == $b->major && $a->minor > $b->minor)
+        || ($a->major == $b->major && $a->minor == $b->minor && $a->revision > $b->revision);
+    return -1;
 }
 
 1;
