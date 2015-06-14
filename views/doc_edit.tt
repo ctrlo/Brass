@@ -1,4 +1,15 @@
 <h2>[% doc.title %]</h2>
+[% IF doc.draft_for_review %]
+    <h4>This is a draft waiting review.
+       [% IF doc.diff %]Differences to published version as follows:[% END %]
+    </h4>
+    [% IF doc.diff %]
+    <tt><pre>
+        [% doc.diff %]
+    </pre></tt>
+    [% END %]
+[% END %]
+
 [% IF doc.latest.mimetype == "application/x-tex" %]
     [% doctype = "tex" %]
 [% ELSIF doc.latest.content %]
@@ -41,6 +52,7 @@
     </div>
     <button type="submit" name="submit" value="submit" class="btn btn-default">Submit</button>
 </form>
+<p></p>
 
 <script type="text/javascript">
     var jscode='[% FILTER remove('\n+') %]

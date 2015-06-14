@@ -1,3 +1,6 @@
 <h2>[% doc.title %]</h2>
-<a href="/doc/edit/[% doc.id %]" class="btn btn-default">Edit</a>
+[% IF doc.draft_for_review %]
+<div class="alert alert-warning">This document has a draft awaiting review</div>
+[% END %]
+<a href="/doc/edit/[% doc.id %]" class="btn btn-default">Edit content</a>
 

@@ -21,6 +21,7 @@ package Brass::Doc;
 use DateTime;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
+use Text::Diff ();
 
 use overload 'bool' => sub { 1 }, '""'  => 'as_string', '0+' => 'as_integer', fallback => 1;
 
@@ -71,6 +72,11 @@ has draft => (
 );
 
 has latest => (
+    is => 'lazy',
+);
+
+# Diff between latest draft and latest published
+has diff => (
     is => 'lazy',
 );
 
@@ -138,6 +144,16 @@ sub _build_draft_for_review
     $self->published && $self->draft
         or return;
     DateTime->compare($self->draft->created, $self->published->created) > 0;
+}
+
+sub _build_diff
+{   my $self = shift;
+    $self->draft_for_review or return;
+    my $draft = $self->draft->version_content->content
+        or return;
+    my $published = $self->published->version_content->content
+        or return;
+    Text::Diff::diff(\$draft, \$published);
 }
 
 sub _version_add
