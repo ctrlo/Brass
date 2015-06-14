@@ -117,6 +117,8 @@ any '/doc/edit/:id' => require_role doc => sub {
 
         # Always create new version on publish
         my $publish = $submit eq 'publish' ? 1 : 0;
+        die "No permission to publish document"
+            unless user_has_role('doc_publish');
         $submit = 'draft' if $publish;
 
         $submit eq 'save' && $doctype eq 'binary'
