@@ -153,7 +153,7 @@ sub _build_diff
         or return;
     my $published = $self->published->version_content->content
         or return;
-    Text::Diff::diff(\$draft, \$published);
+    Text::Diff::diff(\$published, \$draft);
 }
 
 sub _version_add
