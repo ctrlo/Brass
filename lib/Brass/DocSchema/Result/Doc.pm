@@ -70,6 +70,12 @@ __PACKAGE__->table("doc");
   is_foreign_key: 1
   is_nullable: 1
 
+=head2 multiple
+
+  data_type: 'smallint'
+  default_value: 0
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -85,6 +91,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 1 },
   "classification",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "multiple",
+  { data_type => "smallint", default_value => 0, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -157,8 +165,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-12 22:54:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Diyqpu1WOOws+RgOQzytqg
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-17 15:11:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:x/TxBxzgo2a0Pw7rfAuUww
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

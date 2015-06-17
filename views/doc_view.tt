@@ -2,5 +2,20 @@
 [% IF doc.draft_for_review %]
 <div class="alert alert-warning">This document has a draft awaiting review</div>
 [% END %]
+[% IF doc.draft %]
+<p><label>Latest draft:</label> [% doc.draft.created.ymd %]</p>
+[% END %]
+[% IF doc.multiple %]
+    <h5>This document has multiple published versions:</h5>
+    <ul>
+    [% FOREACH version IN doc.published_all %]
+        <li><a href=/version/[% version.id %]>[% version.created %]</a></li>
+    [% END %]
+    </ul>
+[% ELSE %]
+    [% IF doc.published %]
+        <p><label>Latest published:</label> [% doc.published.created.ymd %]</p>
+    [% END %]
+[% END %]
 <a href="/doc/edit/[% doc.id %]" class="btn btn-default">Edit content</a>
 

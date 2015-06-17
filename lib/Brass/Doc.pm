@@ -51,6 +51,12 @@ has owner => (
     builder => sub { $_[0]->_rset->owner },
 );
 
+has multiple => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset->multiple },
+);
+
 has review_due => (
     is => 'lazy',
 );
@@ -65,6 +71,11 @@ has draft_for_review => (
 );
 
 has published => (
+    is      => 'lazy',
+    clearer => 1,
+);
+
+has published_all => (
     is      => 'lazy',
     clearer => 1,
 );
@@ -119,6 +130,17 @@ sub _build_published
         order_by => { -desc => 'major' },
     })->all;
     $published;
+}
+
+sub _build_published_all
+{   my $self = shift;
+    my @published = $self->schema->resultset('Version')->search({
+        doc_id => $self->id,
+        minor  => 0,
+    },{
+        order_by => { -desc => 'major' },
+    })->all;
+    \@published;
 }
 
 sub _build_draft
@@ -228,6 +250,7 @@ sub _version_add
     # Force rebuild
     $self->clear_draft_for_review;
     $self->clear_published;
+    $self->clear_published_all;
     $self->clear_draft;
     $self->clear_latest;
 
