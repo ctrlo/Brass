@@ -51,6 +51,12 @@ has owner => (
     builder => sub { $_[0]->_rset->owner },
 );
 
+has classification => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset->classification },
+);
+
 has multiple => (
     is      => 'rw',
     lazy    => 1,

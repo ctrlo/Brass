@@ -184,11 +184,12 @@ get '/version/:id' => require_role doc => sub {
         my $title    = $version->doc->title;
         my $reviewer = Brass::User->new(schema => schema, id => $version->reviewer);
         my $approver = Brass::User->new(schema => schema, id => $version->approver);
+        my $classification = $version->doc->classification->name;
         my $date     = $version->created->strftime("%e %B %Y");
         $date        =~ s/(\d+)/ordinate($1)/e;
         my $content  = $version->version_content->content;
         $content     =~ s/%%thedate%%/$date/;
-        $content     =~ s!%%thename%%!$title ($vinfo / $date / $reviewer / $approver)!;
+        $content     =~ s!%%thename%%!$title ($vinfo / $date / $reviewer / $approver / $classification)!;
         my $texdir   = config->{brass}->{tex};
         die "Tex build dir $texdir does not exist" unless -d $texdir;
         write_file("$texdir/$vinfo.tex", {binmode => ':utf8'}, $content);
