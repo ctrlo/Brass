@@ -20,7 +20,7 @@ table.diff td:nth-child(2) {
 table.diff tr.change,
 table.diff tr.disc_a,
 table.diff tr.disc_b {
-   background-color: #ffffdd;
+   background-color: #e5e5c6;
 }
 
 table.diff tr.del {
