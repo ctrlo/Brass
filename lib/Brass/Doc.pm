@@ -21,7 +21,7 @@ package Brass::Doc;
 use DateTime;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
-use Text::Diff ();
+use Text::Diff::FormattedHTML;
 
 use overload 'bool' => sub { 1 }, '""'  => 'as_string', '0+' => 'as_integer', fallback => 1;
 
@@ -179,7 +179,7 @@ sub _build_diff
         or return;
     my $published = $self->published->version_content->content
         or return;
-    Text::Diff::diff(\$published, \$draft);
+    diff_strings($published, $draft);
 }
 
 sub _latest
