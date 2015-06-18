@@ -140,6 +140,7 @@ any '/doc/edit/:id' => require_role doc => sub {
             my $user = Brass::User->new(schema => schema, id => logged_in_user->{id});
             $doc->publish_latest($user);
         }
+        redirect '/doc';
     }
 
     template 'doc_edit' => {
