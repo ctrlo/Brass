@@ -39,5 +39,10 @@ sub _build_all
     \@all;
 }
 
+sub topic
+{   my ($self, $id) = @_;
+    grep { $_->topic == $id } @{$self->all};
+}
+
 1;
 

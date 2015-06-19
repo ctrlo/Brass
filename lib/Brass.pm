@@ -83,8 +83,13 @@ get '/doc' => require_role doc => sub {
 
     my $schema  = schema('doc');
     my $docs    = Brass::Docs->new(schema => $schema);
+    my @topics  = Brass::Topics->new(schema => $schema)->all;
+    my $topic_id = param('topic') || session('topic') || $topics[0]->id;
+    session 'topic', $topic_id;
     template 'doc' => {
-        docs        => $docs->all,
+        docs        => [$docs->topic($topic_id)],
+        topic_id    => $topic_id,
+        topics      => \@topics,
         page        => 'doc',
     };
 };

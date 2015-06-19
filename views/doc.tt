@@ -1,6 +1,18 @@
 <p>
     <a href="/doc/edit/0" class="btn btn-default">New document</a>
 </p>
+<p>
+<form class="form-inline">
+    <div class="form-group">
+        <label for="topic">Topic:</label>
+        <select class="form-control" id="topic" name="topic" onchange="this.form.submit()">
+            [% FOREACH topic IN topics %]
+                <option value="[% topic.id %]" [% IF topic.id == topic_id %]selected[% END %]>[% topic.name %] ([% topic.description %])</option>
+            [% END %]
+        </select>
+    </div>
+</form>
+</p>
 <table class="table table-striped">
     <tr>
         <th>ID</th>
