@@ -1,0 +1,93 @@
+<h2>[% doc.title %]</h2>
+[% IF doc.draft_for_review %]
+    <h4>This is a draft waiting review.
+       [% IF doc.diff %]Differences to published version as follows:[% END %]
+    </h4>
+    [% doc.diff %]
+[% END %]
+
+[% IF doc.latest.mimetype == "application/x-tex" %]
+    [% doctype = "tex" %]
+[% ELSIF doc.latest.content %]
+    [% doctype = "plain" %]
+[% ELSE %]
+    [% doctype = "binary" %]
+[% END %]
+<form method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="file">Document type</label>
+        <div class="radio">
+            <label>
+                <input type="radio" name="doctype" id="radio_plain" value="plain"
+                    class="radio_doctype" [% IF doctype == "plain" %]checked[% END %]>
+                Plain text
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="doctype" id="radio_tex" value="tex"
+                    class="radio_doctype" [% IF doctype == "tex" %]checked[% END %]>
+                Latex
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="doctype" id="radio_binary" value="binary"
+                    class="radio_doctype" [% IF doctype == "binary" %]checked[% END %]>
+                Binary file
+            </label>
+        </div>
+    </div>
+    <div class="form-group" id="div_binary" [% IF doctype != "binary" %]style="display:none"[% END %]>
+        <div class="form-group">
+            <label for="file">Upload new file as draft</label>
+            <input type="file" id="file" name="file">
+        </div>
+        <div class="form-group">
+            <button type="submit" name="submit" value="save" class="btn btn-default">Submit</button>
+        </div>
+        [% IF user.permission.doc_publish AND doc.draft_for_review %]
+            <div class="form-group">
+                <label for="file">Current draft</label>
+                <p>Draft file waiting to be published: <a href="/version/[% doc.draft.id %]">ID [% doc.draft.id %]</a> </p>
+                <input type="hidden" name="binary_draft_id" value="[% doc.draft.id %]">
+            </div>
+            <div class="form-group">
+                <button type="submit" name="submit" value="publish" class="btn btn-default">Publish</button>
+            </div>
+        [% END %]
+    </div>
+    <div class="form-group" id="div_text" [% IF doctype == "binary" %]style="display:none"[% END %]>
+        <label for="text_content">Text content</label>
+        <textarea class="form-control" name="text_content" rows="20">[% doc.latest.version_content.content %]</textarea>
+        [% IF doc.draft_for_review %]
+            <button type="submit" name="submit" value="save" class="btn btn-default">Save</button>
+        [% END %]
+        <button type="submit" name="submit" value="draft" class="btn btn-default">Save as new draft</button>
+        [% IF user.permission.doc_publish %]
+            <button type="submit" name="submit" value="publish" class="btn btn-default">Publish</button>
+        [% END %]
+    </div>
+</form>
+<p></p>
+
+<script type="text/javascript">
+    var jscode='[% FILTER remove('\n+') %]
+        [% FILTER replace('\'', '\\\'') %]
+            $(document).ready(function () {
+                $( ".radio_doctype" ).change(function() {
+                    if (this.value == "binary")
+                    {
+                        $( "#div_binary" ).show(400);
+                        $( "#div_text" ).hide(400);
+                    }
+                    else {
+                        $( "#div_binary" ).hide(400);
+                        $( "#div_text" ).show(400);
+                    }
+                });
+            });
+        [% END %]
+    [% END %]';
+</script>
+

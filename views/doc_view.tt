@@ -17,5 +17,5 @@
         <p><label>Latest published:</label> [% doc.published.created.ymd %]</p>
     [% END %]
 [% END %]
-<a href="/doc/edit/[% doc.id %]" class="btn btn-default">Edit content</a>
+<a href="/doc/content/[% doc.id %]" class="btn btn-default">Edit content</a>
 

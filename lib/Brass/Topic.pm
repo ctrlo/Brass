@@ -16,27 +16,62 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =cut
 
-package Brass::Docs;
+package Brass::Topic;
 
-use Brass::Doc;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
+
+use overload 'bool' => sub { 1 }, '""'  => 'as_string', '0+' => 'as_integer', fallback => 1;
 
 has schema => (
     is       => 'ro',
     required => 1,
 );
 
-has all => (
+has id => (
+    is  => 'rwp',
+    isa => Maybe[Int],
+);
+
+has _rset => (
     is => 'lazy',
 );
 
-sub _build_all
+has name => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->name; },
+);
+
+has description => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->description },
+);
+
+sub _build__rset
 {   my $self = shift;
-    my $docs_rs = $self->schema->resultset('Doc')->search;
-    $docs_rs->result_class('Brass::Doc');
-    my @all = $docs_rs->all;
-    \@all;
+    $self->schema->resultset('Topic')->find($self->id);
+}
+
+sub as_string
+{   my $self = shift;
+    $self->name;
+}
+
+sub as_integer
+{   my $self = shift;
+    $self->id;
+}
+
+sub inflate_result {
+    my $data = $_[2];
+    $_[0]->new(
+        id          => $data->{id},
+        name        => $data->{name},
+        description => $data->{description},
+        schema      => $_[1]->schema,
+    );
 }
 
 1;

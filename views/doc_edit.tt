@@ -1,79 +1,31 @@
-<h2>[% doc.title %]</h2>
-[% IF doc.draft_for_review %]
-    <h4>This is a draft waiting review.
-       [% IF doc.diff %]Differences to published version as follows:[% END %]
-    </h4>
-    [% doc.diff %]
-[% END %]
+<h2>
+    [% IF doc.id %]
+        [% doc.title %]
+    [% ELSE %]
+        New document
+    [% END %]
+</h2>
 
-[% IF doc.latest.mimetype == "application/x-tex" %]
-    [% doctype = "tex" %]
-[% ELSIF doc.latest.content %]
-    [% doctype = "plain" %]
-[% ELSE %]
-    [% doctype = "binary" %]
-[% END %]
-<form method="post" enctype="multipart/form-data">
+<form method="post">
     <div class="form-group">
-        <label for="file">Document type</label>
-        <div class="radio">
-            <label>
-                <input type="radio" name="doctype" id="radio_plain" value="plain"
-                    class="radio_doctype" [% IF doctype == "plain" %]checked[% END %]>
-                Plain text
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="doctype" id="radio_tex" value="tex"
-                    class="radio_doctype" [% IF doctype == "tex" %]checked[% END %]>
-                Latex
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="doctype" id="radio_binary" value="binary"
-                    class="radio_doctype" [% IF doctype == "binary" %]checked[% END %]>
-                Binary file
-            </label>
-        </div>
+        <label for="title">Title</label>
+        <input type="text" class="form-control" id="title" name="title" value="[% doc.title %]">
     </div>
-    <div class="form-group" id="div_binary" [% IF doctype != "binary" %]style="display:none"[% END %]>
-        <label for="file">Upload new file as draft</label>
-        <input type="file" id="file" name="file">
-        <button type="submit" name="submit" value="save" class="btn btn-default">Submit</button>
+    <div class="form-group">
+        <label for="title">Topic</label>
+        <select class="form-control" id="title" name="topic">
+            [% FOREACH topic IN topics %]
+                <option value="[% topic.id %]" [% IF doc.topic == topic %]selected[% END %]>[% topic.name %] ([% topic.description %])</option>
+            [% END %]
+        </select>
     </div>
-    <div class="form-group" id="div_text" [% IF doctype == "binary" %]style="display:none"[% END %]>
-        <label for="text_content">Text content</label>
-        <textarea class="form-control" name="text_content" rows="20">[% doc.latest.version_content.content %]</textarea>
-        [% IF doc.draft_for_review %]
-            <button type="submit" name="submit" value="save" class="btn btn-default">Save</button>
-        [% END %]
-        <button type="submit" name="submit" value="draft" class="btn btn-default">Save as new draft</button>
-        [% IF user.permission.doc_publish %]
-            <button type="submit" name="submit" value="publish" class="btn btn-default">Publish</button>
-        [% END %]
+    <div class="checkbox">
+        <label>
+        <input name="multiple" type="checkbox" value="1" [% IF doc.multiple %]checked[% END %]>
+        This document contains multiple current published items
+    </label>
     </div>
+    <button type="submit" name="submit" value="save" class="btn btn-default">Save</button>
 </form>
 <p></p>
-
-<script type="text/javascript">
-    var jscode='[% FILTER remove('\n+') %]
-        [% FILTER replace('\'', '\\\'') %]
-            $(document).ready(function () {
-                $( ".radio_doctype" ).change(function() {
-                    if (this.value == "binary")
-                    {
-                        $( "#div_binary" ).show(400);
-                        $( "#div_text" ).hide(400);
-                    }
-                    else {
-                        $( "#div_binary" ).hide(400);
-                        $( "#div_text" ).show(400);
-                    }
-                });
-            });
-        [% END %]
-    [% END %]';
-</script>
 

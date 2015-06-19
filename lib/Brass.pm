@@ -20,6 +20,7 @@ package Brass;
 
 use Brass::Docs;
 use Brass::DocDB;
+use Brass::Topics;
 use Brass::User;
 use File::Slurp;
 use IPC::ShellCmd;
@@ -111,41 +112,71 @@ any '/doc/edit/:id' => require_role doc => sub {
         schema => $schema,
     );
 
+    my $topics = Brass::Topics->new(schema => $schema);
+
     if (my $submit = param 'submit')
     {
-        my $doctype = param 'doctype';
-
-        # Always create new version on publish
-        my $publish = $submit eq 'publish' ? 1 : 0;
-        die "No permission to publish document"
-            unless user_has_role('doc_publish');
-        $submit = 'draft' if $publish;
-
-        $submit eq 'save' && $doctype eq 'binary'
-        ? $doc->file_save(request->upload('file'))
-        : $submit eq 'save' && $doctype eq 'plain'
-        ? $doc->plain_save(param 'text_content')
-        : $submit eq 'save' && $doctype eq 'tex'
-        ? $doc->tex_save(param 'text_content')
-        : $submit eq 'draft' && $doctype eq 'binary'
-        ? $doc->file_add(param 'text_content')
-        : $submit eq 'draft' && $doctype eq 'plain'
-        ? $doc->plain_add(param 'text_content')
-        : $submit eq 'draft' && $doctype eq 'tex'
-        ? $doc->tex_add(param 'text_content')
-        : die "Invalid request";
-
-        if ($publish)
-        {
-            my $user = Brass::User->new(schema => schema, id => logged_in_user->{id});
-            $doc->publish_latest($user);
-        }
+        $doc->title(param 'title');
+        $doc->set_topic(param 'topic');
+        $doc->multiple(param 'multiple');
+        $doc->write;
         redirect '/doc';
     }
 
     template 'doc_edit' => {
+        doc    => $doc,
+        topics => [$topics->all],
+        page   => 'doc_edit',
+    };
+};
+
+any '/doc/content/:id' => require_role doc => sub {
+
+    my $id     = param 'id';
+    my $schema = schema('doc');
+    my $doc    = Brass::Doc->new(
+        id     => $id,
+        schema => $schema,
+    );
+
+    if (my $submit = param 'submit')
+    {
+        my $doctype = param 'doctype';
+
+        # Always set new option on publish. If the content
+        # is exactly the same, a new one won't actually be created
+        my $publish = $submit eq 'publish' ? 1 : 0;
+        die "No permission to publish document"
+            unless user_has_role('doc_publish');
+        $submit = 'draft' if $publish && $doctype ne 'binary';
+
+        my $new_version_id = $submit eq 'save' && $doctype eq 'binary'
+          ? $doc->file_save(request->upload('file'))
+          : $publish && $doctype eq 'binary'
+          ? param('binary_draft_id')
+          : $submit eq 'save' && $doctype eq 'plain'
+          ? $doc->plain_save(param 'text_content')
+          : $submit eq 'save' && $doctype eq 'tex'
+          ? $doc->tex_save(param 'text_content')
+          : $submit eq 'draft' && $doctype eq 'binary'
+          ? $doc->file_add(param 'text_content')
+          : $submit eq 'draft' && $doctype eq 'plain'
+          ? $doc->plain_add(param 'text_content')
+          : $submit eq 'draft' && $doctype eq 'tex'
+          ? $doc->tex_add(param 'text_content')
+          : die "Invalid request";
+
+        if ($publish)
+        {
+            my $user = Brass::User->new(schema => schema, id => logged_in_user->{id});
+            $doc->publish($new_version_id, $user);
+        }
+        redirect '/doc';
+    }
+
+    template 'doc_content' => {
         doc  => $doc,
-        page => 'doc_edit',
+        page => 'doc_content',
     };
 };
 

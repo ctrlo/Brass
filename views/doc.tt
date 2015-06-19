@@ -1,3 +1,6 @@
+<p>
+    <a href="/doc/edit/0" class="btn btn-default">New document</a>
+</p>
 <table class="table table-striped">
     <tr>
         <th>ID</th>

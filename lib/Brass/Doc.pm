@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package Brass::Doc;
 
 use DateTime;
+use Brass::Topic;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 use Text::Diff::FormattedHTML;
@@ -32,7 +33,7 @@ has schema => (
 
 has id => (
     is  => 'rwp',
-    isa => Int,
+    isa => Maybe[Int],
 );
 
 has _rset => (
@@ -41,14 +42,31 @@ has _rset => (
 
 has title => (
     is      => 'rw',
+    isa     => Maybe[Str],
     lazy    => 1,
-    builder => sub { $_[0]->_rset->title; },
+    builder => sub { $_[0]->_rset && $_[0]->_rset->title; },
+);
+
+has topic => (
+    is      => 'rwp',
+    lazy    => 1,
+    builder => sub {
+        my $self = shift;
+        my $topic = $self->_rset && $self->_rset->topic
+            or return;
+        Brass::Topic->new(
+            id          => $topic->id,
+            name        => $topic->name,
+            description => $topic->description,
+            schema      => $self->schema,
+        );
+    },
 );
 
 has owner => (
     is      => 'rw',
     lazy    => 1,
-    builder => sub { $_[0]->_rset->owner },
+    builder => sub { $_[0]->_rset && $_[0]->_rset->owner },
 );
 
 has classification => (
@@ -59,8 +77,10 @@ has classification => (
 
 has multiple => (
     is      => 'rw',
+    isa     => Bool,
     lazy    => 1,
-    builder => sub { $_[0]->_rset->multiple },
+    builder => sub { $_[0]->_rset && $_[0]->_rset->multiple },
+    coerce  => sub { $_[0] ? 1 : 0 },
 );
 
 has review_due => (
@@ -100,6 +120,30 @@ has latest => (
 has diff => (
     is => 'lazy',
 );
+
+sub inflate_result {
+    my $data = $_[2];
+    $_[0]->new(
+        id             => $data->{id},
+        title          => $data->{title},
+        set_topic      => $data->{topic_id},
+        review         => $data->{review},
+        set_owner      => $data->{owner},
+        classification => $data->{classification},
+        multiple       => $data->{multiple},
+        schema         => $_[1]->schema,
+    );
+}
+
+sub set_topic
+{   my ($self, $id) = @_;
+    $self->_set_topic(Brass::Topic->new(id => $id, schema => $self->schema));
+}
+
+sub set_owner
+{   my ($self, $id) = @_;
+    # $self->topic(Brass::Topic->new(id => $id, schema => $self->schema));
+}
 
 sub _build_review_due
 {   my $self = shift;
@@ -165,6 +209,7 @@ sub _build_latest
 {   my $self = shift;
     my $draft = $self->draft;
     my $published = $self->published;
+    return unless $draft || $published; # No docs yet
     return $draft || $published if $draft xor $published; # Only one exists
     _version_compare($draft, $published) > 0
     ? $draft
@@ -173,6 +218,8 @@ sub _build_latest
 
 sub _build_draft_for_review
 {   my $self = shift;
+    $self->draft && !$self->published
+        and return 1;
     $self->published && $self->draft
         or return;
     _version_compare($self->draft, $self->published) > 0;
@@ -226,19 +273,20 @@ sub _version_add
     # will be false if the latest document is published.published
     $options{new} = 1 if !$self->draft_for_review;
 
+    my $version_new;
     if ($options{new})
     {
-        my $version = $self->schema->resultset('Version')->create({
+        $version_new = $self->schema->resultset('Version')->create({
             doc_id   => $self->id,
-            major    => $latest->major,
-            minor    => $latest->minor + 1,
+            major    => $latest ? $latest->major : 0,
+            minor    => $latest ? $latest->minor + 1 : 1,
             revision => 0,
             created  => DateTime->now,
             blobext  => $ext,
             mimetype => $mimetype,
         });
         $self->schema->resultset('VersionContent')->create({
-            id           => $version->id,
+            id           => $version_new->id,
             content      => $content,
             content_blob => $content_blob,
         });
@@ -251,6 +299,7 @@ sub _version_add
             content      => $content,
             content_blob => $content_blob,
         });
+        $version_new = $latest;
     }
 
     # Force rebuild
@@ -261,13 +310,15 @@ sub _version_add
     $self->clear_latest;
 
     $guard->commit;
+    $version_new->id;
 }
 
-sub publish_latest
-{   my ($self, $user) = @_;
+sub publish
+{   my ($self, $id, $user) = @_;
     my $guard = $self->schema->txn_scope_guard;
     my $latest = $self->_latest;
-    $latest->update({
+    my $version = $self->schema->resultset('Version')->find($id);
+    $version->update({
         major    => $latest->major + 1,
         minor    => 0,
         revision => 0,
@@ -332,6 +383,22 @@ sub tex_add
         new     => 1,
     );
     $self->_version_add(%options);
+}
+
+sub write
+{   my $self = shift;
+    my $values = {
+        title    => $self->title,
+        topic_id => $self->topic->id,
+        multiple => $self->multiple,
+    };
+    if ($self->id)
+    {
+        $self->_rset->update($values);
+    }
+    else {
+        $self->schema->resultset('Doc')->create($values);
+    }
 }
 
 sub as_string

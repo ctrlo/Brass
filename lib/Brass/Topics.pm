@@ -16,9 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =cut
 
-package Brass::Docs;
+package Brass::Topics;
 
-use Brass::Doc;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 
@@ -27,16 +26,12 @@ has schema => (
     required => 1,
 );
 
-has all => (
-    is => 'lazy',
-);
-
-sub _build_all
+sub all
 {   my $self = shift;
-    my $docs_rs = $self->schema->resultset('Doc')->search;
-    $docs_rs->result_class('Brass::Doc');
-    my @all = $docs_rs->all;
-    \@all;
+    my $all_rs = $self->schema->resultset('Topic')->search;
+    $all_rs->result_class('Brass::Topic');
+    my @all = $all_rs->all;
+    @all;
 }
 
 1;
