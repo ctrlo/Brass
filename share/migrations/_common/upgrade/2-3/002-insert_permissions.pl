@@ -16,6 +16,9 @@ migrate {
         },{
             name        => 'doc_publish',
             description => 'User can publish documents',
+        },{
+            name        => 'doc_save',
+            description => 'User can save drafts',
         },
     ]);
 };
