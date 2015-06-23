@@ -228,9 +228,9 @@ sub _build_draft_for_review
 sub _build_diff
 {   my $self = shift;
     $self->draft_for_review or return;
-    my $draft = $self->draft->version_content->content
+    my $draft = $self->draft && $self->draft->version_content->content
         or return;
-    my $published = $self->published->version_content->content
+    my $published = $self->published && $self->published->version_content->content
         or return;
     diff_strings($published, $draft);
 }
