@@ -152,7 +152,9 @@ any '/doc/content/:id' => require_role doc => sub {
         # is exactly the same, a new one won't actually be created
         my $publish = $submit eq 'publish' ? 1 : 0;
         die "No permission to publish document"
-            unless user_has_role('doc_publish');
+            if $publish && !user_has_role('doc_publish');
+        die "No permission to save draft"
+            unless user_has_role('doc_save');
         $submit = 'draft' if $publish && $doctype ne 'binary';
 
         my $new_version_id = $submit eq 'save' && $doctype eq 'binary'
