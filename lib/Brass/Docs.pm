@@ -33,7 +33,9 @@ has all => (
 
 sub _build_all
 {   my $self = shift;
-    my $docs_rs = $self->schema->resultset('Doc')->search;
+    my $docs_rs = $self->schema->resultset('Doc')->search({
+        retired => undef,
+    });
     $docs_rs->result_class('Brass::Doc');
     my @all = $docs_rs->all;
     \@all;

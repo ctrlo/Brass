@@ -94,7 +94,7 @@ get '/doc' => require_role doc => sub {
     };
 };
 
-get '/doc/view/:id' => require_role doc => sub {
+any '/doc/view/:id' => require_role doc => sub {
 
     my $id     = param 'id';
     my $schema = schema('doc');
@@ -102,6 +102,15 @@ get '/doc/view/:id' => require_role doc => sub {
         id     => $id,
         schema => $schema,
     );
+
+    if (param 'retire')
+    {
+        die "Retiring a document requires the publishing permission"
+            unless user_has_role('doc_publish');
+        $doc->retire;
+        redirect '/doc';
+    }
+
     template 'doc_view' => {
         doc  => $doc,
         page => 'doc_view',

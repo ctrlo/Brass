@@ -17,5 +17,10 @@
         <p><label>Latest published:</label> [% doc.published.created.ymd %]</p>
     [% END %]
 [% END %]
-<a href="/doc/content/[% doc.id %]" class="btn btn-default">Edit content</a>
+<form method="post">
+    <a href="/doc/content/[% doc.id %]" class="btn btn-default">Edit content</a>
+    [% IF user.permission.doc_publish %]
+        <button type="submit" name="retire" value="retire" class="btn btn-default">Retire</button>
+    [% END %]
+</form>
 

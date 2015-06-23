@@ -76,6 +76,12 @@ __PACKAGE__->table("doc");
   default_value: 0
   is_nullable: 0
 
+=head2 retired
+
+  data_type: 'datetime'
+  datetime_undef_if_invalid: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -93,6 +99,12 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "multiple",
   { data_type => "smallint", default_value => 0, is_nullable => 0 },
+  "retired",
+  {
+    data_type => "datetime",
+    datetime_undef_if_invalid => 1,
+    is_nullable => 1,
+  },
 );
 
 =head1 PRIMARY KEY
@@ -165,8 +177,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-17 15:11:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:x/TxBxzgo2a0Pw7rfAuUww
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-23 18:21:53
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yvsd9Gyup3WC0w6Sx14h0w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

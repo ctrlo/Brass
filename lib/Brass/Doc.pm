@@ -328,6 +328,11 @@ sub publish
     $guard->commit;
 }
 
+sub retire
+{   my $self = shift;
+    $self->_rset->update({retired => DateTime->now});
+}
+
 sub file_save
 {   my ($self, $file) = @_;
     my %options = (
