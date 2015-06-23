@@ -22,6 +22,7 @@ use DateTime;
 use Brass::Topic;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
+use MooX::Types::MooseLike::DateTime qw/DateAndTime/;
 use Text::Diff::FormattedHTML;
 
 use overload 'bool' => sub { 1 }, '""'  => 'as_string', '0+' => 'as_integer', fallback => 1;
@@ -83,12 +84,22 @@ has multiple => (
     coerce  => sub { $_[0] ? 1 : 0 },
 );
 
+# Database review field date. Manual override for calculated review_due field
+has review => (
+    is      => 'rw',
+    isa     => Maybe[DateAndTime],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->review; },
+);
+
 has review_due => (
-    is => 'lazy',
+    is      => 'lazy',
+    clearer => 1,
 );
 
 has review_due_warning => (
-    is => 'lazy',
+    is      => 'lazy',
+    clearer => 1,
 );
 
 has draft_for_review => (
@@ -122,12 +133,15 @@ has diff => (
 );
 
 sub inflate_result {
-    my $data = $_[2];
+    my $data   = $_[2];
+    my $schema = $_[1]->schema;
+    my $db_parser = $schema->storage->datetime_parser;
+    my $review = $data->{review} ? $db_parser->parse_date($data->{review}) : undef;
     $_[0]->new(
         id             => $data->{id},
         title          => $data->{title},
         set_topic      => $data->{topic_id},
-        review         => $data->{review},
+        review         => $review,
         set_owner      => $data->{owner},
         classification => $data->{classification},
         multiple       => $data->{multiple},
@@ -147,7 +161,8 @@ sub set_owner
 
 sub _build_review_due
 {   my $self = shift;
-    $self->published && $self->published->created->clone->add(years => 1);
+    $self->review
+      or $self->published && $self->published->created->clone->add(years => 1);
 }
 
 sub _build_review_due_warning
@@ -304,6 +319,9 @@ sub _version_add
 
     # Force rebuild
     $self->clear_draft_for_review;
+    $self->clear_review_due;
+    $self->clear_review;
+    $self->clear_review_due_warning;
     $self->clear_published;
     $self->clear_published_all;
     $self->clear_draft;
@@ -315,8 +333,8 @@ sub _version_add
 
 sub publish
 {   my ($self, $id, $user) = @_;
-    my $guard = $self->schema->txn_scope_guard;
-    my $latest = $self->_latest;
+    my $guard   = $self->schema->txn_scope_guard;
+    my $latest  = $self->_latest;
     my $version = $self->schema->resultset('Version')->find($id);
     $version->update({
         major    => $latest->major + 1,
@@ -325,6 +343,7 @@ sub publish
         reviewer => $user->id,
         approver => $user->id,
     });
+    $self->_rset->update(review => undef);
     $guard->commit;
 }
 
@@ -396,6 +415,7 @@ sub write
         title    => $self->title,
         topic_id => $self->topic->id,
         multiple => $self->multiple,
+        review   => $self->review,
     };
     if ($self->id)
     {

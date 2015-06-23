@@ -21,6 +21,7 @@
     <a href="/doc/content/[% doc.id %]" class="btn btn-default">Edit content</a>
     [% IF user.permission.doc_publish %]
         <button type="submit" name="retire" value="retire" class="btn btn-default">Retire</button>
+        <button type="submit" name="review" value="12" class="btn btn-default">Review in 12 months</button>
     [% END %]
 </form>
 
