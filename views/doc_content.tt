@@ -8,7 +8,7 @@
 
 [% IF doc.latest.mimetype == "application/x-tex" %]
     [% doctype = "tex" %]
-[% ELSIF doc.latest.content %]
+[% ELSIF doc.latest.version_content.content %]
     [% doctype = "plain" %]
 [% ELSE %]
     [% doctype = "binary" %]
