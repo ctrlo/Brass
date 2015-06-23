@@ -1,6 +1,6 @@
 <h2>[% doc.title %]</h2>
 [% IF doc.draft_for_review %]
-<div class="alert alert-warning">This document has a draft awaiting review</div>
+<div class="alert alert-warning">This document has a <a href="/version/[% doc.draft.id %]">draft awaiting review</a></div>
 [% END %]
 [% IF doc.draft %]
 <p><label>Latest draft:</label> [% doc.draft.created.ymd %]</p>

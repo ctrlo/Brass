@@ -220,8 +220,8 @@ get '/version/:id' => require_role doc => sub {
 
         my $filename = "$vinfo.pdf";
         my $title    = $version->doc->title;
-        my $reviewer = Brass::User->new(schema => schema, id => $version->reviewer);
-        my $approver = Brass::User->new(schema => schema, id => $version->approver);
+        my $reviewer = $version->reviewer ? Brass::User->new(schema => schema, id => $version->reviewer) : "Not reviewed";
+        my $approver = $version->approver ? Brass::User->new(schema => schema, id => $version->approver) : "Not approved";
         my $classification = $version->doc->classification->name;
         my $date     = $version->created->strftime("%e %B %Y");
         $date        =~ s/(\d+)/ordinate($1)/e;
