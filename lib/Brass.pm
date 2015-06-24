@@ -234,7 +234,7 @@ get '/version/:id' => require_role doc => sub {
             filename     => $vinfo.".".$version->blobext,
         );
     }
-    elsif ($version->mimetype eq 'application/x-tex') {
+    elsif ($version->mimetype && $version->mimetype eq 'application/x-tex') {
 
         my $filename = "$vinfo.pdf";
         my $title    = $version->doc->title;
