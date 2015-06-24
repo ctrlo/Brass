@@ -89,6 +89,7 @@ has review => (
     is      => 'rw',
     isa     => Maybe[DateAndTime],
     lazy    => 1,
+    clearer => 1,
     builder => sub { $_[0]->_rset && $_[0]->_rset->review; },
 );
 
