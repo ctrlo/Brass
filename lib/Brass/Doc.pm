@@ -344,7 +344,7 @@ sub publish
         reviewer => $user->id,
         approver => $user->id,
     });
-    $self->_rset->update(review => undef);
+    $self->_rset->update({review => undef});
     $guard->commit;
 }
 
