@@ -284,9 +284,11 @@ get '/version/:id' => require_role doc => sub {
 
     }
     else {
+        my $txt = $version->version_content->content;
+        utf8::encode($txt); # Strings cannot be passed to send_file with utf-8 chars
         return send_file(
-            \$version->version_content->content,
-            content_type => 'text/plain',
+            \$txt,
+            content_type => 'text/plain; charset=utf-8',
             filename     => $version->id.".txt",
         );
     }
