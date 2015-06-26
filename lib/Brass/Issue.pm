@@ -113,6 +113,21 @@ has type => (
     },
 );
 
+has project => (
+    is      => 'rwp',
+    lazy    => 1,
+    builder => sub {
+        my $self = shift;
+        my $project = $self->_rset && $self->_rset->project
+            or return;
+        Brass::Issue::Project->new(
+            id          => $project->id,
+            name        => $project->name,
+            schema      => $self->schema,
+        );
+    },
+);
+
 has status => (
     is      => 'rwp',
     lazy    => 1,
@@ -218,6 +233,11 @@ sub set_type
     $self->_set_type(Brass::Issue::Type->new(id => $id, schema => $self->schema));
 }
 
+sub set_project
+{   my ($self, $id) = @_;
+    $self->_set_project(Brass::Issue::Project->new(id => $id, schema => $self->schema));
+}
+
 sub _build_comments
 {   my $self = shift;
     my $comments_rs = $self->schema->resultset('Comment')->search({
@@ -249,6 +269,7 @@ sub inflate_result {
         reference      => $data->{reference},
         security       => $data->{security},
         set_type       => $data->{type_id},
+        set_project    => $data->{project_id},
         set_owner      => $data->{owner},
         set_author     => $data->{author},
         set_approver   => $data->{approver},
@@ -272,6 +293,7 @@ sub write
         reference   => $self->reference,
         security    => $self->security,
         type_id     => $self->type->id,
+        project_id  => $self->project->id,
         owner       => $self->set_owner,
         author      => $self->set_author,
         approver    => $self->set_approver,

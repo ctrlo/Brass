@@ -70,6 +70,12 @@ __PACKAGE__->table("issue");
   is_foreign_key: 1
   is_nullable: 1
 
+=head2 project_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
 =head2 author
 
   data_type: 'integer'
@@ -117,6 +123,8 @@ __PACKAGE__->add_columns(
   "status_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "priority_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "project_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "author",
   { data_type => "integer", is_nullable => 1 },
@@ -211,6 +219,26 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 project
+
+Type: belongs_to
+
+Related object: L<Brass::IssueSchema::Result::Project>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "project",
+  "Brass::IssueSchema::Result::Project",
+  { id => "project_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "RESTRICT",
+    on_update     => "RESTRICT",
+  },
+);
+
 =head2 status
 
 Type: belongs_to
@@ -252,8 +280,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-26 17:39:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LyW63laUtoJFeRgoUFsPzw
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-26 17:45:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZcVTZtIsbKhcRzApoYk4nA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

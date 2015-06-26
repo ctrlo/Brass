@@ -21,6 +21,7 @@ package Brass;
 use Brass::Docs;
 use Brass::DocDB;
 use Brass::Issue::Priorities;
+use Brass::Issue::Projects;
 use Brass::Issue::Statuses;
 use Brass::Issue::Types;
 use Brass::Issues;
@@ -96,6 +97,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_all)] => sub {
         priorities => Brass::Issue::Priorities->new(schema => $schema)->all,
         statuses   => Brass::Issue::Statuses->new(schema => $schema)->all,
         types      => Brass::Issue::Types->new(schema => $schema)->all,
+        projects   => Brass::Issue::Projects->new(schema => $schema)->all,
         page       => 'issue',
     };
 
@@ -108,6 +110,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_all)] => sub {
             $issue->description(param 'description');
             $issue->security(param 'security');
             $issue->set_type(param 'type');
+            $issue->set_project(param 'project');
             $issue->set_status(param 'status');
             $issue->set_priority(param 'priority');
             $issue->write(logged_in_user->{id});
