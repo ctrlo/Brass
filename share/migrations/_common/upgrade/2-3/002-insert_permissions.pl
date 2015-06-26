@@ -31,6 +31,9 @@ migrate {
         },{
             name        => 'issue_write_all',
             description => 'User can write to all issues',
+        },{
+            name        => 'issue_read_project',
+            description => 'User can view all issues for certain projects',
         },
     ]);
 };
