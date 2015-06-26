@@ -1,12 +1,12 @@
 use utf8;
-package Brass::Schema::Result::IssueStatus;
+package Brass::Schema::Result::IssuePriority;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-Brass::Schema::Result::IssueStatus
+Brass::Schema::Result::IssuePriority
 
 =cut
 
@@ -27,11 +27,11 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<issue_status>
+=head1 TABLE: C<issue_priority>
 
 =cut
 
-__PACKAGE__->table("issue_status");
+__PACKAGE__->table("issue_priority");
 
 =head1 ACCESSORS
 
@@ -47,7 +47,7 @@ __PACKAGE__->table("issue_status");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 status
+=head2 priority
 
   data_type: 'integer'
   is_foreign_key: 1
@@ -72,7 +72,7 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "issue",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "status",
+  "priority",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "datetime",
   {
@@ -113,18 +113,18 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 status
+=head2 priority
 
 Type: belongs_to
 
-Related object: L<Brass::Schema::Result::Status>
+Related object: L<Brass::Schema::Result::Priority>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "status",
-  "Brass::Schema::Result::Status",
-  { id => "status" },
+  "priority",
+  "Brass::Schema::Result::Priority",
+  { id => "priority" },
   { is_deferrable => 1, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
@@ -150,7 +150,7 @@ __PACKAGE__->belongs_to(
 
 
 # Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-26 23:58:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mAGWGGA1ymkrWx/sHGul4g
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LicrzqVpwnnMrSIOuwKFhg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

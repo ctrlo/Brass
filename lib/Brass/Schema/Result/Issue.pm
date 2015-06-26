@@ -58,12 +58,6 @@ __PACKAGE__->table("issue");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 priority
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
-
 =head2 author
 
   data_type: 'integer'
@@ -71,6 +65,12 @@ __PACKAGE__->table("issue");
   is_nullable: 1
 
 =head2 owner
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
+=head2 approver
 
   data_type: 'integer'
   is_foreign_key: 1
@@ -88,6 +88,12 @@ __PACKAGE__->table("issue");
   is_foreign_key: 1
   is_nullable: 1
 
+=head2 security
+
+  data_type: 'smallint'
+  default_value: 0
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -99,16 +105,18 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "type",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "priority",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "author",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "owner",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "approver",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "reference",
   { data_type => "varchar", is_nullable => 1, size => 128 },
   "project",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "security",
+  { data_type => "smallint", default_value => 0, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -124,6 +132,26 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
+
+=head2 approver
+
+Type: belongs_to
+
+Related object: L<Brass::Schema::Result::User>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "approver",
+  "Brass::Schema::Result::User",
+  { id => "approver" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
+);
 
 =head2 author
 
@@ -160,6 +188,21 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 issue_priorities
+
+Type: has_many
+
+Related object: L<Brass::Schema::Result::IssuePriority>
+
+=cut
+
+__PACKAGE__->has_many(
+  "issue_priorities",
+  "Brass::Schema::Result::IssuePriority",
+  { "foreign.issue" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 issue_statuses
 
 Type: has_many
@@ -187,26 +230,6 @@ __PACKAGE__->belongs_to(
   "owner",
   "Brass::Schema::Result::User",
   { id => "owner" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "NO ACTION",
-    on_update     => "NO ACTION",
-  },
-);
-
-=head2 priority
-
-Type: belongs_to
-
-Related object: L<Brass::Schema::Result::Priority>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "priority",
-  "Brass::Schema::Result::Priority",
-  { id => "priority" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
@@ -256,8 +279,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 20:14:31
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HVqi3yzOB7SjrIzIDZd9sA
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-26 23:58:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xCvQfBW8V897eK6h3urnTA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

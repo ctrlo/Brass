@@ -161,6 +161,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 issue_approvers
+
+Type: has_many
+
+Related object: L<Brass::Schema::Result::Issue>
+
+=cut
+
+__PACKAGE__->has_many(
+  "issue_approvers",
+  "Brass::Schema::Result::Issue",
+  { "foreign.approver" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 issue_authors
 
 Type: has_many
@@ -191,6 +206,36 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 issue_priorities
+
+Type: has_many
+
+Related object: L<Brass::Schema::Result::IssuePriority>
+
+=cut
+
+__PACKAGE__->has_many(
+  "issue_priorities",
+  "Brass::Schema::Result::IssuePriority",
+  { "foreign.user" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 issue_statuses
+
+Type: has_many
+
+Related object: L<Brass::Schema::Result::IssueStatus>
+
+=cut
+
+__PACKAGE__->has_many(
+  "issue_statuses",
+  "Brass::Schema::Result::IssueStatus",
+  { "foreign.user" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 user_permissions
 
 Type: has_many
@@ -207,8 +252,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 22:30:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kpzO2fTYTNUPmcI+5TUiMA
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-26 23:58:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fK0ft2ne8LdfFv53o4J3Pg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
