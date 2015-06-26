@@ -243,7 +243,7 @@ sub set_project
 sub _build_comments
 {   my $self = shift;
     my $comments_rs = $self->schema->resultset('Comment')->search({
-        issue_id => $self->id,
+        issue => $self->id,
     });
     $comments_rs->result_class('Brass::Issue::Comment');
     my @all = $comments_rs->all;
@@ -256,7 +256,7 @@ sub comment_add
     $self->schema->resultset('Comment')->create({
         text     => $options{text},
         author   => $options{user_id},
-        issue_id => $self->id,
+        issue    => $self->id,
         datetime => DateTime->now,
     });
 }
@@ -270,8 +270,8 @@ sub inflate_result {
         description    => $data->{description},
         reference      => $data->{reference},
         security       => $data->{security},
-        set_type       => $data->{type_id},
-        set_project    => $data->{project_id},
+        set_type       => $data->{type},
+        set_project    => $data->{project},
         set_owner      => $data->{owner},
         set_author     => $data->{author},
         set_approver   => $data->{approver},
@@ -294,8 +294,8 @@ sub write
         description => $self->description,
         reference   => $self->reference,
         security    => $self->security,
-        type_id     => $self->type->id,
-        project_id  => $self->project->id,
+        type        => $self->type->id,
+        project     => $self->project->id,
         owner       => $self->set_owner,
         author      => $self->set_author,
         approver    => $self->set_approver,

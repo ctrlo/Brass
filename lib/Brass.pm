@@ -88,7 +88,7 @@ get '/myip' => sub {
 any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_all)] => sub {
 
     my $id      = param 'id';
-    my $schema  = schema('issue');
+    my $schema  = schema;
     my $users   = Brass::Users->new(schema => schema); # Default schema
     my $issues  = Brass::Issues->new(schema => $schema, users => $users);
 
