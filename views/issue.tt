@@ -34,6 +34,12 @@
                         [% END %]
                     </select>
                 </div>
+                <div class="checkbox">
+                    <label>
+                        <input name="security" type="checkbox" value="1" [% IF issue.security %]checked[% END %]>
+                        This issue is security related
+                    </label>
+                </div>
                 <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
             </form>
         </div>

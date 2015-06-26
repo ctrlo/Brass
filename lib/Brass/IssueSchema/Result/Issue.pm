@@ -97,6 +97,12 @@ __PACKAGE__->table("issue");
   is_nullable: 1
   size: 45
 
+=head2 security
+
+  data_type: 'smallint'
+  default_value: 0
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -122,6 +128,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 128 },
   "reference",
   { data_type => "varchar", is_nullable => 1, size => 45 },
+  "security",
+  { data_type => "smallint", default_value => 0, is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -244,8 +252,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-26 14:35:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FF3/v1t0J2Z9Ojl06s8i/Q
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-26 17:39:03
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LyW63laUtoJFeRgoUFsPzw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

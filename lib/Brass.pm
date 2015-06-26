@@ -106,6 +106,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_all)] => sub {
         {
             $issue->title(param 'title');
             $issue->description(param 'description');
+            $issue->security(param 'security');
             $issue->set_type(param 'type');
             $issue->set_status(param 'status');
             $issue->set_priority(param 'priority');
