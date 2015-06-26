@@ -46,7 +46,9 @@ has id => (
 );
 
 has _rset => (
-    is => 'lazy',
+    is      => 'rwp',
+    lazy    => 1,
+    builder => 1,
 );
 
 has title => (
@@ -303,7 +305,8 @@ sub write
         $self->_rset->update($values);
     }
     else {
-        $self->schema->resultset('Issue')->create($values);
+        $self->_set__rset($self->schema->resultset('Issue')->create($values));
+        $self->_set_id($self->_rset->id);
     }
     if ($self->status_changed)
     {

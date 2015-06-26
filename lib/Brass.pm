@@ -101,7 +101,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_all)] => sub {
         page       => 'issue',
     };
 
-    if ($id)
+    if (defined $id)
     {
         my $issue = Brass::Issue->new(id => $id, users => $users, schema => $schema);
         if (param 'save')
@@ -114,6 +114,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_all)] => sub {
             $issue->set_status(param 'status');
             $issue->set_priority(param 'priority');
             $issue->write(logged_in_user->{id});
+            redirect '/issue';
         }
         if (param 'comment_add')
         {
