@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =cut
 
-package Brass::User;
+package Brass::Issue::Status;
 
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
@@ -30,56 +30,41 @@ has schema => (
 
 has id => (
     is  => 'rwp',
-    isa => Int,
+    isa => Maybe[Int],
 );
 
 has _rset => (
     is => 'lazy',
 );
 
-has email => (
+has name => (
     is      => 'rw',
     lazy    => 1,
-    builder => sub { $_[0]->_rset->email },
-);
-
-has surname => (
-    is      => 'rw',
-    lazy    => 1,
-    builder => sub { $_[0]->_rset->surname },
-);
-
-has firstname => (
-    is      => 'rw',
-    lazy    => 1,
-    builder => sub { $_[0]->_rset->firstname },
+    builder => sub { $_[0]->_rset && $_[0]->_rset->name; },
 );
 
 sub _build__rset
 {   my $self = shift;
-    $self->schema->resultset('User')->find($self->id);
-}
-
-sub inflate_result {
-    my $data   = $_[2];
-    my $schema = $_[1]->schema;
-    $_[0]->new(
-        id             => $data->{id},
-        email          => $data->{title},
-        surname        => $data->{surname},
-        firstname      => $data->{firstname},
-        schema         => $schema,
-    );
+    $self->schema->resultset('Status')->find($self->id);
 }
 
 sub as_string
 {   my $self = shift;
-    $self->surname.", ".$self->firstname;
+    $self->name;
 }
 
 sub as_integer
 {   my $self = shift;
     $self->id;
+}
+
+sub inflate_result {
+    my $data = $_[2];
+    $_[0]->new(
+        id          => $data->{id},
+        name        => $data->{name},
+        schema      => $_[1]->schema,
+    );
 }
 
 1;

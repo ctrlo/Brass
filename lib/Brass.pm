@@ -20,8 +20,13 @@ package Brass;
 
 use Brass::Docs;
 use Brass::DocDB;
+use Brass::Issue::Priorities;
+use Brass::Issue::Statuses;
+use Brass::Issue::Types;
+use Brass::Issues;
 use Brass::Topics;
 use Brass::User;
+use Brass::Users;
 use File::Slurp;
 use IPC::ShellCmd;
 use Lingua::EN::Numbers::Ordinate;
@@ -77,6 +82,43 @@ get '/myip' => sub {
         address     => request->address,
         page        => 'myip',
     };
+};
+
+any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_all)] => sub {
+
+    my $id      = param 'id';
+    my $schema  = schema('issue');
+    my $users   = Brass::Users->new(schema => schema); # Default schema
+    my $issues  = Brass::Issues->new(schema => $schema, users => $users);
+
+    my $params = {
+        issues     => $issues->all,
+        priorities => Brass::Issue::Priorities->new(schema => $schema)->all,
+        statuses   => Brass::Issue::Statuses->new(schema => $schema)->all,
+        types      => Brass::Issue::Types->new(schema => $schema)->all,
+        page       => 'issue',
+    };
+
+    if ($id)
+    {
+        my $issue = Brass::Issue->new(id => $id, users => $users, schema => $schema);
+        if (param 'save')
+        {
+            $issue->title(param 'title');
+            $issue->description(param 'description');
+            $issue->set_type(param 'type');
+            $issue->set_status(param 'status');
+            $issue->set_priority(param 'priority');
+            $issue->write(logged_in_user->{id});
+        }
+        if (param 'comment_add')
+        {
+            $issue->comment_add(text => param('comment'), user_id => logged_in_user->{id});
+        }
+        $params->{issue} = $issue;
+    }
+
+    template 'issue' => $params;
 };
 
 get '/doc' => require_role doc => sub {

@@ -44,6 +44,9 @@
                                 [% IF user %]
                                     <li><a href="/doc">Documents</a></li>
                                 [% END %]
+                                [% IF user %]
+                                    <li><a href="/issue">Issues</a></li>
+                                [% END %]
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
 

@@ -1,0 +1,79 @@
+[% IF issue %]
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" class="form-control" id="title" name="title" value="[% issue.title %]">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" id="description" class="form-control" rows="6">[% issue.description %]</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="type">Type</label>
+                    <select class="form-control" id="type" name="type">
+                        [% FOREACH type IN types %]
+                            <option value="[% type.id %]" [% IF issue.type == type %]selected[% END %]>[% type.name %]</option>
+                        [% END %]
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+                    <select class="form-control" id="priority" name="priority">
+                        [% FOREACH priority IN priorities %]
+                            <option value="[% priority.id %]" [% IF issue.priority == priority %]selected[% END %]>[% priority.name %]</option>
+                        [% END %]
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select class="form-control" id="status" name="status">
+                        [% FOREACH status IN statuses %]
+                            <option value="[% status.id %]" [% IF issue.status == status %]selected[% END %]>[% status.name %]</option>
+                        [% END %]
+                    </select>
+                </div>
+                <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form method="post">
+                <div class="form-group">
+                    <label for="comment">Comments</label>
+                    [% FOR comment IN issue.comments %]
+                    <div class="well well-sm">
+                        <strong>
+                            By [% comment.author %] ([% comment.datetime %])
+                        </strong><br />[% comment.text %]
+                    </div>
+                    [% END %]
+                    <textarea name="comment" id="comment" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    [% IF issue.id %]
+                        <button type="submit" name="comment_add" value="submit" class="btn btn-default">Add comment</button>
+                    [% END %]
+                </div>
+            </form>
+        </div>
+    <div>
+[% ELSE %]
+    <p>
+        <a href="/issue/0" class="btn btn-default">New issue</a>
+    </p>
+    <table class="table table-striped">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Owner</th>
+        </tr>
+        [% FOREACH issue IN issues %]
+            <tr>
+                <td>[% issue.id %]</td>
+                <td><a href="/issue/[% issue.id %]">[% issue.title %]</a></td>
+                <td>[% issue.owner %]</td>
+            </tr>
+        [% END %]
+    </table>
+[% END %]

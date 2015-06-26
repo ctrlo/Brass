@@ -19,6 +19,18 @@ migrate {
         },{
             name        => 'doc_save',
             description => 'User can save drafts',
+        },{
+            name        => 'issue_read',
+            description => 'User can view own issues',
+        },{
+            name        => 'issue_read_all',
+            description => 'User can view all issues',
+        },{
+            name        => 'issue_write',
+            description => 'User can write to new and own issues',
+        },{
+            name        => 'issue_write_all',
+            description => 'User can write to all issues',
         },
     ]);
 };
