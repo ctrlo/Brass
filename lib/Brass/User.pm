@@ -60,6 +60,14 @@ sub _build__rset
     $self->schema->resultset('User')->find($self->id);
 }
 
+sub has_project
+{   my ($self, $project_id) = @_;
+    $self->schema->resultset('UserProject')->search({
+        project => $project_id,
+        user    => $self->id,
+    })->count;
+}
+
 sub inflate_result {
     my $data   = $_[2];
     my $schema = $_[1]->schema;

@@ -18,9 +18,10 @@
                         [% END %]
                     </select>
                 </div>
+                [% UNLESS user.permission.issue_write_all %][% readonly = "readonly" %][% END %]
                 <div class="form-group">
                     <label for="type">Type</label>
-                    <select class="form-control" id="type" name="type">
+                    <select class="form-control" id="type" name="type" [% readonly %]>
                         [% FOREACH type IN types %]
                             <option value="[% type.id %]" [% IF issue.type == type %]selected[% END %]>[% type.name | html_entity %]</option>
                         [% END %]
@@ -28,7 +29,7 @@
                 </div>
                 <div class="form-group">
                     <label for="priority">Priority</label>
-                    <select class="form-control" id="priority" name="priority">
+                    <select class="form-control" id="priority" name="priority" [% readonly %]>
                         [% FOREACH priority IN priorities %]
                             <option value="[% priority.id %]" [% IF issue.priority == priority %]selected[% END %]>[% priority.name | html_entity %]</option>
                         [% END %]
@@ -36,18 +37,20 @@
                 </div>
                 <div class="form-group">
                     <label for="status">Status</label>
-                    <select class="form-control" id="status" name="status">
+                    <select class="form-control" id="status" name="status" [% readonly %]>
                         [% FOREACH status IN statuses %]
                             <option value="[% status.id %]" [% IF issue.status == status %]selected[% END %]>[% status.name | html_entity %]</option>
                         [% END %]
                     </select>
                 </div>
-                <div class="checkbox">
-                    <label>
-                        <input name="security" type="checkbox" value="1" [% IF issue.security %]checked[% END %]>
-                        This issue is security related
-                    </label>
-                </div>
+                [% UNLESS readonly %]
+                    <div class="checkbox">
+                        <label>
+                            <input name="security" type="checkbox" value="1" [% IF issue.security %]checked[% END %]>
+                            This issue is security related
+                        </label>
+                    </div>
+                [% END %]
                 <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
             </form>
         </div>
@@ -74,7 +77,9 @@
     <div>
 [% ELSE %]
     <p>
-        <a href="/issue/0" class="btn btn-default">New issue</a>
+        [% IF user.permission.issue_write OR user.permission.issue_write_all %]
+            <a href="/issue/0" class="btn btn-default">New issue</a>
+        [% END %]
         <a href="" data-toggle="modal" data-target="#modal_filter" class="btn btn-default">Filtering...</a>
     </p>
     <table class="table table-striped">

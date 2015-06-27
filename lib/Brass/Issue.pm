@@ -83,21 +83,21 @@ has set_owner => (
     is      => 'rw',
     isa     => Maybe[Int],
     lazy    => 1,
-    builder => sub { $_[0]->_rset && $_[0]->_rset->owner; },
+    builder => sub { $_[0]->_rset && $_[0]->_rset->get_column('owner'); },
 );
 
 has set_author => (
     is      => 'rw',
     isa     => Maybe[Int],
     lazy    => 1,
-    builder => sub { $_[0]->_rset && $_[0]->_rset->author; },
+    builder => sub { $_[0]->_rset && $_[0]->_rset->get_column('author'); },
 );
 
 has set_approver => (
     is      => 'rw',
     isa     => Maybe[Int],
     lazy    => 1,
-    builder => sub { $_[0]->_rset && $_[0]->_rset->approver; },
+    builder => sub { $_[0]->_rset && $_[0]->_rset->get_column('approver'); },
 );
 
 has type => (
@@ -215,6 +215,23 @@ has comments => (
     isa => ArrayRef,
 );
 
+sub user_can_read
+{   my ($self, $user) = @_;
+    return 1 if $user->{permission}->{issue_read_all};
+    return 1 if $user->{permission}->{issue_read_project} && $self->users->user($user->{id})->has_project($self->project->id);
+    return 1 if $user->{permission}->{issue_read} && !$self->id; # New issue
+    return 1 if $user->{permission}->{issue_read} &&
+        ($self->owner == $user->{id} || $self->author == $user->{id} || $self->approver == $user->{id});
+}
+
+sub user_can_write
+{   my ($self, $user) = @_;
+    return 1 if $user->{permission}->{issue_write_all};
+    return 1 if $user->{permission}->{issue_write} && !$self->id; # New issue
+    return 1 if $user->{permission}->{issue_write} &&
+        ($self->owner == $user->{id} || $self->author == $user->{id} || $self->approver == $user->{id});
+}
+
 sub owner
 {   my $self = shift;
     $self->users->user($self->set_owner);
@@ -294,7 +311,7 @@ sub write
         description => $self->description,
         reference   => $self->reference,
         security    => $self->security,
-        type        => $self->type->id,
+        type        => ($self->type && $self->type->id),
         project     => $self->project->id,
         owner       => $self->set_owner,
         author      => $self->set_author,

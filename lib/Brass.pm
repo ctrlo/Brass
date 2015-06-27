@@ -88,14 +88,16 @@ get '/myip' => sub {
     };
 };
 
-any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_all)] => sub {
+any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_read_all)] => sub {
 
     my $id      = param 'id';
     my $schema  = schema;
     my $users   = Brass::Users->new(schema => schema); # Default schema
     my $issues  = Brass::Issues->new(schema => $schema, users => $users);
 
-    my $filtering = session('filtering') || {};
+    # Always copy the filtering session, to stop it being a cache for
+    # user and project filtering
+    my $filtering = { %{session('filtering')} };
     if (param 'submit_filtering')
     {
         $filtering = {
@@ -103,7 +105,22 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_all)] => sub {
             status   => param('filtering_status'),
             security => param('filtering_security'),
         };
-        session 'filtering' => $filtering;
+        my $copy = { %$filtering };
+        session 'filtering' => $copy;
+    }
+
+    if (user_has_role 'issue_read_all')
+    {
+        # No further filtering needed
+    }
+    elsif (user_has_role 'issue_read_project')
+    {
+        # Only show issues for user's projects
+        $filtering->{project_user_id} = logged_in_user->{id};
+    }
+    else {
+        # Only show own issues
+        $filtering->{user_id} = logged_in_user->{id};
     }
     $issues->filtering($filtering);
 
@@ -120,20 +137,33 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_all)] => sub {
     if (defined $id)
     {
         my $issue = Brass::Issue->new(id => $id, users => $users, schema => $schema);
+        # Check user can read. Not sure that user would ever be writing
+        # to an issue that they can't read, so stop here regardless
+        die "No access to this issue"
+            unless $issue->user_can_read(logged_in_user);
         if (param 'save')
         {
+            die "No write access to this issue"
+                unless $issue->user_can_write(logged_in_user);
+            $issue->set_author(logged_in_user->{id})
+                if !$id; # New
             $issue->title(param 'title');
             $issue->description(param 'description');
-            $issue->security(param 'security');
-            $issue->set_type(param 'type');
             $issue->set_project(param 'project');
-            $issue->set_status(param 'status');
-            $issue->set_priority(param 'priority');
+            if (user_has_role 'issue_write_all')
+            {
+                # Can only write to these fields if write_all
+                $issue->security(param 'security');
+                $issue->set_type(param 'type');
+                $issue->set_status(param 'status');
+                $issue->set_priority(param 'priority');
+            }
             $issue->write(logged_in_user->{id});
             redirect '/issue';
         }
         if (param 'comment_add')
         {
+            # Allow any reader to add a comment
             $issue->comment_add(text => param('comment'), user_id => logged_in_user->{id});
         }
         $params->{issue} = $issue;

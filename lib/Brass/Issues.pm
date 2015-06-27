@@ -50,6 +50,13 @@ has filtering => (
             if $in->{project};
         $return->{'issue_statuses.status'} = $in->{status}
             if $in->{status};
+        $return->{'-or'} = {
+            owner    => $in->{user_id},
+            author   => $in->{user_id},
+            approver => $in->{user_id},
+        } if $in->{user_id};
+        $return->{'user_projects.user'} = $in->{project_user_id}
+            if $in->{project_user_id};
         $return;
     },
 );
@@ -61,7 +68,14 @@ sub _build_all
     my $issues_rs = $self->schema->resultset('Issue')->search(
         $search
     ,{
-        prefetch => {issue_statuses => 'issuestatus_later'},
+        prefetch => [
+            {
+                project => 'user_projects',
+            },
+            {
+                issue_statuses => 'issuestatus_later'
+            }
+        ],
     });
     $issues_rs->result_class('Brass::Issue');
     my @all = $issues_rs->all;
