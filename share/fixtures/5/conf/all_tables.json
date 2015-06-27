@@ -1,0 +1,61 @@
+{
+   "sets" : [
+      {
+         "quantity" : "all",
+         "class" : "Type"
+      },
+      {
+         "quantity" : "all",
+         "class" : "User"
+      },
+      {
+         "class" : "Status",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Permission"
+      },
+      {
+         "quantity" : "all",
+         "class" : "IssueStatus"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Comment"
+      },
+      {
+         "class" : "Project",
+         "quantity" : "all"
+      },
+      {
+         "class" : "Priority",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Issue"
+      },
+      {
+         "class" : "UserPermission",
+         "quantity" : "all"
+      },
+      {
+         "class" : "IssuePriority",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "UserProject"
+      }
+   ],
+   "belongs_to" : {
+      "fetch" : 0
+   },
+   "has_many" : {
+      "fetch" : 0
+   },
+   "might_have" : {
+      "fetch" : 0
+   }
+}

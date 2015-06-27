@@ -1,0 +1,1091 @@
+---
+schema:
+  procedures: {}
+  tables:
+    comment:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - author
+          match_type: ''
+          name: comment_fk_author
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: user
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: comment_fk_id
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: issue
+          type: FOREIGN KEY
+      fields:
+        author:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: author
+          order: 2
+          size:
+            - 0
+        datetime:
+          data_type: datetime
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: datetime
+          order: 4
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        issue:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: issue
+          order: 3
+          size:
+            - 0
+        text:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: text
+          order: 5
+          size:
+            - 0
+      indices:
+        - fields:
+            - author
+          name: comment_idx_author
+          options: []
+          type: NORMAL
+      name: comment
+      options: []
+      order: 1
+    issue:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - approver
+          match_type: ''
+          name: issue_fk_approver
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: user
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - author
+          match_type: ''
+          name: issue_fk_author
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: user
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - owner
+          match_type: ''
+          name: issue_fk_owner
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: user
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - project
+          match_type: ''
+          name: issue_fk_project
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: project
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - type
+          match_type: ''
+          name: issue_fk_type
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: type
+          type: FOREIGN KEY
+      fields:
+        approver:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: approver
+          order: 7
+          size:
+            - 0
+        author:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: author
+          order: 5
+          size:
+            - 0
+        description:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: description
+          order: 3
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        owner:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: owner
+          order: 6
+          size:
+            - 0
+        project:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: project
+          order: 9
+          size:
+            - 0
+        reference:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: reference
+          order: 8
+          size:
+            - 128
+        security:
+          data_type: smallint
+          default_value: 0
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: security
+          order: 10
+          size:
+            - 0
+        title:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: title
+          order: 2
+          size:
+            - 256
+        type:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: type
+          order: 4
+          size:
+            - 0
+      indices:
+        - fields:
+            - approver
+          name: issue_idx_approver
+          options: []
+          type: NORMAL
+        - fields:
+            - author
+          name: issue_idx_author
+          options: []
+          type: NORMAL
+        - fields:
+            - owner
+          name: issue_idx_owner
+          options: []
+          type: NORMAL
+        - fields:
+            - project
+          name: issue_idx_project
+          options: []
+          type: NORMAL
+        - fields:
+            - type
+          name: issue_idx_type
+          options: []
+          type: NORMAL
+      name: issue
+      options: []
+      order: 2
+    issue_priority:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - issue
+          match_type: ''
+          name: issue_priority_fk_issue
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: issue
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - priority
+          match_type: ''
+          name: issue_priority_fk_priority
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: priority
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user
+          match_type: ''
+          name: issue_priority_fk_user
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: user
+          type: FOREIGN KEY
+      fields:
+        datetime:
+          data_type: datetime
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: datetime
+          order: 4
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        issue:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: issue
+          order: 2
+          size:
+            - 0
+        priority:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: priority
+          order: 3
+          size:
+            - 0
+        user:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: user
+          order: 5
+          size:
+            - 0
+      indices:
+        - fields:
+            - issue
+          name: issue_priority_idx_issue
+          options: []
+          type: NORMAL
+        - fields:
+            - priority
+          name: issue_priority_idx_priority
+          options: []
+          type: NORMAL
+        - fields:
+            - user
+          name: issue_priority_idx_user
+          options: []
+          type: NORMAL
+      name: issue_priority
+      options: []
+      order: 3
+    issue_status:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - issue
+          match_type: ''
+          name: issue_status_fk_issue
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: issue
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - status
+          match_type: ''
+          name: issue_status_fk_status
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: status
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user
+          match_type: ''
+          name: issue_status_fk_user
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: user
+          type: FOREIGN KEY
+      fields:
+        datetime:
+          data_type: datetime
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: datetime
+          order: 4
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        issue:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: issue
+          order: 2
+          size:
+            - 0
+        status:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: status
+          order: 3
+          size:
+            - 0
+        user:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: user
+          order: 5
+          size:
+            - 0
+      indices:
+        - fields:
+            - issue
+          name: issue_status_idx_issue
+          options: []
+          type: NORMAL
+        - fields:
+            - status
+          name: issue_status_idx_status
+          options: []
+          type: NORMAL
+        - fields:
+            - user
+          name: issue_status_idx_user
+          options: []
+          type: NORMAL
+      name: issue_status
+      options: []
+      order: 4
+    permission:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        description:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: description
+          order: 3
+          size:
+            - 256
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 2
+          size:
+            - 45
+      indices: []
+      name: permission
+      options: []
+      order: 5
+    priority:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 2
+          size:
+            - 128
+      indices: []
+      name: priority
+      options: []
+      order: 6
+    project:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 2
+          size:
+            - 128
+      indices: []
+      name: project
+      options: []
+      order: 7
+    status:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 2
+          size:
+            - 128
+      indices: []
+      name: status
+      options: []
+      order: 8
+    type:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 2
+          size:
+            - 128
+      indices: []
+      name: type
+      options: []
+      order: 9
+    user:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        deleted:
+          data_type: datetime
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: deleted
+          order: 6
+          size:
+            - 0
+        email:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: email
+          order: 5
+          size:
+            - 128
+        firstname:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: firstname
+          order: 3
+          size:
+            - 128
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        lastlogin:
+          data_type: datetime
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: lastlogin
+          order: 10
+          size:
+            - 0
+        password:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: password
+          order: 7
+          size:
+            - 128
+        pwchanged:
+          data_type: datetime
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: pwchanged
+          order: 8
+          size:
+            - 0
+        pwresetcode:
+          data_type: char
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: pwresetcode
+          order: 9
+          size:
+            - 32
+        surname:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: surname
+          order: 4
+          size:
+            - 128
+        username:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: username
+          order: 2
+          size:
+            - 128
+      indices: []
+      name: user
+      options: []
+      order: 10
+    user_permission:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - permission
+          match_type: ''
+          name: user_permission_fk_permission
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: permission
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user
+          match_type: ''
+          name: user_permission_fk_user
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: user
+          type: FOREIGN KEY
+      fields:
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        permission:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: permission
+          order: 3
+          size:
+            - 0
+        user:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: user
+          order: 2
+          size:
+            - 0
+      indices:
+        - fields:
+            - permission
+          name: user_permission_idx_permission
+          options: []
+          type: NORMAL
+        - fields:
+            - user
+          name: user_permission_idx_user
+          options: []
+          type: NORMAL
+      name: user_permission
+      options: []
+      order: 11
+    user_project:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - project
+          match_type: ''
+          name: user_project_fk_project
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: project
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - user
+          match_type: ''
+          name: user_project_fk_user
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: user
+          type: FOREIGN KEY
+      fields:
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        project:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: project
+          order: 3
+          size:
+            - 0
+        user:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: user
+          order: 2
+          size:
+            - 0
+      indices:
+        - fields:
+            - project
+          name: user_project_idx_project
+          options: []
+          type: NORMAL
+        - fields:
+            - user
+          name: user_project_idx_user
+          options: []
+          type: NORMAL
+      name: user_project
+      options: []
+      order: 12
+  triggers: {}
+  views: {}
+translator:
+  add_drop_table: 0
+  filename: ~
+  no_comments: 0
+  parser_args:
+    sources:
+      - Comment
+      - Issue
+      - IssuePriority
+      - IssueStatus
+      - Permission
+      - Priority
+      - Project
+      - Status
+      - Type
+      - User
+      - UserPermission
+      - UserProject
+  parser_type: SQL::Translator::Parser::DBIx::Class
+  producer_args: {}
+  producer_type: SQL::Translator::Producer::YAML
+  show_warnings: 0
+  trace: 0
+  version: 0.11021

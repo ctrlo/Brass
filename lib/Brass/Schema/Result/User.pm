@@ -251,9 +251,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 user_projects
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-26 23:58:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fK0ft2ne8LdfFv53o4J3Pg
+Type: has_many
+
+Related object: L<Brass::Schema::Result::UserProject>
+
+=cut
+
+__PACKAGE__->has_many(
+  "user_projects",
+  "Brass::Schema::Result::UserProject",
+  { "foreign.user" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-27 15:25:49
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AafZZlUX0ugA7RJQaFLk8g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
