@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass;
 
+use Brass::DB;
 use Brass::Docs;
 use Brass::DocDB;
 use Brass::Issue::Priorities;
@@ -47,6 +48,8 @@ hook before => sub {
     return if param 'error';
 
     my $db = Brass::DocDB->new(schema => schema('doc'));
+    $db->setup;
+    $db = Brass::DB->new(schema => schema);
     $db->setup;
 };
 
@@ -92,8 +95,21 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_all)] => sub {
     my $users   = Brass::Users->new(schema => schema); # Default schema
     my $issues  = Brass::Issues->new(schema => $schema, users => $users);
 
+    my $filtering = session('filtering') || {};
+    if (param 'submit_filtering')
+    {
+        $filtering = {
+            project  => param('filtering_project'),
+            status   => param('filtering_status'),
+            security => param('filtering_security'),
+        };
+        session 'filtering' => $filtering;
+    }
+    $issues->filtering($filtering);
+
     my $params = {
         issues     => $issues->all,
+        filtering  => $filtering,
         priorities => Brass::Issue::Priorities->new(schema => $schema)->all,
         statuses   => Brass::Issue::Statuses->new(schema => $schema)->all,
         types      => Brass::Issue::Types->new(schema => $schema)->all,

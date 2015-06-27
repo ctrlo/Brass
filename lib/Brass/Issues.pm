@@ -36,9 +36,32 @@ has all => (
     is => 'lazy',
 );
 
+has filtering => (
+    is      => 'rw',
+    isa     => HashRef,
+    lazy    => 1,
+    default => sub { {} },
+    coerce  => sub {
+        my $in = shift;
+        my $return = {};
+        $return->{security} = $in->{security} eq 'yes' ? 1 : 0
+            if $in->{security};
+        $return->{project} = $in->{project}
+            if $in->{project};
+        $return->{'issue_statuses.status'} = $in->{status}
+            if $in->{status};
+        $return;
+    },
+);
+
 sub _build_all
 {   my $self = shift;
-    my $issues_rs = $self->schema->resultset('Issue')->search({
+    my $search = $self->filtering;
+    $search->{'issuestatus_later.datetime'} = undef;
+    my $issues_rs = $self->schema->resultset('Issue')->search(
+        $search
+    ,{
+        prefetch => {issue_statuses => 'issuestatus_later'},
     });
     $issues_rs->result_class('Brass::Issue');
     my @all = $issues_rs->all;
