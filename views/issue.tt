@@ -22,6 +22,9 @@
                 <div class="form-group">
                     <label for="type">Type</label>
                     <select class="form-control" id="type" name="type" [% readonly %]>
+                        [% UNLESS issue.type %]
+                            <option value=""></option>
+                        [% END %]
                         [% FOREACH type IN types %]
                             <option value="[% type.id %]" [% IF issue.type == type %]selected[% END %]>[% type.name | html_entity %]</option>
                         [% END %]
@@ -30,6 +33,9 @@
                 <div class="form-group">
                     <label for="priority">Priority</label>
                     <select class="form-control" id="priority" name="priority" [% readonly %]>
+                        [% UNLESS issue.priority %]
+                            <option value=""></option>
+                        [% END %]
                         [% FOREACH priority IN priorities %]
                             <option value="[% priority.id %]" [% IF issue.priority == priority %]selected[% END %]>[% priority.name | html_entity %]</option>
                         [% END %]
@@ -38,6 +44,9 @@
                 <div class="form-group">
                     <label for="status">Status</label>
                     <select class="form-control" id="status" name="status" [% readonly %]>
+                        [% UNLESS issue.status %]
+                            <option value=""></option>
+                        [% END %]
                         [% FOREACH status IN statuses %]
                             <option value="[% status.id %]" [% IF issue.status == status %]selected[% END %]>[% status.name | html_entity %]</option>
                         [% END %]
