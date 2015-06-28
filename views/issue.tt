@@ -51,7 +51,9 @@
                         </label>
                     </div>
                 [% END %]
-                <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
+                [% IF issue.user_can_write(user) %]
+                    <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
+                [% END %]
             </form>
         </div>
         <div class="col-md-6">
