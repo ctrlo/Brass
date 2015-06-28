@@ -274,7 +274,7 @@ sub _version_add
         $options{content} =~ s/\r\n/\n/g;
         $options{content} =~ s/\r/\n/g;
         # Do not create new version if content hasn't changed
-        $options{new} = 0 if $options{content} eq $latest->version_content->content;
+        $options{new} = 0 if $latest && $options{content} eq $latest->version_content->content;
         $mimetype = $options{tex} ? 'application/x-tex' : 'text/plain';
         $content  = $options{content};
     }
