@@ -218,8 +218,8 @@ has comments => (
 sub user_can_read
 {   my ($self, $user) = @_;
     return 1 if $user->{permission}->{issue_read_all};
-    return 1 if $user->{permission}->{issue_read_project} && $self->users->user($user->{id})->has_project($self->project->id);
     return 1 if $user->{permission}->{issue_read} && !$self->id; # New issue
+    return 1 if $user->{permission}->{issue_read_project} && $self->users->user($user->{id})->has_project($self->project->id);
     return 1 if $user->{permission}->{issue_read} &&
         ($self->owner == $user->{id} || $self->author == $user->{id} || $self->approver == $user->{id});
 }
