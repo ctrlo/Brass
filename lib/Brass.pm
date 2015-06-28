@@ -131,6 +131,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
         statuses   => Brass::Issue::Statuses->new(schema => $schema)->all,
         types      => Brass::Issue::Types->new(schema => $schema)->all,
         projects   => Brass::Issue::Projects->new(schema => $schema)->all,
+        users      => $users->all,
         page       => 'issue',
     };
 
@@ -157,6 +158,8 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
                 $issue->set_type(param 'type');
                 $issue->set_status(param 'status');
                 $issue->set_priority(param 'priority');
+                $issue->set_owner(param 'owner');
+                $issue->set_approver(param 'approver');
             }
             $issue->write(logged_in_user->{id});
             redirect '/issue';

@@ -31,6 +31,12 @@ has _index => (
     is => 'lazy',
 );
 
+sub all
+{   my $self = shift;
+    my @all = values %{$self->_index};
+    \@all;
+}
+
 sub _build__index
 {   my $self = shift;
     my $users_rs = $self->schema->resultset('User')->search({
