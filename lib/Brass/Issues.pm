@@ -44,9 +44,9 @@ has filtering => (
     coerce  => sub {
         my $in = shift;
         my $return = {};
-        $return->{security} = $in->{security} eq 'yes' ? 1 : 0
+        $return->{'me.security'} = $in->{security} eq 'yes' ? 1 : 0
             if $in->{security};
-        $return->{project} = $in->{project}
+        $return->{'me.project'} = $in->{project}
             if $in->{project};
         $return->{'issue_statuses.status'} = $in->{status}
             if $in->{status};
