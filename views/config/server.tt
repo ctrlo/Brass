@@ -29,44 +29,46 @@
                 [% IF user.permission.config_write %]
                     <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
                 [% END %]
-                <div class="form-group">
-                    <label for="domain">Certificates</label>
-                                   <a href="" data-toggle="modal"
-                                        data-target="#modal_cert"
-                                        data-server_cert_id=""
-                                        data-cert_id=""
-                                        data-use_id=""
-                                        >New
-                                    </a>
-                    <table class="table table-striped">
-                    [% FOR cert IN server.certs.values %]
-                        <tr>
-                            [% IF user.permission.config_write %]
-                                <td>
-                                   <a href="" data-toggle="modal"
-                                        data-target="#modal_cert"
-                                        data-server_cert_id="[% cert.id %]"
-                                        data-cert_id="[% cert.cert.id %]"
-                                        data-use_id="[% cert.use.id %]"
-                                        >Edit
-                                    </a>
-                                </td>
-                            [% END %]
-                            <td>[% cert.cert.cn %]</td>
-                            <td>[% cert.cert.type %]</td>
-                            <td>[% cert.cert.usedby %]</td>
-                            <td>[% cert.use.name %]</td>
-                        </tr>
-                    [% END %]
-                    </table>
-                </div>
+                [% IF server.id %]
+                    <div class="form-group">
+                        <label for="domain">Certificates</label>
+                                       <a href="" data-toggle="modal"
+                                            data-target="#modal_cert"
+                                            data-server_cert_id=""
+                                            data-cert_id=""
+                                            data-use_id=""
+                                            >New
+                                        </a>
+                        <table class="table table-striped">
+                        [% FOR cert IN server.certs.values %]
+                            <tr>
+                                [% IF user.permission.config_write %]
+                                    <td>
+                                       <a href="" data-toggle="modal"
+                                            data-target="#modal_cert"
+                                            data-server_cert_id="[% cert.id %]"
+                                            data-cert_id="[% cert.cert.id %]"
+                                            data-use_id="[% cert.use.id %]"
+                                            >Edit
+                                        </a>
+                                    </td>
+                                [% END %]
+                                <td>[% cert.cert.cn %]</td>
+                                <td>[% cert.cert.type %]</td>
+                                <td>[% cert.cert.usedby %]</td>
+                                <td>[% cert.use.name %]</td>
+                            </tr>
+                        [% END %]
+                        </table>
+                    </div>
+                [% END %]
             </form>
         </div>
     <div>
 [% ELSE %]
     <p>
         [% IF user.permission.config_write %]
-            <a href="/server/0" class="btn btn-default">New server</a>
+            <a href="/config/server/0" class="btn btn-default">New server</a>
         [% END %]
     </p>
     <table class="table table-striped">
