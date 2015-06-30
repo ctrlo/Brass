@@ -78,11 +78,15 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
+            <th>Domain</th>
+            <th>Types</th>
         </tr>
         [% FOREACH server IN servers %]
             <tr>
                 <td>[% server.id %]</td>
                 <td><a href="/config/server/[% server.id %]">[% server.name | html_entity %]</a></td>
+                <td>[% server.domain %]</td>
+                <td>[% server.types.values.join %]</td>
             </tr>
         [% END %]
     </table>
