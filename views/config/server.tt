@@ -28,6 +28,9 @@
                 </div>
                 [% IF user.permission.config_write %]
                     <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
+                    [% IF server.id %]
+                        <button type="submit" name="delete" value="delete" class="btn btn-default">Delete</button>
+                    [% END %]
                 [% END %]
                 [% IF server.id %]
                     <div class="form-group">

@@ -162,6 +162,16 @@ sub write
     $guard->commit;
 }
 
+sub delete
+{   my $self = shift;
+    my $guard = $self->schema->txn_scope_guard;
+    $self->schema->resultset('ServerCert')->search({ server_id => $self->id })->delete;
+    $self->schema->resultset('ServerType')->search({ server_id => $self->id })->delete;
+    $self->schema->resultset('Sqldb')->search({ server_id => $self->id })->delete;
+    $self->_rset->delete;
+    $guard->commit;
+}
+
 sub as_string
 {   my $self = shift;
     $self->name;

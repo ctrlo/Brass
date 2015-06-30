@@ -139,6 +139,13 @@ any '/config/server/?:id?' => require_role 'config' => sub {
             $server->write;
             redirect '/config/server';
         }
+        if (param 'delete')
+        {
+            die "No permission to update server"
+                unless user_has_role 'config_write';
+            $server->delete;
+            redirect '/config/server';
+        }
         $params->{server} = $server;
     }
 
