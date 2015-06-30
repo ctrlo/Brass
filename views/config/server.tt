@@ -1,0 +1,142 @@
+[% IF server %]
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post">
+                <div class="form-group">
+                    <label for="title">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="[% server.name | html_entity %]">
+                </div>
+                <div class="form-group">
+                    <label for="domain">Domain</label>
+                    <select class="form-control" id="domain" name="domain">
+                        [% FOREACH domain IN domains %]
+                            <option value="[% domain.id %]" [% IF server.domain == domain %]selected[% END %]>[% domain.name | html_entity %]</option>
+                        [% END %]
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Types</label>
+                    [% FOR type IN types %]
+                        <div class="checkbox">
+                            <label>
+                                [% st = type.id %]
+                                <input name="type" type="checkbox" value="[% st %]" [% IF server.types.$st %]checked[% END %]>
+                                [% type.name %]
+                            </label>
+                        </div>
+                    [% END %]
+                </div>
+                [% IF user.permission.config_write %]
+                    <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
+                [% END %]
+                <div class="form-group">
+                    <label for="domain">Certificates</label>
+                                   <a href="" data-toggle="modal"
+                                        data-target="#modal_cert"
+                                        data-server_cert_id=""
+                                        data-cert_id=""
+                                        data-use_id=""
+                                        >New
+                                    </a>
+                    <table class="table table-striped">
+                    [% FOR cert IN server.certs.values %]
+                        <tr>
+                            [% IF user.permission.config_write %]
+                                <td>
+                                   <a href="" data-toggle="modal"
+                                        data-target="#modal_cert"
+                                        data-server_cert_id="[% cert.id %]"
+                                        data-cert_id="[% cert.cert.id %]"
+                                        data-use_id="[% cert.use.id %]"
+                                        >Edit
+                                    </a>
+                                </td>
+                            [% END %]
+                            <td>[% cert.cert.cn %]</td>
+                            <td>[% cert.cert.type %]</td>
+                            <td>[% cert.cert.usedby %]</td>
+                            <td>[% cert.use.name %]</td>
+                        </tr>
+                    [% END %]
+                    </table>
+                </div>
+            </form>
+        </div>
+    <div>
+[% ELSE %]
+    <p>
+        [% IF user.permission.config_write %]
+            <a href="/server/0" class="btn btn-default">New server</a>
+        [% END %]
+    </p>
+    <table class="table table-striped">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+        </tr>
+        [% FOREACH server IN servers %]
+            <tr>
+                <td>[% server.id %]</td>
+                <td><a href="/config/server/[% server.id %]">[% server.name | html_entity %]</a></td>
+            </tr>
+        [% END %]
+    </table>
+[% END %]
+
+<div class="modal fade" id="modal_cert" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form role="form" method="post">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="modal_permissions-title">Certificate details</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="server_cert_id" id="server_cert_id" value="">
+                <div class="form-group">
+                    <label for="cert_id">Certificate</label>
+                    <select class="form-control" id="cert_id" name="cert_id">
+                        [% FOREACH cert IN certs %]
+                            <option value="[% cert.id %]">[% cert.cn | html_entity %] ([% cert.type | html_entity %] - [% cert.usedby | html_entity %])</option>
+                        [% END %]
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="use_id">Use</label>
+                    <select class="form-control" id="use_id" name="use_id">
+                        [% FOREACH cert_use IN cert_uses %]
+                            <option value="[% cert_use.id %]">[% cert_use.name | html_entity %]</option>
+                        [% END %]
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" name="update_server_cert" value="submit" class="btn btn-primary">Save</button>
+                <button type="submit" name="delete_server_cert" id="delete_server_cert" value="submit" class="btn btn-default">Delete</button>
+            </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script type="text/javascript">
+    var jscode='[% FILTER remove('\n+') %]
+        [% FILTER replace('\'', '\\\'') %]
+            $('#modal_cert').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var server_cert_id = button.data('server_cert_id');
+                $('#server_cert_id').val(server_cert_id);
+                if (server_cert_id) {
+                    $('#delete_server_cert').show();
+                } else {
+                    $('#delete_server_cert').hide();
+                }
+                var cert_id = button.data('cert_id');
+                $('#cert_id').val(cert_id);
+                var use_id = button.data('use_id');
+                $('#use_id').val(use_id);
+            });
+        [% END %]
+    [% END %]';
+</script>
+

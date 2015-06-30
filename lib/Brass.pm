@@ -18,6 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass;
 
+use Brass::Config::Certs;
+use Brass::Config::CertUses;
+use Brass::Config::Domains;
+use Brass::Config::Server;
+use Brass::Config::Servers;
+use Brass::Config::Server::Types;
 use Brass::DB;
 use Brass::Docs;
 use Brass::DocDB;
@@ -86,6 +92,56 @@ get '/myip' => sub {
         address     => request->address,
         page        => 'myip',
     };
+};
+
+any '/config/server/?:id?' => require_role 'config' => sub {
+
+    my $id      = param 'id';
+    my $schema  = schema('config');
+
+    my $params = {
+        servers   => Brass::Config::Servers->new(schema => $schema)->all,
+        domains   => Brass::Config::Domains->new(schema => $schema)->all,
+        types     => Brass::Config::Server::Types->new(schema => $schema)->all,
+        certs     => Brass::Config::Certs->new(schema => $schema)->all,
+        cert_uses => Brass::Config::CertUses->new(schema => $schema)->all,
+        page      => 'config/server',
+    };
+
+    if (defined $id)
+    {
+        my $server = Brass::Config::Server->new(id => $id, schema => $schema);
+        if (param 'update_server_cert')
+        {
+            die "No permission to update server"
+                unless user_has_role 'config_write';
+            my $cert = $server->certs->{param 'server_cert_id'}
+                || Brass::Config::Server::Cert->new(schema => $schema, server_id => $server->id);
+            $cert->set_cert_id(param 'cert_id');
+            $cert->set_use_id(param 'use_id');
+            $cert->write;
+            $server->certs->{$cert->id} = $cert; # In case it's new
+        }
+        if (param 'delete_server_cert')
+        {
+            die "No permission to update server"
+                unless user_has_role 'config_write';
+            my $cert = delete $server->certs->{param 'server_cert_id'};
+            $cert->delete;
+        }
+        if (param 'save')
+        {
+            die "No permission to update server"
+                unless user_has_role 'config_write';
+            $server->name(param 'name');
+            $server->set_domain(param 'domain');
+            $server->set_types(param 'type');
+            $server->write;
+        }
+        $params->{server} = $server;
+    }
+
+    template 'config/server' => $params;
 };
 
 any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_read_all)] => sub {

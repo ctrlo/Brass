@@ -34,6 +34,12 @@ migrate {
         },{
             name        => 'issue_read_project',
             description => 'User can view all issues for certain projects',
+        },{
+            name        => 'config',
+            description => 'User can view configuration information',
+        },{
+            name        => 'config_write',
+            description => 'User can write configuration information',
         },
     ]);
 };
