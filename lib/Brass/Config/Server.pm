@@ -151,7 +151,9 @@ sub write
         $self->_set_id($self->_rset->id);
     }
     # Update all the server types.
-    $self->schema->resultset('ServerType')->delete;
+    $self->schema->resultset('ServerType')->search({
+        server_id => $self->id,
+    })->delete;
     foreach my $t (keys %{$self->types})
     {
         $self->schema->resultset('ServerType')->create({
