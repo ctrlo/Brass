@@ -97,7 +97,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
 
     # Always copy the filtering session, to stop it being a cache for
     # user and project filtering
-    my $filtering = { %{session('filtering')} };
+    my $filtering = { %{session('filtering') || {}} };
     if (param 'submit_filtering')
     {
         $filtering = {
