@@ -75,8 +75,6 @@ sub set_types
 {   my ($self, $new) = @_;
     $new = ref $new ? $new : [$new || ()];
     my %new = map { $_ => 1 } @$new;
-    use Data::Dumper;
-    warn Dumper \%new;
     my @all = @{Brass::Config::Server::Types->new(schema => $self->schema)->all};
     @all = grep { exists $new{$_->id} } @all;
     my %types = map { $_->id => $_->name } @all;

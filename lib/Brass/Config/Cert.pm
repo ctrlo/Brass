@@ -35,13 +35,8 @@ has id => (
 );
 
 has _rset => (
-    is => 'lazy',
-);
-
-has content => (
-    is      => 'rw',
-    lazy    => 1,
-    builder => sub { $_[0]->_rset && $_[0]->_rset->content; },
+    is      => 'lazy',
+    clearer => 1,
 );
 
 has cn => (
@@ -63,6 +58,13 @@ has expiry => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->expiry; },
 );
 
+sub set_expiry
+{   my ($self, $value) = @_;
+    my $db_parser = $self->schema->storage->datetime_parser;
+    my $expiry = $db_parser->parse_date($value);
+    $self->expiry($expiry);
+}
+
 has usedby => (
     is      => 'rw',
     lazy    => 1,
@@ -75,9 +77,41 @@ has filename => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->filename; },
 );
 
+has content => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->content; },
+);
+
 sub _build__rset
 {   my $self = shift;
     $self->schema->resultset('Cert')->find($self->id);
+}
+
+sub write
+{   my $self = shift;
+    my $values = {
+        cn        => $self->cn,
+        type      => $self->type,
+        expiry    => $self->expiry,
+        usedby    => $self->usedby,
+        filename  => $self->filename,
+        content   => $self->content,
+    };
+    if ($self->_rset)
+    {
+        $self->_rset->update($values);
+    }
+    else {
+        my $rset = $self->schema->resultset('Cert')->create($values);
+        $self->_set_id($rset->id);
+        $self->_clear_rset;
+    };
+}
+
+sub delete
+{   my $self = shift;
+    $self->_rset->delete;
 }
 
 sub as_string

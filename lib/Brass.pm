@@ -144,6 +144,45 @@ any '/config/server/?:id?' => require_role 'config' => sub {
     template 'config/server' => $params;
 };
 
+any '/config/cert/?:id?' => require_role 'config' => sub {
+
+    my $id      = param 'id';
+    my $schema  = schema('config');
+
+    my $params = {
+        certs     => Brass::Config::Certs->new(schema => $schema)->all,
+        page      => 'config/cert',
+    };
+
+    if (defined $id)
+    {
+        my $cert = Brass::Config::Cert->new(id => $id, schema => $schema);
+        if (param 'save')
+        {
+            die "No permission to save certificate"
+                unless user_has_role 'config_write';
+            $cert->cn(param 'cn');
+            $cert->type(param 'type');
+            $cert->set_expiry(param 'expiry');
+            $cert->usedby(param 'usedby');
+            $cert->filename(param 'filename');
+            $cert->content(param 'content');
+            $cert->write;
+            redirect '/config/cert';
+        }
+        if (param 'delete')
+        {
+            die "No permission to save certificate"
+                unless user_has_role 'config_write';
+            $cert->delete;
+            redirect '/config/cert';
+        }
+        $params->{cert} = $cert;
+    }
+
+    template 'config/cert' => $params;
+};
+
 any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_read_all)] => sub {
 
     my $id      = param 'id';
