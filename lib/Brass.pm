@@ -254,13 +254,13 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
             $issue->title(param 'title');
             $issue->description(param 'description');
             $issue->set_project(param 'project');
+            $issue->set_priority(param 'priority');
             if (user_has_role 'issue_write_all')
             {
                 # Can only write to these fields if write_all
                 $issue->security(param 'security');
                 $issue->set_type(param 'type');
                 $issue->set_status(param 'status');
-                $issue->set_priority(param 'priority');
                 $issue->set_owner(param 'owner');
                 $issue->set_approver(param 'approver');
             }

@@ -18,6 +18,17 @@
                         [% END %]
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+                    <select class="form-control" id="priority" name="priority" [% readonly %]>
+                        [% UNLESS issue.priority %]
+                            <option value=""></option>
+                        [% END %]
+                        [% FOREACH priority IN priorities %]
+                            <option value="[% priority.id %]" [% IF issue.priority == priority %]selected[% END %]>[% priority.name | html_entity %]</option>
+                        [% END %]
+                    </select>
+                </div>
                 [% UNLESS user.permission.issue_write_all %][% readonly = "readonly" %][% END %]
                 <div class="form-group">
                     <label for="type">Type</label>
@@ -27,17 +38,6 @@
                         [% END %]
                         [% FOREACH type IN types %]
                             <option value="[% type.id %]" [% IF issue.type == type %]selected[% END %]>[% type.name | html_entity %]</option>
-                        [% END %]
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="priority">Priority</label>
-                    <select class="form-control" id="priority" name="priority" [% readonly %]>
-                        [% UNLESS issue.priority %]
-                            <option value=""></option>
-                        [% END %]
-                        [% FOREACH priority IN priorities %]
-                            <option value="[% priority.id %]" [% IF issue.priority == priority %]selected[% END %]>[% priority.name | html_entity %]</option>
                         [% END %]
                     </select>
                 </div>
