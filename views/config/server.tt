@@ -80,6 +80,10 @@
             <th>Name</th>
             <th>Domain</th>
             <th>Types</th>
+            <th>Version</th>
+            <th>Last update</th>
+            <th>Result</th>
+            <th>Restart?</th>
         </tr>
         [% FOREACH server IN servers %]
             <tr>
@@ -87,6 +91,10 @@
                 <td><a href="/config/server/[% server.id %]">[% server.name | html_entity %]</a></td>
                 <td>[% server.domain %]</td>
                 <td>[% server.types.values.join %]</td>
+                <td>[% server.os_version %]</td>
+                <td>[% server.update_datetime %]</td>
+                <td>[% server.update_result %]</td>
+                <td>[% server.restart_required %]</td>
             </tr>
         [% END %]
     </table>

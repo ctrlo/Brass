@@ -49,6 +49,34 @@ has name => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->name; },
 );
 
+has update_datetime => (
+    is      => 'ro',
+    isa     => Maybe[DateAndTime],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->update_datetime; },
+);
+
+has update_result => (
+    is      => 'ro',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->update_result; },
+);
+
+has restart_required => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->restart_required; },
+);
+
+has os_version => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->os_version; },
+);
+
 has domain => (
     is      => 'rwp',
     lazy    => 1,

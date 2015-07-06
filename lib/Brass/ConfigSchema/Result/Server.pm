@@ -53,6 +53,28 @@ __PACKAGE__->table("server");
   is_foreign_key: 1
   is_nullable: 1
 
+=head2 update_datetime
+
+  data_type: 'datetime'
+  datetime_undef_if_invalid: 1
+  is_nullable: 1
+
+=head2 update_result
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 restart_required
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 os_version
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 128
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -62,6 +84,18 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 128 },
   "domain_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "update_datetime",
+  {
+    data_type => "datetime",
+    datetime_undef_if_invalid => 1,
+    is_nullable => 1,
+  },
+  "update_result",
+  { data_type => "text", is_nullable => 1 },
+  "restart_required",
+  { data_type => "text", is_nullable => 1 },
+  "os_version",
+  { data_type => "varchar", is_nullable => 1, size => 128 },
 );
 
 =head1 PRIMARY KEY
@@ -158,8 +192,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-28 20:41:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PN3qfTwJo4DpSZ4oiHsVlw
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-07-06 00:26:25
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lkyhCfwa9jG4Fx5aLgfuKw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
