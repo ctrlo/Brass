@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package Brass::Doc;
 
 use DateTime;
+use Brass::Classification;
 use Brass::Topic;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
@@ -71,9 +72,18 @@ has owner => (
 );
 
 has classification => (
-    is      => 'rw',
+    is      => 'rwp',
     lazy    => 1,
-    builder => sub { $_[0]->_rset->classification },
+    builder => sub {
+        my $self = shift;
+        my $classification = $self->_rset && $self->_rset->classification
+            or return;
+        Brass::Classification->new(
+            id          => $classification->id,
+            name        => $classification->name,
+            schema      => $self->schema,
+        );
+    },
 );
 
 has multiple => (
@@ -139,20 +149,25 @@ sub inflate_result {
     my $db_parser = $schema->storage->datetime_parser;
     my $review = $data->{review} ? $db_parser->parse_date($data->{review}) : undef;
     $_[0]->new(
-        id             => $data->{id},
-        title          => $data->{title},
-        set_topic      => $data->{topic_id},
-        review         => $review,
-        set_owner      => $data->{owner},
-        classification => $data->{classification},
-        multiple       => $data->{multiple},
-        schema         => $_[1]->schema,
+        id                 => $data->{id},
+        title              => $data->{title},
+        set_topic          => $data->{topic_id},
+        review             => $review,
+        set_owner          => $data->{owner},
+        set_classification => $data->{classification},
+        multiple           => $data->{multiple},
+        schema             => $_[1]->schema,
     );
 }
 
 sub set_topic
 {   my ($self, $id) = @_;
     $self->_set_topic(Brass::Topic->new(id => $id, schema => $self->schema));
+}
+
+sub set_classification
+{   my ($self, $id) = @_;
+    $self->_set_classification(Brass::Classification->new(id => $id, schema => $self->schema));
 }
 
 sub set_owner
@@ -414,10 +429,11 @@ sub tex_add
 sub write
 {   my $self = shift;
     my $values = {
-        title    => $self->title,
-        topic_id => $self->topic->id,
-        multiple => $self->multiple,
-        review   => $self->review,
+        title          => $self->title,
+        topic_id       => $self->topic->id,
+        classification => $self->classification->id,
+        multiple       => $self->multiple,
+        review         => $self->review,
     };
     if ($self->id)
     {

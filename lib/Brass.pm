@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass;
 
+use Brass::Classifications;
 use Brass::Config::Certs;
 use Brass::Config::CertUses;
 use Brass::Config::Domains;
@@ -335,20 +336,23 @@ any '/doc/edit/:id' => require_role doc => sub {
     );
 
     my $topics = Brass::Topics->new(schema => $schema);
+    my $classifications = Brass::Classifications->new(schema => $schema);
 
     if (my $submit = param 'submit')
     {
         $doc->title(param 'title');
         $doc->set_topic(param 'topic');
+        $doc->set_classification(param 'classification');
         $doc->multiple(param 'multiple');
         $doc->write;
         redirect '/doc';
     }
 
     template 'doc_edit' => {
-        doc    => $doc,
-        topics => [$topics->all],
-        page   => 'doc_edit',
+        doc             => $doc,
+        topics          => [$topics->all],
+        classifications => [$classifications->all],
+        page            => 'doc_edit',
     };
 };
 
