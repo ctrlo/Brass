@@ -309,7 +309,8 @@ sub _version_add
     }
     else {
         $latest->update({
-            created => DateTime->now,
+            created  => DateTime->now,
+            mimetype => $mimetype,
         });
         $latest->version_content->update({
             content      => $content,
