@@ -93,7 +93,19 @@
                 <td>[% server.domain %]</td>
                 <td>[% server.types.values.join %]</td>
                 <td>[% server.os_version %]</td>
-                <td>[% server.backup_verify %]</td>
+                <td>
+                    [% matches = server.backup_verify.match('^File (.*) retrieved at (.*) with differences(.*)and /root/testfile are identical\s?$') %]
+                    [% IF NOT server.types.values.grep('^backup$').size %]
+                        N/A
+                    [% ELSIF matches.size == 3 %]
+                        Identical
+                        <a style="cursor: pointer" class="personpop" data-toggle="popover"
+                        title="File identical"
+                        data-content="[% server.backup_verify | html_entity %]">[% matches.1 %]</a>
+                    [% ELSE %]
+                        [% server.backup_verify | html_entity %]
+                    [% END %]
+                </td>
                 <td>[% server.update_datetime %]</td>
                 <td>[% server.update_result %]</td>
                 <td>[% server.restart_required %]</td>
@@ -141,6 +153,7 @@
 <script type="text/javascript">
     var jscode='[% FILTER remove('\n+') %]
         [% FILTER replace('\'', '\\\'') %]
+            $('.personpop').popover({placement:'auto', html:true});
             $('#modal_cert').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget);
                 var server_cert_id = button.data('server_cert_id');
