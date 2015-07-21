@@ -81,6 +81,7 @@
             <th>Domain</th>
             <th>Types</th>
             <th>Version</th>
+            <th>Backup verification</th>
             <th>Last update</th>
             <th>Result</th>
             <th>Restart?</th>
@@ -92,6 +93,7 @@
                 <td>[% server.domain %]</td>
                 <td>[% server.types.values.join %]</td>
                 <td>[% server.os_version %]</td>
+                <td>[% server.backup_verify %]</td>
                 <td>[% server.update_datetime %]</td>
                 <td>[% server.update_result %]</td>
                 <td>[% server.restart_required %]</td>

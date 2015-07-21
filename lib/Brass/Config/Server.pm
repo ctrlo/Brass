@@ -77,6 +77,13 @@ has os_version => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->os_version; },
 );
 
+has backup_verify => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->backup_verify; },
+);
+
 has domain => (
     is      => 'rwp',
     lazy    => 1,

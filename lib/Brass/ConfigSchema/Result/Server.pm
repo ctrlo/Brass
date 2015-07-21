@@ -75,6 +75,11 @@ __PACKAGE__->table("server");
   is_nullable: 1
   size: 128
 
+=head2 backup_verify
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -96,6 +101,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "os_version",
   { data_type => "varchar", is_nullable => 1, size => 128 },
+  "backup_verify",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -192,8 +199,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-07-06 00:26:25
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lkyhCfwa9jG4Fx5aLgfuKw
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-07-21 11:33:02
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IVU0B/kYpoL6QEG7jLIbpg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
