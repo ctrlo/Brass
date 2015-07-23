@@ -84,6 +84,23 @@ has backup_verify => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->backup_verify; },
 );
 
+has sites => (
+    is      => 'rw',
+    isa     => ArrayRef,
+    lazy    => 1,
+    builder => sub {
+        my $self = shift;
+        $self->_rset or return [];
+        my @sites = map { $_->name } $self->_rset->sites;
+        \@sites;
+    },
+);
+
+has set_sites => (
+    is  => 'rw',
+    isa => Str,
+);
+
 has domain => (
     is      => 'rwp',
     lazy    => 1,
@@ -194,6 +211,17 @@ sub write
         $self->schema->resultset('ServerType')->create({
             server_id => $self->id,
             type_id   => $t,
+        });
+    }
+    # Update all the sites
+    $self->schema->resultset('Site')->search({
+        server_id => $self->id,
+    })->delete;
+    foreach my $site (split "\n", $self->set_sites)
+    {
+        $self->schema->resultset('Site')->create({
+            server_id => $self->id,
+            name      => $site,
         });
     }
     $guard->commit;

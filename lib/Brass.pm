@@ -137,6 +137,7 @@ any '/config/server/?:id?' => require_role 'config' => sub {
             $server->name(param 'name');
             $server->set_domain(param 'domain');
             $server->set_types(param 'type');
+            $server->set_sites(param 'sites');
             $server->write;
             redirect '/config/server';
         }

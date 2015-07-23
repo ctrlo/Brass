@@ -80,6 +80,11 @@ __PACKAGE__->table("server");
   data_type: 'text'
   is_nullable: 1
 
+=head2 notes
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -102,6 +107,8 @@ __PACKAGE__->add_columns(
   "os_version",
   { data_type => "varchar", is_nullable => 1, size => 128 },
   "backup_verify",
+  { data_type => "text", is_nullable => 1 },
+  "notes",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -183,6 +190,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 sites
+
+Type: has_many
+
+Related object: L<Brass::ConfigSchema::Result::Site>
+
+=cut
+
+__PACKAGE__->has_many(
+  "sites",
+  "Brass::ConfigSchema::Result::Site",
+  { "foreign.server_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 sqldbs
 
 Type: has_many
@@ -199,8 +221,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-07-21 11:33:02
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IVU0B/kYpoL6QEG7jLIbpg
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-07-23 14:49:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+cnJWluiyuqb65fBdjtXyg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
