@@ -84,6 +84,13 @@ has backup_verify => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->backup_verify; },
 );
 
+has notes => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->notes; },
+);
+
 has sites => (
     is      => 'rw',
     isa     => ArrayRef,
@@ -193,6 +200,7 @@ sub write
     my $values = {
         name        => $self->name,
         domain_id   => $self->domain->id,
+        notes       => $self->notes,
     };
     if ($self->id)
     {
