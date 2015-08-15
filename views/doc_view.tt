@@ -14,8 +14,16 @@
     </ul>
 [% ELSE %]
     [% IF doc.published %]
-        <p><label>Latest published:</label> [% doc.published.created.ymd %]</p>
+        [% version = doc.published %]
+        <p><label>Latest published:</label> <a href="/version/[% version.id %]">[% version.created.ymd %]</a></p>
     [% END %]
+    <h5>Previous published versions</h5>
+    <ul>
+    [% FOREACH version IN doc.published_all %]
+        [% NEXT IF version.id == doc.published.id %]
+        <li><a href=/version/[% version.id %]>[% version.created %]</a></li>
+    [% END %]
+    </ul>
 [% END %]
 <form method="post">
     <a href="/doc/content/[% doc.id %]" class="btn btn-default">Edit content</a>
