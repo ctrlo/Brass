@@ -55,7 +55,10 @@ sub inflate_result {
     my $data = $_[2];
     my $schema = $_[1]->schema;
     my $db_parser = $schema->storage->datetime_parser;
-    my $datetime = $data->{datetime} ? $db_parser->parse_datetime($data->{datetime}) : undef;
+    my $datetime = $data->{datetime} && $data->{datetime} ne '0000-00-00 00:00:00'
+        ? $db_parser->parse_datetime($data->{datetime})
+        : undef;
+
     $_[0]->new(
         id          => $data->{id},
         text        => $data->{text},
