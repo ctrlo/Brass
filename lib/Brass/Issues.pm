@@ -50,6 +50,8 @@ has filtering => (
             if $in->{project};
         $return->{'issue_statuses.status'} = $in->{status}
             if $in->{status};
+        $return->{'me.type'} = $in->{type}
+            if $in->{type};
         $return->{'-or'} = {
             owner    => $in->{user_id},
             author   => $in->{user_id},
