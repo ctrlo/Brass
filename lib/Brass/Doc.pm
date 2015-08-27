@@ -266,7 +266,7 @@ sub _build_draft
         minor  => { '!=' => 0 },
     },{
         rows     => 1,
-        order_by => { -desc => [qw/major minor/] },
+        order_by => { -desc => [qw/major minor revision/] },
     })->all;
     $draft;
 }
