@@ -21,6 +21,7 @@ package Brass::Doc;
 use DateTime;
 use Brass::Classification;
 use Brass::Topic;
+use Log::Report;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 use MooX::Types::MooseLike::DateTime qw/DateAndTime/;
@@ -128,6 +129,16 @@ has published_all => (
     clearer => 1,
 );
 
+has published_all_retired => (
+    is      => 'lazy',
+    clearer => 1,
+);
+
+has published_all_live => (
+    is      => 'lazy',
+    clearer => 1,
+);
+
 has draft => (
     is      => 'lazy',
     clearer => 1,
@@ -216,8 +227,32 @@ sub _build_published
 sub _build_published_all
 {   my $self = shift;
     my @published = $self->schema->resultset('Version')->search({
-        doc_id => $self->id,
-        minor  => 0,
+        doc_id  => $self->id,
+        minor   => 0,
+    },{
+        order_by => { -desc => 'major' },
+    })->all;
+    \@published;
+}
+
+sub _build_published_all_retired
+{   my $self = shift;
+    my @published = $self->schema->resultset('Version')->search({
+        doc_id  => $self->id,
+        minor   => 0,
+        retired => { '!=' => undef },
+    },{
+        order_by => { -desc => 'major' },
+    })->all;
+    \@published;
+}
+
+sub _build_published_all_live
+{   my $self = shift;
+    my @published = $self->schema->resultset('Version')->search({
+        doc_id  => $self->id,
+        minor   => 0,
+        retired => undef,
     },{
         order_by => { -desc => 'major' },
     })->all;
@@ -341,6 +376,8 @@ sub _version_add
     $self->clear_review_due_warning;
     $self->clear_published;
     $self->clear_published_all;
+    $self->clear_published_all_retired;
+    $self->clear_published_all_live;
     $self->clear_draft;
     $self->clear_latest;
 
@@ -367,6 +404,15 @@ sub publish
 sub retire
 {   my $self = shift;
     $self->_rset->update({retired => DateTime->now});
+}
+
+sub retire_version
+{   my ($self, $version_id) = @_;
+    my @versions = @{$self->published_all};
+    my ($version) = grep { $_->id == $version_id } @versions
+        or error __x"Version {id} not found in document {docid}",
+            id => $version_id, docid => $self->id;
+    $version->update({retired => DateTime->now});
 }
 
 sub file_save

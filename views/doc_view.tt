@@ -8,10 +8,18 @@
 [% IF doc.multiple %]
     <h5>This document has multiple published versions:</h5>
     <ul>
-    [% FOREACH version IN doc.published_all %]
-        <li><a href=/version/[% version.id %]>[% version.created %]</a></li>
+    [% FOREACH version IN doc.published_all_live %]
+        <li><a href=/version/[% version.id %]>[% version.created %]</a> (<a href="" data-toggle="modal" data-target="#modal_retire" data-retire="[% version.id %]">retire</a>)</li>
     [% END %]
     </ul>
+    [% IF doc.published_all_retired.size %]
+        <h5>Retired published versions</h5>
+        <ul>
+        [% FOREACH version IN doc.published_all_retired %]
+            <li><a href=/version/[% version.id %]>[% version.created %]</a></li>
+        [% END %]
+        </ul>
+    [% END %]
 [% ELSE %]
     [% IF doc.published %]
         [% version = doc.published %]
@@ -33,4 +41,35 @@
         <button type="submit" name="review" value="12" class="btn btn-default">Review in 12 months</button>
     [% END %]
 </form>
+
+<div class="modal fade" id="modal_retire" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form role="form" method="post">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Retire published version</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to retire this version?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" name="retire_version" id="retire" value="" class="btn btn-primary">Retire</button>
+            </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script type="text/javascript">
+    var jscode='[% FILTER remove('\n+') %]
+        [% FILTER replace('\'', '\\\'') %]
+            $('#modal_retire').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var retire = button.data('retire');
+                $('#retire').val(retire);
+            });
+        [% END %]
+    [% END %]';
+</script>
 

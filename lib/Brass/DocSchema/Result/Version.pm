@@ -87,6 +87,12 @@ __PACKAGE__->table("version");
   data_type: 'integer'
   is_nullable: 1
 
+=head2 retired
+
+  data_type: 'datetime'
+  datetime_undef_if_invalid: 1
+  is_nullable: 1
+
 =head2 blobext
 
   data_type: 'varchar'
@@ -124,6 +130,12 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 1 },
   "approver",
   { data_type => "integer", is_nullable => 1 },
+  "retired",
+  {
+    data_type => "datetime",
+    datetime_undef_if_invalid => 1,
+    is_nullable => 1,
+  },
   "blobext",
   { data_type => "varchar", is_nullable => 1, size => 45 },
   "mimetype",
@@ -175,8 +187,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-12 22:54:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jV76mmkiCMc/3N7BXR9J4Q
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-08-27 10:43:00
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:10l/ugsZzDll6YFHiFDo6g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

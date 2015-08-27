@@ -314,6 +314,14 @@ any '/doc/view/:id' => require_role doc => sub {
         redirect '/doc';
     }
 
+    if (my $version_id = param 'retire_version')
+    {
+        die "Retiring a document requires the publishing permission"
+            unless user_has_role('doc_publish');
+        $doc->retire_version($version_id);
+        redirect '/doc';
+    }
+
     if (param 'review')
     {
         die "Setting review date requires the publishing permission"
