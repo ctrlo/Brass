@@ -130,6 +130,22 @@ has project => (
     },
 );
 
+has opened => (
+    is => 'lazy',
+);
+
+sub _build_opened
+{   my $self = shift;
+    my ($status) = $self->schema->resultset('IssueStatus')->search({
+        issue => $self->id,
+    },{
+        rows     => 1,
+        order_by => { -asc => 'datetime' },
+    })->all
+        or return;
+    $status->datetime;
+}
+
 has status => (
     is      => 'rwp',
     lazy    => 1,

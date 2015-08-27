@@ -119,6 +119,7 @@
         <tr>
             <th>ID</th>
             <th>Title</th>
+            <th>Opened</th>
             <th>Project</th>
             <th>Status</th>
             <th>Priority</th>
@@ -128,6 +129,7 @@
             <tr>
                 <td>[% issue.id %]</td>
                 <td><a href="/issue/[% issue.id %]">[% issue.title | html_entity %]</a></td>
+                <td>[% issue.opened | html_entity %]</td>
                 <td>[% issue.project | html_entity %]</td>
                 <td>[% issue.status | html_entity %]</td>
                 <td>[% issue.priority | html_entity %]</td>
