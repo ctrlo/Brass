@@ -52,6 +52,7 @@
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Config <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         <li [% IF page=="config/server" %]class="active"[% END %]><a href="/config/server">Servers</a></li>
+                                        <li [% IF page=="config/uad" %]class="active"[% END %]><a href="/config/uad">UADs</a></li>
                                         <li [% IF page=="config/cert" %]class="active"[% END %]><a href="/config/cert">Certificates</a></li>
                                     </ul>
                                     </li>

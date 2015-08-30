@@ -1,0 +1,49 @@
+[% IF uad %]
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post">
+                <div class="form-group">
+                    <label for="title">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="[% uad.name | html_entity %]">
+                </div>
+                <div class="form-group">
+                    <label for="owner">Owner</label>
+                    <select class="form-control" id="owner" name="owner">
+                        [% UNLESS uad.owner %]
+                            <option value=""></option>
+                        [% END %]
+                        [% FOREACH u IN users %]
+                            <option value="[% u.id %]" [% IF uad.owner == u %]selected[% END %]>[% u | html_entity %]</option>
+                        [% END %]
+                    </select>
+                </div>
+                [% IF user.permission.config_write %]
+                    <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
+                    [% IF uad.id %]
+                        <button type="submit" name="delete" value="delete" class="btn btn-default">Delete</button>
+                    [% END %]
+                [% END %]
+            </form>
+        </div>
+    <div>
+[% ELSE %]
+    <p>
+        [% IF user.permission.config_write %]
+            <a href="/config/uad/0" class="btn btn-default">New UAD</a>
+        [% END %]
+    </p>
+    <table class="table table-striped">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Owner</th>
+        </tr>
+        [% FOREACH uad IN uads %]
+            <tr>
+                <td>[% uad.id %]</td>
+                <td><a href="/config/uad/[% uad.id %]">[% uad.name | html_entity %]</a></td>
+                <td>[% uad.owner %]</td>
+            </tr>
+        [% END %]
+    </table>
+[% END %]

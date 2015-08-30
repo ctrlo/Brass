@@ -25,6 +25,8 @@ use Brass::Config::Domains;
 use Brass::Config::Server;
 use Brass::Config::Servers;
 use Brass::Config::Server::Types;
+use Brass::Config::UAD;
+use Brass::Config::UADs;
 use Brass::DB;
 use Brass::Docs;
 use Brass::DocDB;
@@ -153,6 +155,47 @@ any '/config/server/?:id?' => require_role 'config' => sub {
     }
 
     template 'config/server' => $params;
+};
+
+any '/config/uad/?:id?' => require_role 'config' => sub {
+
+    my $id      = param 'id';
+    my $schema  = schema('config');
+    my $users   = Brass::Users->new(schema => schema); # Default schema
+
+    my $params = {
+        uads   => Brass::Config::UADs->new(schema => $schema, users => $users)->all,
+        page   => 'config/uad',
+    };
+
+    if (defined $id)
+    {
+        my $uad = Brass::Config::UAD->new(
+            id     => $id,
+            schema => $schema,
+            users  => $users,
+        );
+        if (param 'save')
+        {
+            die "No permission to update UAD"
+                unless user_has_role 'config_write';
+            $uad->name(param 'name');
+            $uad->set_owner(param 'owner');
+            $uad->write;
+            redirect '/config/uad';
+        }
+        if (param 'delete')
+        {
+            die "No permission to update UAD"
+                unless user_has_role 'config_write';
+            $uad->delete;
+            redirect '/config/uad';
+        }
+        $params->{uad}   = $uad;
+        $params->{users} = $users->all;
+    }
+
+    template 'config/uad' => $params;
 };
 
 any '/config/cert/?:id?' => require_role 'config' => sub {

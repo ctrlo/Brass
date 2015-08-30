@@ -160,6 +160,21 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 pws
+
+Type: has_many
+
+Related object: L<Brass::ConfigSchema::Result::Pw>
+
+=cut
+
+__PACKAGE__->has_many(
+  "pws",
+  "Brass::ConfigSchema::Result::Pw",
+  { "foreign.server_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 server_certs
 
 Type: has_many
@@ -205,24 +220,9 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 sqldbs
 
-Type: has_many
-
-Related object: L<Brass::ConfigSchema::Result::Sqldb>
-
-=cut
-
-__PACKAGE__->has_many(
-  "sqldbs",
-  "Brass::ConfigSchema::Result::Sqldb",
-  { "foreign.server_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-07-23 14:49:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+cnJWluiyuqb65fBdjtXyg
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-08-30 12:53:55
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dEAO3sjtTdmJuK0v+4XkJQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
