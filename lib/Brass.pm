@@ -508,7 +508,7 @@ get '/version/:id' => require_role doc => sub {
         write_file("$texdir/$vinfo.tex", {binmode => ':utf8'}, $content);
         my $cmd = ["$texdir/xelatex", "-jobname=$vinfo", "-shell-escape", "$texdir/$vinfo.tex"];
         # run twice to ensure contents, page numbers etc are correct
-        foreach my $i (1..2) {
+        foreach my $i (1..3) {
             my $isc = IPC::ShellCmd->new($cmd);
             $isc->working_dir("$texdir");
             # Strange things happen with the formatting when using STDIN
