@@ -171,15 +171,21 @@ sub inflate_result {
     );
 }
 
-sub set_topic
-{   my ($self, $id) = @_;
-    $self->_set_topic(Brass::Topic->new(id => $id, schema => $self->schema));
-}
+has set_topic => (
+    is      => 'rw',
+    trigger => sub {
+        my ($self, $id) = @_;
+        $self->_set_topic(Brass::Topic->new(id => $id, schema => $self->schema));
+    },
+);
 
-sub set_classification
-{   my ($self, $id) = @_;
-    $self->_set_classification(Brass::Classification->new(id => $id, schema => $self->schema));
-}
+has set_classification => (
+    is      => 'rw',
+    trigger => sub {
+        my ($self, $id) = @_;
+        $self->_set_classification(Brass::Classification->new(id => $id, schema => $self->schema));
+    },
+);
 
 sub set_owner
 {   my ($self, $id) = @_;
