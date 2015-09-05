@@ -20,6 +20,7 @@ package Brass::Issue::Status;
 
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
+use MooX::Types::MooseLike::DateTime qw/DateAndTime/;
 
 use overload 'bool' => sub { 1 }, '""'  => 'as_string', '0+' => 'as_integer', fallback => 1;
 
@@ -41,6 +42,15 @@ has name => (
     is      => 'rw',
     lazy    => 1,
     builder => sub { $_[0]->_rset && $_[0]->_rset->name; },
+);
+
+has user => (
+    is => 'rw',
+);
+
+has datetime => (
+    is  => 'rw',
+    isa => Maybe[DateAndTime],
 );
 
 sub _build__rset

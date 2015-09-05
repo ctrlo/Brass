@@ -186,6 +186,28 @@ has status_changed => (
     isa => Bool,
 );
 
+has status_history => (
+    is => 'lazy',
+);
+
+sub _build_status_history
+{   my $self = shift;
+    my @statuses = $self->schema->resultset('IssueStatus')->search({
+        issue => $self->id,
+    },{
+        order_by => 'datetime',
+    })->all;
+    my @s = map {
+        my $s = Brass::Issue::Status->new(
+            id          => $_->get_column('status'),
+            datetime    => $_->datetime,
+            user        => $self->users->user($_->get_column('user')),
+            schema      => $self->schema,
+        );
+    } @statuses;
+    \@s;
+}
+
 has priority => (
     is      => 'rwp',
     lazy    => 1,

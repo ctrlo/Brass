@@ -90,6 +90,17 @@
         <div class="col-md-6">
             <form method="post">
                 <div class="form-group">
+                    <label for="comment">Statuses</label>
+                    [% FOR status IN issue.status_history %]
+                    <div class="well well-sm">
+                        <strong>
+                            [% status %]
+                        </strong><br />[% comment.text_html_links %]
+                        By [% status.user | html_entity %] ([% status.datetime %])
+                    </div>
+                    [% END %]
+                </div>
+                <div class="form-group">
                     <label for="comment">Comments</label>
                     [% FOR comment IN issue.comments %]
                     <div class="well well-sm">
