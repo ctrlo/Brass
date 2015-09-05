@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass::Issue::Comment;
 
+use HTML::FromText;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 use MooX::Types::MooseLike::DateTime qw/DateAndTime/;
@@ -64,6 +65,18 @@ sub inflate_result {
         text        => $data->{text},
         set_author  => $data->{author},
         datetime    => $datetime,
+    );
+}
+
+sub text_html_links
+{   my $self = shift;
+    my $text = $self->text;
+    text2html(
+        $text,
+        urls      => 1,
+        email     => 1,
+        metachars => 1,
+        paras     => 1,
     );
 }
 
