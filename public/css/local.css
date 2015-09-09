@@ -20,7 +20,7 @@ table.diff td:nth-child(2) {
 table.diff tr.change,
 table.diff tr.disc_a,
 table.diff tr.disc_b {
-   background-color: #e5e5c6;
+   background-color: #e5e5c6 !important;
 }
 
 table.diff tr.del {
@@ -35,12 +35,13 @@ table.diff tr.ins {
 table.diff td:nth-child(3),
 table.diff td:nth-child(4) {
    font-family: monospace;
+   font-size: 9pt;
 }
 
 table.diff td ins {
    padding: 2px;
-   color: #009900;
-   background-color: #ccffcc;
+   color: #009900 !important;
+   background-color: #ccffcc !important;
    text-decoration: none;
    font-weight: bold;
 }
@@ -48,7 +49,7 @@ table.diff td ins {
 table.diff td del {
    padding: 2px;
    color: #990000;
-   background-color: #ffcccc;
+   background-color: #ffcccc !important;
    text-decoration: none;
    font-weight: bold;
 }
