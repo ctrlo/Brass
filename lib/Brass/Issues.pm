@@ -78,6 +78,7 @@ sub _build_all
                 issue_statuses => 'issuestatus_later'
             }
         ],
+        order_by => 'me.title',
     });
     $issues_rs->result_class('Brass::Issue');
     my @all = $issues_rs->all;
