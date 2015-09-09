@@ -1,0 +1,70 @@
+[% IF pwd %]
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post">
+                <div class="form-group">
+                    <label for="type">Type</label>
+                    <input type="text" class="form-control" id="type" name="type" value="[% pwd.type | html_entity %]">
+                </div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" value="[% pwd.username | html_entity %]">
+                </div>
+                <div class="form-group">
+                    <label for="last_changed">Last changed</label>
+                    <input type="text" class="form-control" id="last_changed" name="last_changed" value="[% pwd.last_changed.ymd | html_entity %]">
+                </div>
+                <div class="form-group">
+                    <label for="uad">UAD</label>
+                    <select class="form-control" id="uad" name="uad">
+                        <option value=""></option>
+                        [% FOREACH uad IN uads %]
+                            <option value="[% uad.id %]" [% IF pwd.uad == uad %]selected[% END %]>[% uad | html_entity %]</option>
+                        [% END %]
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="server">Server</label>
+                    <select class="form-control" id="server" name="server">
+                        <option value=""></option>
+                        [% FOREACH server IN servers %]
+                            <option value="[% server.id %]" [% IF pwd.server == server %]selected[% END %]>[% server | html_entity %]</option>
+                        [% END %]
+                    </select>
+                </div>
+                [% IF user.permission.config_write %]
+                    <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
+                    [% IF pwd.id %]
+                        <button type="submit" name="delete" value="delete" class="btn btn-default">Delete</button>
+                    [% END %]
+                [% END %]
+            </form>
+        </div>
+    <div>
+[% ELSE %]
+    <p>
+        [% IF user.permission.config_write %]
+            <a href="/config/pwd/0" class="btn btn-default">New password</a>
+        [% END %]
+    </p>
+    <table class="table table-striped">
+        <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Username</th>
+            <th>UAD</th>
+            <th>Server</th>
+            <th>Last changed</th>
+        </tr>
+        [% FOREACH pwd IN pwds %]
+            <tr>
+                <td><a href="/config/pwd/[% pwd.id %]">[% pwd.id %]</a></td>
+                <td>[% pwd.type | html_entity %]</td>
+                <td>[% pwd.username %]</td>
+                <td>[% pwd.uad %]</td>
+                <td>[% pwd.server %]</td>
+                <td>[% pwd.last_changed.ymd %]</td>
+            </tr>
+        [% END %]
+    </table>
+[% END %]

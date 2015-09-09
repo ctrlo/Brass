@@ -54,6 +54,7 @@
                                         <li [% IF page=="config/server" %]class="active"[% END %]><a href="/config/server">Servers</a></li>
                                         <li [% IF page=="config/uad" %]class="active"[% END %]><a href="/config/uad">UADs</a></li>
                                         <li [% IF page=="config/cert" %]class="active"[% END %]><a href="/config/cert">Certificates</a></li>
+                                        <li [% IF page=="config/pwd" %]class="active"[% END %]><a href="/config/pwd">Passwords</a></li>
                                     </ul>
                                     </li>
                                 [% END %]

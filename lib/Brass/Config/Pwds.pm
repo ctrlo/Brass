@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =cut
 
-package Brass::Config::UADs;
+package Brass::Config::Pwds;
 
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
@@ -26,7 +26,12 @@ has schema => (
     required => 1,
 );
 
-has users => (
+has servers => (
+    is       => 'ro',
+    required => 1,
+);
+
+has uads => (
     is       => 'ro',
     required => 1,
 );
@@ -37,30 +42,19 @@ has all => (
 
 sub _build_all
 {   my $self = shift;
-    my @all = values %{$self->_index};
-    \@all;
-}
-
-has _index => (
-    is => 'lazy',
-);
-
-sub _build__index
-{   my $self = shift;
-    my $uad_rs = $self->schema->resultset('Uad')->search({},{
-        order_by => ['me.name'],
+    my $pwd_rs = $self->schema->resultset('Pw')->search({
+        type => { '!=' => [ -and => qw/sqldb admonitor/] },
+    },{
+        order_by => ['me.id'],
     });
-    $uad_rs->result_class('Brass::Config::UAD');
-    my @all = $uad_rs->all;
-    $_->users($self->users) foreach @all;
-    my %index = map { $_->id => $_ } @all;
-    \%index;
-}
-
-sub uad
-{   my ($self, $id) = @_;
-    my $index = $self->_index;
-    $index->{$id};
+    $pwd_rs->result_class('Brass::Config::Pwd');
+    my @all = $pwd_rs->all;
+    foreach (@all)
+    {
+        $_->servers($self->servers);
+        $_->uads($self->uads);
+    }
+    \@all;
 }
 
 1;

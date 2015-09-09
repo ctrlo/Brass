@@ -75,9 +75,26 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 RELATIONS
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-08-30 13:16:07
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/nzmCtfwoEVUo/2oN3Tg7g
+=head2 pws
+
+Type: has_many
+
+Related object: L<Brass::ConfigSchema::Result::Pw>
+
+=cut
+
+__PACKAGE__->has_many(
+  "pws",
+  "Brass::ConfigSchema::Result::Pw",
+  { "foreign.uad_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-09 10:57:11
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fDMRtxaINZukVPpibGTc1Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

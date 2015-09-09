@@ -62,10 +62,10 @@ sub inflate_result {
     my $data   = $_[2];
     my $schema = $_[1]->schema;
     $_[0]->new(
-        id             => $data->{id},
-        name           => $data->{name},
-        set_owner      => $data->{owner},
-        schema         => $schema,
+        id        => $data->{id},
+        name      => $data->{name},
+        set_owner => $data->{owner},
+        schema    => $schema,
     );
 }
 

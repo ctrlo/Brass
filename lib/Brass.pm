@@ -22,6 +22,8 @@ use Brass::Classifications;
 use Brass::Config::Certs;
 use Brass::Config::CertUses;
 use Brass::Config::Domains;
+use Brass::Config::Pwd;
+use Brass::Config::Pwds;
 use Brass::Config::Server;
 use Brass::Config::Servers;
 use Brass::Config::Server::Types;
@@ -196,6 +198,61 @@ any '/config/uad/?:id?' => require_role 'config' => sub {
     }
 
     template 'config/uad' => $params;
+};
+
+any '/config/pwd/?:id?' => require_role 'config' => sub {
+
+    my $id      = param 'id';
+    my $schema  = schema('config');
+    my $users   = Brass::Users->new(schema => schema); # Default schema
+    my $uads    = Brass::Config::UADs->new(schema => $schema, users => $users);
+    my $servers = Brass::Config::Servers->new(schema => $schema);
+
+    my $params = {
+        pwds   => Brass::Config::Pwds->new(
+            schema  => $schema,
+            servers => $servers,
+            uads    => $uads,
+        )->all,
+        page   => 'config/pwd',
+    };
+
+    if (defined $id)
+    {
+        my $pwd = Brass::Config::Pwd->new(
+            id      => $id,
+            schema  => $schema,
+            uads    => $uads,
+            servers => $servers,
+        );
+        if (param 'save')
+        {
+            die "No permission to update password details"
+                unless user_has_role 'config_write';
+            my $strp = DateTime::Format::Strptime->new(
+                pattern   => '%F',
+            );
+            $pwd->type(param 'type');
+            $pwd->username(param 'username');
+            $pwd->last_changed($strp->parse_datetime(param 'last_changed'));
+            $pwd->set_uad(param 'uad');
+            $pwd->set_server(param 'server');
+            $pwd->write;
+            redirect '/config/pwd';
+        }
+        if (param 'delete')
+        {
+            die "No permission to update password details"
+                unless user_has_role 'config_write';
+            $pwd->delete;
+            redirect '/config/pwd';
+        }
+        $params->{pwd}     = $pwd;
+        $params->{uads}    = $uads->all;
+        $params->{servers} = $servers->all;
+    }
+
+    template 'config/pwd' => $params;
 };
 
 any '/config/cert/?:id?' => require_role 'config' => sub {
