@@ -353,8 +353,6 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
         {
             die "No write access to this issue"
                 unless $issue->user_can_write(logged_in_user);
-            $issue->set_author(logged_in_user->{id})
-                if !$id; # New
             $issue->title(param 'title');
             $issue->description(param 'description');
             $issue->set_project(param 'project');
@@ -365,16 +363,29 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
                 $issue->security(param 'security');
                 $issue->set_type(param 'type');
                 $issue->set_status(param 'status');
+                $issue->set_author(param('author') || logged_in_user->{id});
                 $issue->set_owner(param 'owner');
                 $issue->set_approver(param 'approver');
             }
+            else {
+                $issue->set_author(logged_in_user->{id})
+                    if !$id; # New
+            }
             $issue->write(logged_in_user->{id});
+            $issue->send_notifications(
+                uri_base          => request->uri_base,
+                logged_in_user_id => logged_in_user->{id},
+            );
             redirect '/issue';
         }
         if (param 'comment_add')
         {
             # Allow any reader to add a comment
             $issue->comment_add(text => param('comment'), user_id => logged_in_user->{id});
+            $issue->send_notifications(
+                uri_base          => request->uri_base,
+                logged_in_user_id => logged_in_user->{id},
+            );
         }
         $params->{issue} = $issue;
     }

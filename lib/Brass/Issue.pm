@@ -24,6 +24,7 @@ use Brass::Issue::Status;
 use Brass::Issue::Type;
 use Brass::User;
 use DateTime;
+use Mail::Message;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 use MooX::Types::MooseLike::DateTime qw/DateAndTime/;
@@ -314,6 +315,38 @@ sub comment_add
         issue    => $self->id,
         datetime => DateTime->now,
     });
+}
+
+sub send_notifications
+{   my ($self, %options) = @_;
+    my $id = $self->id;
+    if ($self->author == $options{logged_in_user_id})
+    {
+        # Author editing. Send to admin
+        my $msg = Mail::Message->build(
+            To             => $self->author->email,
+            'Content-Type' => 'text/plain',
+            Subject        => 'Ticket updated',
+            data           => <<__PLAIN,
+A ticket that you are the author of has been updated:
+
+$options{uri_base}/issue/$id
+__PLAIN
+        )->send(via => 'sendmail');
+    }
+    else {
+        # Otherwise update original author
+        my $msg = Mail::Message->build(
+            To             => 'root',
+            'Content-Type' => 'text/plain',
+            Subject        => 'Ticket updated',
+            data           => <<__PLAIN,
+A ticket has been updated:
+
+$options{uri_base}/issue/$id
+__PLAIN
+        )->send(via => 'sendmail');
+    }
 }
 
 sub inflate_result {

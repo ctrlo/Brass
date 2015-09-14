@@ -73,7 +73,7 @@ sub inflate_result {
     my $schema = $_[1]->schema;
     $_[0]->new(
         id             => $data->{id},
-        email          => $data->{title},
+        email          => $data->{email},
         surname        => $data->{surname},
         firstname      => $data->{firstname},
         schema         => $schema,
