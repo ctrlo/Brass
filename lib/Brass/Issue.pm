@@ -324,7 +324,7 @@ sub send_notifications
     {
         # Author editing. Send to admin
         my $msg = Mail::Message->build(
-            To             => $self->author->email,
+            To             => 'root',
             'Content-Type' => 'text/plain',
             Subject        => 'Ticket updated',
             data           => <<__PLAIN,
@@ -337,7 +337,7 @@ __PLAIN
     else {
         # Otherwise update original author
         my $msg = Mail::Message->build(
-            To             => 'root',
+            To             => $self->author->email,
             'Content-Type' => 'text/plain',
             Subject        => 'Ticket updated',
             data           => <<__PLAIN,
