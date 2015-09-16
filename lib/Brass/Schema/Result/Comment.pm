@@ -39,7 +39,6 @@ __PACKAGE__->table("comment");
 
   data_type: 'integer'
   is_auto_increment: 1
-  is_foreign_key: 1
   is_nullable: 0
 
 =head2 author
@@ -51,6 +50,7 @@ __PACKAGE__->table("comment");
 =head2 issue
 
   data_type: 'integer'
+  is_foreign_key: 1
   is_nullable: 0
 
 =head2 datetime
@@ -68,16 +68,11 @@ __PACKAGE__->table("comment");
 
 __PACKAGE__->add_columns(
   "id",
-  {
-    data_type         => "integer",
-    is_auto_increment => 1,
-    is_foreign_key    => 1,
-    is_nullable       => 0,
-  },
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "author",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "issue",
-  { data_type => "integer", is_nullable => 0 },
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "datetime",
   {
     data_type => "datetime",
@@ -117,7 +112,7 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
-=head2 id
+=head2 issue
 
 Type: belongs_to
 
@@ -126,15 +121,15 @@ Related object: L<Brass::Schema::Result::Issue>
 =cut
 
 __PACKAGE__->belongs_to(
-  "id",
+  "issue",
   "Brass::Schema::Result::Issue",
-  { id => "id" },
+  { id => "issue" },
   { is_deferrable => 1, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-10 20:14:31
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:G3IygO3sOHEO1eOf0bzrNA
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-08-28 16:40:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:w8aOTEd4sGTjh7+T1MkXlg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

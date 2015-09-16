@@ -173,18 +173,18 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 comment
+=head2 comments
 
-Type: might_have
+Type: has_many
 
 Related object: L<Brass::Schema::Result::Comment>
 
 =cut
 
-__PACKAGE__->might_have(
-  "comment",
+__PACKAGE__->has_many(
+  "comments",
   "Brass::Schema::Result::Comment",
-  { "foreign.id" => "self.id" },
+  { "foreign.issue" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
@@ -279,8 +279,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-26 23:58:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xCvQfBW8V897eK6h3urnTA
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-08-28 16:40:45
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:cxYD4AmlP9wBhcEbuSEHzQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
