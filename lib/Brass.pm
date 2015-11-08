@@ -571,6 +571,7 @@ get '/version/:id' => require_role doc => sub {
         my $content  = $version->version_content->content;
         $content     =~ s/%%thedate%%/$date/;
         $content     =~ s!%%thename%%!$title ($vinfo / $date / $reviewer / $approver / $classification)!;
+        $content     =~ s!%%thereference%%!$vinfo!g;
         my $texdir   = config->{brass}->{tex};
         die "Tex build dir $texdir does not exist" unless -d $texdir;
         write_file("$texdir/$vinfo.tex", {binmode => ':utf8'}, $content);
