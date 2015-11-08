@@ -569,8 +569,8 @@ get '/version/:id' => require_role doc => sub {
         my $date     = $version->created->strftime("%e %B %Y");
         $date        =~ s/(\d+)/ordinate($1)/e;
         my $content  = $version->version_content->content;
-        $content     =~ s/%%thedate%%/$date/;
-        $content     =~ s!%%thename%%!$title ($vinfo / $date / $reviewer / $approver / $classification)!;
+        $content     =~ s/%%thedate%%/$date/g;
+        $content     =~ s!%%thename%%!$title ($vinfo / $date / $reviewer / $approver / $classification)!g;
         $content     =~ s!%%thereference%%!$vinfo!g;
         my $texdir   = config->{brass}->{tex};
         die "Tex build dir $texdir does not exist" unless -d $texdir;
