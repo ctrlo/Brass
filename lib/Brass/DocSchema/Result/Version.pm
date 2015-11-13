@@ -65,6 +65,12 @@ __PACKAGE__->table("version");
   default_value: 1
   is_nullable: 0
 
+=head2 signed
+
+  data_type: 'smallint'
+  default_value: 0
+  is_nullable: 0
+
 =head2 record
 
   data_type: 'tinyint'
@@ -118,6 +124,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", default_value => 1, is_nullable => 0 },
   "revision",
   { data_type => "integer", default_value => 1, is_nullable => 0 },
+  "signed",
+  { data_type => "smallint", default_value => 0, is_nullable => 0 },
   "record",
   { data_type => "tinyint", default_value => 0, is_nullable => 0 },
   "created",
@@ -187,8 +195,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-08-27 10:43:00
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:10l/ugsZzDll6YFHiFDo6g
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-11-12 17:14:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MwxbsXiETYWqfW3B7bH3og
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

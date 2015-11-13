@@ -496,12 +496,18 @@ any '/doc/content/:id' => require_role doc => sub {
         my $publish = $submit eq 'publish' ? 1 : 0;
         die "No permission to publish document"
             if $publish && !user_has_role('doc_publish');
+        die "No permission to publish signed copy"
+            if param('signed') && !user_has_role('doc_publish');
         die "No permission to save draft"
             unless user_has_role('doc_save');
         $submit = 'draft' if $publish && $doctype ne 'binary';
 
+        my $user = Brass::User->new(schema => schema, id => logged_in_user->{id});
+
         my $new_version_id = $submit eq 'save' && $doctype eq 'binary'
           ? $doc->file_save(request->upload('file'))
+          : $doctype eq 'signed'
+          ? $doc->signed_save(request->upload('file'), $user)
           : $publish && $doctype eq 'binary'
           ? param('binary_draft_id')
           : $submit eq 'save' && $doctype eq 'plain'
@@ -516,11 +522,8 @@ any '/doc/content/:id' => require_role doc => sub {
           ? $doc->tex_add(param 'text_content')
           : die "Invalid request";
 
-        if ($publish)
-        {
-            my $user = Brass::User->new(schema => schema, id => logged_in_user->{id});
-            $doc->publish($new_version_id, $user);
-        }
+        $doc->publish($new_version_id, $user)
+            if $publish;
         redirect '/doc';
     }
 
@@ -539,7 +542,9 @@ get '/doc/latest/:id' => require_role doc => sub {
         schema => $schema,
     );
 
-    redirect "/version/".$doc->published->id;
+    my $id = $doc->signed ? $doc->signed->id : $doc->published->id;
+
+    redirect "/version/".$id;
 };
 
 get '/version/:id' => require_role doc => sub {

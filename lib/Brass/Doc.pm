@@ -119,6 +119,11 @@ has draft_for_review => (
     clearer => 1,
 );
 
+has signed => (
+    is      => 'lazy',
+    clearer => 1,
+);
+
 has published => (
     is      => 'lazy',
     clearer => 1,
@@ -217,12 +222,25 @@ sub _build__rset
     $doc;
 }
 
-# Should only be 2 versions in the resultset: one published and one draft
+# Should only be 3 versions in the resultset: one published, one signed and one draft
+sub _build_signed
+{   my $self = shift;
+    my ($signed) = $self->schema->resultset('Version')->search({
+        doc_id => $self->id,
+        signed => 1,
+    },{
+        rows     => 1,
+        order_by => { -desc => ['major', 'minor'] },
+    })->all;
+    $signed;
+}
+
 sub _build_published
 {   my $self = shift;
     my ($published) = $self->schema->resultset('Version')->search({
         doc_id => $self->id,
         minor  => 0,
+        signed => 0,
     },{
         rows     => 1,
         order_by => { -desc => 'major' },
@@ -311,6 +329,7 @@ sub _latest
 {   my $self = shift;
     my ($latest) = $self->schema->resultset('Version')->search({
         doc_id => $self->id,
+        signed => 0,
     },{
         rows     => 1,
         order_by => { -desc => [qw/major minor revision/] },
@@ -345,13 +364,27 @@ sub _version_add
     # will be false if the latest document is published.published
     $options{new} = 1 if !$self->draft_for_review;
 
+    # Don't allow saving of signed unless something published
+    my $signed = $options{signed} && $self->published ? 1 : 0;
+
     my $version_new;
     if ($options{new})
     {
+        my $major = $signed
+                  ? $self->published->major
+                  : $latest
+                  ? $latest->major
+                  : 0;
+        my $minor = $signed
+                  ? $self->published->minor
+                  : $latest
+                  ? $latest->minor + 1
+                  : 1;
         $version_new = $self->schema->resultset('Version')->create({
             doc_id   => $self->id,
-            major    => $latest ? $latest->major : 0,
-            minor    => $latest ? $latest->minor + 1 : 1,
+            major    => $major,
+            minor    => $minor,
+            signed   => $signed,
             revision => 0,
             created  => DateTime->now,
             blobext  => $ext,
@@ -362,6 +395,10 @@ sub _version_add
             content      => $content,
             content_blob => $content_blob,
         });
+        $version_new->update({
+            reviewer => $options{user}->id,
+            approver => $options{user}->id,
+        }) if $signed; # No formal publishing
     }
     else {
         $latest->update({
@@ -380,6 +417,7 @@ sub _version_add
     $self->clear_review_due;
     $self->clear_review;
     $self->clear_review_due_warning;
+    $self->clear_signed;
     $self->clear_published;
     $self->clear_published_all;
     $self->clear_published_all_retired;
@@ -425,6 +463,16 @@ sub file_save
 {   my ($self, $file) = @_;
     my %options = (
         file => $file,
+    );
+    $self->_version_add(%options);
+}
+
+sub signed_save
+{   my ($self, $file, $user) = @_;
+    my %options = (
+        file   => $file,
+        signed => 1,
+        user   => $user,
     );
     $self->_version_add(%options);
 }
