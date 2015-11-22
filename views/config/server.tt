@@ -121,7 +121,13 @@
                     [% END %]
                 </td>
                 <td>[% server.update_datetime %]</td>
-                <td>[% server.update_result %]</td>
+                <td>
+                    [% IF server.update_result.match('0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.$') %]
+                        Already up to date
+                    [% ELSE %]
+                        [% server.update_result %]
+                    [% END %]
+                </td>
                 <td>[% server.restart_required %]</td>
             </tr>
         [% END %]
