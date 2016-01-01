@@ -508,23 +508,23 @@ any '/doc/content/:id' => require_role doc => sub {
         my $notes = param 'notes';
 
         my $new_version_id = $submit eq 'save' && $doctype eq 'binary'
-          ? $doc->file_save(request->upload('file'), notes => $notes)
+          ? $doc->file_save(upload => request->upload('file'), notes => $notes)
           : $doctype eq 'signed'
-          ? $doc->signed_save(request->upload('file'), user => $user, notes => $notes)
+          ? $doc->signed_save(upload => request->upload('file'), user => $user, notes => $notes)
           : $doctype eq 'record'
-          ? $doc->record_save(request->upload('file'), user => $user, notes => $notes)
+          ? $doc->record_save(upload => request->upload('file'), user => $user, notes => $notes)
           : $publish && $doctype eq 'binary'
           ? param('binary_draft_id')
           : $submit eq 'save' && $doctype eq 'plain'
-          ? $doc->plain_save(param('text_content'), notes => $notes)
+          ? $doc->plain_save(text => param('text_content'), notes => $notes)
           : $submit eq 'save' && $doctype eq 'tex'
-          ? $doc->tex_save(param('text_content'), notes => $notes)
+          ? $doc->tex_save(text => param('text_content'), notes => $notes)
           : $submit eq 'draft' && $doctype eq 'binary'
-          ? $doc->file_add(param('text_content'), notes => $notes)
+          ? $doc->file_add(text => param('text_content'), notes => $notes)
           : $submit eq 'draft' && $doctype eq 'plain'
-          ? $doc->plain_add(param('text_content'), notes => $notes)
+          ? $doc->plain_add(text => param('text_content'), notes => $notes)
           : $submit eq 'draft' && $doctype eq 'tex'
-          ? $doc->tex_add(param('text_content'), notes => $notes)
+          ? $doc->tex_add(text => param('text_content'), notes => $notes)
           : die "Invalid request";
 
         $doc->publish($new_version_id, $user)

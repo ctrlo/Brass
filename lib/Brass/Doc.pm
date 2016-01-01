@@ -346,18 +346,23 @@ sub _version_add
     my ($mimetype, $ext, $content, $content_blob);
     if ($options{text})
     {
-        $options{content} =~ s/\r\n/\n/g;
-        $options{content} =~ s/\r/\n/g;
+        $options{text} =~ s/\r\n/\n/g;
+        $options{text} =~ s/\r/\n/g;
         # Do not create new version if content hasn't changed
-        $options{new} = 0 if $latest && $options{content} eq $latest->version_content->content;
+        $options{new} = 0 if $latest && $options{text} eq $latest->version_content->content;
         $mimetype = $options{tex} ? 'application/x-tex' : 'text/plain';
-        $content  = $options{content};
+        $content  = $options{text};
+    }
+    elsif ($options{upload}) {
+        $mimetype     = $options{upload}->type;
+        $content_blob = $options{upload}->content;
+        $options{upload}->basename =~ /.*\.([a-z0-9]+)/i;
+        $ext = $1;
     }
     else {
-        $mimetype     = $options{file}->type;
-        $content_blob = $options{file}->content;
-        $options{file}->basename =~ /.*\.([a-z0-9]+)/i;
-        $ext = $1;
+        $mimetype     = $options{mimetype} or die "Missing mimetype";
+        $content_blob = $options{file} or die "Missing file content";
+        $ext          = $options{ext} or die "Missing file extension";
     }
 
     # Never save over a published document. draft_for_review
@@ -470,60 +475,48 @@ sub retire_version
 }
 
 sub file_save
-{   my ($self, $file, %options) = @_;
-    $options{file} = $file;
+{   my ($self, %options) = @_;
     $self->_version_add(%options);
 }
 
 sub signed_save
-{   my ($self, $file, %options) = @_;
-    $options{file}   = $file;
+{   my ($self, %options) = @_;
     $options{signed} = 1;
     $self->_version_add(%options);
 }
 
 sub record_save
-{   my ($self, $file, %options) = @_;
-    $options{file}   = $file;
+{   my ($self, %options) = @_;
     $options{record} = 1;
     $self->_version_add(%options);
 }
 
 sub plain_save
 {   my ($self, $text, %options) = @_;
-    $options{text}    = 1;
-    $options{content} = $text;
     $self->_version_add(%options);
 }
 
 sub tex_save
 {   my ($self, $text, %options) = @_;
     $options{tex}     = 1;
-    $options{text}    = 1;
-    $options{content} = $text;
     $self->_version_add(%options);
 }
 
 sub file_add
-{   my ($self, $file, %options) = @_;
-    $options{file} = $file;
+{   my ($self, %options) = @_;
     $options{new}  = 1;
     $self->_version_add(%options);
 }
 
 sub plain_add
-{   my ($self, $text, %options) = @_;
+{   my ($self, %options) = @_;
     $options{new}     = 1;
-    $options{text}    = 1;
-    $options{content} = $text;
     $self->_version_add(%options);
 }
 
 sub tex_add
-{   my ($self, $text, %options) = @_;
+{   my ($self, %options) = @_;
     $options{tex}     = 1;
-    $options{text}    = 1;
-    $options{content} = $text;
     $options{new}     = 1;
     $self->_version_add(%options);
 }
