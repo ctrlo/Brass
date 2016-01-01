@@ -497,7 +497,7 @@ any '/doc/content/:id' => require_role doc => sub {
         die "No permission to publish document"
             if $publish && !user_has_role('doc_publish');
         die "No permission to publish signed copy"
-            if param('signed') && !user_has_role('doc_publish');
+            if $doctype eq 'signed' && !user_has_role('doc_publish');
         die "No permission to publish record"
             if $doctype eq 'record' && !user_has_role('doc_record');
         die "No permission to save draft"
