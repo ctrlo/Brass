@@ -501,7 +501,7 @@ any '/doc/content/:id' => require_role doc => sub {
         die "No permission to publish record"
             if $doctype eq 'record' && !user_has_role('doc_record');
         die "No permission to save draft"
-            unless user_has_role('doc_save');
+            if $doctype ne 'record' && !user_has_role('doc_save');
         $submit = 'draft' if $publish && $doctype ne 'binary';
 
         my $user = Brass::User->new(schema => schema, id => logged_in_user->{id});
