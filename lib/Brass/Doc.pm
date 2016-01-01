@@ -367,6 +367,7 @@ sub _version_add
     # Don't allow saving of signed unless something published
     my $signed = $options{signed} && $self->published ? 1 : 0;
     my $record = $options{record} ? 1 : 0;
+    my $notes  = $options{notes};
 
     my $version_new;
     if ($options{new})
@@ -392,6 +393,7 @@ sub _version_add
             signed   => $signed,
             record   => $record,
             revision => 0,
+            notes    => $notes,
             created  => DateTime->now,
             blobext  => $ext,
             mimetype => $mimetype,
@@ -404,12 +406,14 @@ sub _version_add
         $version_new->update({
             reviewer => $options{user}->id,
             approver => $options{user}->id,
+            notes    => $notes,
         }) if $signed; # No formal publishing
     }
     else {
         $latest->update({
             created  => DateTime->now,
             mimetype => $mimetype,
+            notes    => $notes,
         });
         $latest->version_content->update({
             content      => $content,
@@ -466,79 +470,61 @@ sub retire_version
 }
 
 sub file_save
-{   my ($self, $file) = @_;
-    my %options = (
-        file => $file,
-    );
+{   my ($self, $file, %options) = @_;
+    $options{file} = $file;
     $self->_version_add(%options);
 }
 
 sub signed_save
-{   my ($self, $file, $user) = @_;
-    my %options = (
-        file   => $file,
-        signed => 1,
-        user   => $user,
-    );
+{   my ($self, $file, %options) = @_;
+    $options{file}   = $file;
+    $options{signed} = 1;
     $self->_version_add(%options);
 }
 
 sub record_save
-{   my ($self, $file, $user) = @_;
-    my %options = (
-        file   => $file,
-        record => 1,
-        user   => $user,
-    );
+{   my ($self, $file, %options) = @_;
+    $options{file}   = $file;
+    $options{record} = 1;
     $self->_version_add(%options);
 }
 
 sub plain_save
-{   my ($self, $text) = @_;
-    my %options = (
-        text    => 1,
-        content => $text,
-    );
+{   my ($self, $text, %options) = @_;
+    $options{text}    = 1;
+    $options{content} = $text;
     $self->_version_add(%options);
 }
 
 sub tex_save
-{   my ($self, $text) = @_;
-    my %options = (
-        tex     => 1,
-        text    => 1,
-        content => $text,
-    );
+{   my ($self, $text, %options) = @_;
+    $options{tex}     = 1;
+    $options{text}    = 1;
+    $options{content} = $text;
     $self->_version_add(%options);
 }
 
 sub file_add
-{   my ($self, $file) = @_;
-    my %options = (
-        file => $file,
-        new  => 1,
-    );
+{   my ($self, $file, %options) = @_;
+    $options{file} = $file;
+    $options{new}  = 1;
     $self->_version_add(%options);
 }
 
 sub plain_add
-{   my ($self, $text) = @_;
-    my %options = (
-        text    => 1,
-        content => $text,
-        new     => 1,
-    );
+{   my ($self, $text, %options) = @_;
+    $options{new}     = 1;
+    $options{text}    = 1;
+    $options{content} = $text;
     $self->_version_add(%options);
 }
 
 sub tex_add
-{   my ($self, $text) = @_;
-    my %options = (
-        tex     => 1,
-        text    => 1,
-        content => $text,
-        new     => 1,
-    );
+{   my ($self, $text, %options) = @_;
+    $options{tex}     = 1;
+    $options{text}    = 1;
+    $options{content} = $text;
+    $options{new}     = 1;
     $self->_version_add(%options);
 }
 

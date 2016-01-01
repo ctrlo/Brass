@@ -505,25 +505,26 @@ any '/doc/content/:id' => require_role doc => sub {
         $submit = 'draft' if $publish && $doctype ne 'binary';
 
         my $user = Brass::User->new(schema => schema, id => logged_in_user->{id});
+        my $notes = param 'notes';
 
         my $new_version_id = $submit eq 'save' && $doctype eq 'binary'
-          ? $doc->file_save(request->upload('file'))
+          ? $doc->file_save(request->upload('file'), notes => $notes)
           : $doctype eq 'signed'
-          ? $doc->signed_save(request->upload('file'), $user)
+          ? $doc->signed_save(request->upload('file'), user => $user, notes => $notes)
           : $doctype eq 'record'
-          ? $doc->record_save(request->upload('file'), $user)
+          ? $doc->record_save(request->upload('file'), user => $user, notes => $notes)
           : $publish && $doctype eq 'binary'
           ? param('binary_draft_id')
           : $submit eq 'save' && $doctype eq 'plain'
-          ? $doc->plain_save(param 'text_content')
+          ? $doc->plain_save(param('text_content'), notes => $notes)
           : $submit eq 'save' && $doctype eq 'tex'
-          ? $doc->tex_save(param 'text_content')
+          ? $doc->tex_save(param('text_content'), notes => $notes)
           : $submit eq 'draft' && $doctype eq 'binary'
-          ? $doc->file_add(param 'text_content')
+          ? $doc->file_add(param('text_content'), notes => $notes)
           : $submit eq 'draft' && $doctype eq 'plain'
-          ? $doc->plain_add(param 'text_content')
+          ? $doc->plain_add(param('text_content'), notes => $notes)
           : $submit eq 'draft' && $doctype eq 'tex'
-          ? $doc->tex_add(param 'text_content')
+          ? $doc->tex_add(param('text_content'), notes => $notes)
           : die "Invalid request";
 
         $doc->publish($new_version_id, $user)

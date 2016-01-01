@@ -111,6 +111,11 @@ __PACKAGE__->table("version");
   is_nullable: 1
   size: 45
 
+=head2 notes
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -148,6 +153,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 45 },
   "mimetype",
   { data_type => "varchar", is_nullable => 1, size => 45 },
+  "notes",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -195,8 +202,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-11-12 17:14:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MwxbsXiETYWqfW3B7bH3og
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2016-01-01 10:57:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Y18bQKfrouk/Uc+r/Pumcw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
