@@ -535,10 +535,9 @@ any '/doc/content/:id' => require_role doc => sub {
 
 get '/doc/latest/:id' => require_role doc => sub {
 
-    my $id     = param 'id';
     my $schema = schema('doc');
     my $doc    = Brass::Doc->new(
-        id     => $id,
+        id     => param('id'),
         schema => $schema,
     );
 
