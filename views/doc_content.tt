@@ -44,6 +44,13 @@
                 Signed file (will have same version as latest published)
             </label>
         </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="doctype" id="radio_record" value="record"
+                    class="radio_doctype">
+                Record (will be published as next major version number)
+            </label>
+        </div>
     </div>
     <div class="form-group" id="div_binary" [% IF doctype != "binary" %]style="display:none"[% END %]>
         <div class="form-group">
@@ -83,7 +90,7 @@
         [% FILTER replace('\'', '\\\'') %]
             $(document).ready(function () {
                 $( ".radio_doctype" ).change(function() {
-                    if (this.value == "binary" || this.value == "signed")
+                    if (this.value == "binary" || this.value == "signed" || this.value == "record")
                     {
                         $( "#div_binary" ).show(400);
                         $( "#div_text" ).hide(400);

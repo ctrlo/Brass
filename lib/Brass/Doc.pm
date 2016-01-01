@@ -366,17 +366,22 @@ sub _version_add
 
     # Don't allow saving of signed unless something published
     my $signed = $options{signed} && $self->published ? 1 : 0;
+    my $record = $options{record} ? 1 : 0;
 
     my $version_new;
     if ($options{new})
     {
         my $major = $signed
                   ? $self->published->major
+                  : $record
+                  ? ($latest ? $latest->major + 1 : 1)
                   : $latest
                   ? $latest->major
                   : 0;
         my $minor = $signed
                   ? $self->published->minor
+                  : $record
+                  ? 0
                   : $latest
                   ? $latest->minor + 1
                   : 1;
@@ -385,6 +390,7 @@ sub _version_add
             major    => $major,
             minor    => $minor,
             signed   => $signed,
+            record   => $record,
             revision => 0,
             created  => DateTime->now,
             blobext  => $ext,
@@ -472,6 +478,16 @@ sub signed_save
     my %options = (
         file   => $file,
         signed => 1,
+        user   => $user,
+    );
+    $self->_version_add(%options);
+}
+
+sub record_save
+{   my ($self, $file, $user) = @_;
+    my %options = (
+        file   => $file,
+        record => 1,
         user   => $user,
     );
     $self->_version_add(%options);
