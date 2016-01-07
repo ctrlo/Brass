@@ -34,13 +34,31 @@
             <label>
                 <input type="radio" name="doctype" id="radio_binary" value="binary"
                     class="radio_doctype" [% IF doctype == "binary" %]checked[% END %]>
-                Binary file
+                Binary file (will be uploaded as draft)
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="doctype" id="radio_signed" value="signed"
+                    class="radio_doctype">
+                Signed file (will have same version as latest published)
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="doctype" id="radio_record" value="record"
+                    class="radio_doctype">
+                Record (will be published as next major version number)
             </label>
         </div>
     </div>
+    <div class="form-group">
+        <label for="notes">Notes for this version</label>
+        <input type="text" name="notes" class="form-control" id="notes" value="[% doc.latest.notes %]">
+    </div>
     <div class="form-group" id="div_binary" [% IF doctype != "binary" %]style="display:none"[% END %]>
         <div class="form-group">
-            <label for="file">Upload new file as draft</label>
+            <label for="file">Upload new file</label>
             <input type="file" id="file" name="file">
         </div>
         <div class="form-group">
@@ -76,7 +94,7 @@
         [% FILTER replace('\'', '\\\'') %]
             $(document).ready(function () {
                 $( ".radio_doctype" ).change(function() {
-                    if (this.value == "binary")
+                    if (this.value == "binary" || this.value == "signed" || this.value == "record")
                     {
                         $( "#div_binary" ).show(400);
                         $( "#div_text" ).hide(400);

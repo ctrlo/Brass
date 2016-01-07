@@ -496,31 +496,39 @@ any '/doc/content/:id' => require_role doc => sub {
         my $publish = $submit eq 'publish' ? 1 : 0;
         die "No permission to publish document"
             if $publish && !user_has_role('doc_publish');
+        die "No permission to publish signed copy"
+            if $doctype eq 'signed' && !user_has_role('doc_publish');
+        die "No permission to publish record"
+            if $doctype eq 'record' && !user_has_role('doc_record');
         die "No permission to save draft"
-            unless user_has_role('doc_save');
+            if $doctype ne 'record' && !user_has_role('doc_save');
         $submit = 'draft' if $publish && $doctype ne 'binary';
 
+        my $user = Brass::User->new(schema => schema, id => logged_in_user->{id});
+        my $notes = param 'notes';
+
         my $new_version_id = $submit eq 'save' && $doctype eq 'binary'
-          ? $doc->file_save(request->upload('file'))
+          ? $doc->file_save(upload => request->upload('file'), notes => $notes)
+          : $doctype eq 'signed'
+          ? $doc->signed_save(upload => request->upload('file'), user => $user, notes => $notes)
+          : $doctype eq 'record'
+          ? $doc->record_save(upload => request->upload('file'), user => $user, notes => $notes)
           : $publish && $doctype eq 'binary'
           ? param('binary_draft_id')
           : $submit eq 'save' && $doctype eq 'plain'
-          ? $doc->plain_save(param 'text_content')
+          ? $doc->plain_save(text => param('text_content'), notes => $notes)
           : $submit eq 'save' && $doctype eq 'tex'
-          ? $doc->tex_save(param 'text_content')
+          ? $doc->tex_save(text => param('text_content'), notes => $notes)
           : $submit eq 'draft' && $doctype eq 'binary'
-          ? $doc->file_add(param 'text_content')
+          ? $doc->file_add(text => param('text_content'), notes => $notes)
           : $submit eq 'draft' && $doctype eq 'plain'
-          ? $doc->plain_add(param 'text_content')
+          ? $doc->plain_add(text => param('text_content'), notes => $notes)
           : $submit eq 'draft' && $doctype eq 'tex'
-          ? $doc->tex_add(param 'text_content')
+          ? $doc->tex_add(text => param('text_content'), notes => $notes)
           : die "Invalid request";
 
-        if ($publish)
-        {
-            my $user = Brass::User->new(schema => schema, id => logged_in_user->{id});
-            $doc->publish($new_version_id, $user);
-        }
+        $doc->publish($new_version_id, $user)
+            if $publish;
         redirect '/doc';
     }
 
@@ -532,14 +540,15 @@ any '/doc/content/:id' => require_role doc => sub {
 
 get '/doc/latest/:id' => require_role doc => sub {
 
-    my $id     = param 'id';
     my $schema = schema('doc');
     my $doc    = Brass::Doc->new(
-        id     => $id,
+        id     => param('id'),
         schema => $schema,
     );
 
-    redirect "/version/".$doc->published->id;
+    my $id = $doc->signed ? $doc->signed->id : $doc->published->id;
+
+    redirect "/version/".$id;
 };
 
 get '/version/:id' => require_role doc => sub {
@@ -569,8 +578,9 @@ get '/version/:id' => require_role doc => sub {
         my $date     = $version->created->strftime("%e %B %Y");
         $date        =~ s/(\d+)/ordinate($1)/e;
         my $content  = $version->version_content->content;
-        $content     =~ s/%%thedate%%/$date/;
-        $content     =~ s!%%thename%%!$title ($vinfo / $date / $reviewer / $approver / $classification)!;
+        $content     =~ s/%%thedate%%/$date/g;
+        $content     =~ s!%%thename%%!$title ($vinfo / $date / $reviewer / $approver / $classification)!g;
+        $content     =~ s!%%thereference%%!$vinfo!g;
         my $texdir   = config->{brass}->{tex};
         die "Tex build dir $texdir does not exist" unless -d $texdir;
         write_file("$texdir/$vinfo.tex", {binmode => ':utf8'}, $content);

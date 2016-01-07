@@ -119,6 +119,11 @@ has draft_for_review => (
     clearer => 1,
 );
 
+has signed => (
+    is      => 'lazy',
+    clearer => 1,
+);
+
 has published => (
     is      => 'lazy',
     clearer => 1,
@@ -217,12 +222,25 @@ sub _build__rset
     $doc;
 }
 
-# Should only be 2 versions in the resultset: one published and one draft
+# Should only be 3 versions in the resultset: one published, one signed and one draft
+sub _build_signed
+{   my $self = shift;
+    my ($signed) = $self->schema->resultset('Version')->search({
+        doc_id => $self->id,
+        signed => 1,
+    },{
+        rows     => 1,
+        order_by => { -desc => ['major', 'minor'] },
+    })->all;
+    $signed;
+}
+
 sub _build_published
 {   my $self = shift;
     my ($published) = $self->schema->resultset('Version')->search({
         doc_id => $self->id,
         minor  => 0,
+        signed => 0,
     },{
         rows     => 1,
         order_by => { -desc => 'major' },
@@ -311,6 +329,7 @@ sub _latest
 {   my $self = shift;
     my ($latest) = $self->schema->resultset('Version')->search({
         doc_id => $self->id,
+        signed => 0,
     },{
         rows     => 1,
         order_by => { -desc => [qw/major minor revision/] },
@@ -327,32 +346,59 @@ sub _version_add
     my ($mimetype, $ext, $content, $content_blob);
     if ($options{text})
     {
-        $options{content} =~ s/\r\n/\n/g;
-        $options{content} =~ s/\r/\n/g;
+        $options{text} =~ s/\r\n/\n/g;
+        $options{text} =~ s/\r/\n/g;
         # Do not create new version if content hasn't changed
-        $options{new} = 0 if $latest && $options{content} eq $latest->version_content->content;
+        $options{new} = 0 if $latest && $options{text} eq $latest->version_content->content;
         $mimetype = $options{tex} ? 'application/x-tex' : 'text/plain';
-        $content  = $options{content};
+        $content  = $options{text};
+    }
+    elsif ($options{upload}) {
+        $mimetype     = $options{upload}->type;
+        $content_blob = $options{upload}->content;
+        $options{upload}->basename =~ /.*\.([a-z0-9]+)/i;
+        $ext = $1;
     }
     else {
-        $mimetype     = $options{file}->type;
-        $content_blob = $options{file}->content;
-        $options{file}->basename =~ /.*\.([a-z0-9]+)/i;
-        $ext = $1;
+        $mimetype     = $options{mimetype} or die "Missing mimetype";
+        $content_blob = $options{file} or die "Missing file content";
+        $ext          = $options{ext} or die "Missing file extension";
     }
 
     # Never save over a published document. draft_for_review
     # will be false if the latest document is published.published
     $options{new} = 1 if !$self->draft_for_review;
 
+    # Don't allow saving of signed unless something published
+    my $signed = $options{signed} && $self->published ? 1 : 0;
+    my $record = $options{record} ? 1 : 0;
+    my $notes  = $options{notes};
+
     my $version_new;
     if ($options{new})
     {
+        my $major = $signed
+                  ? $self->published->major
+                  : $record
+                  ? ($latest ? $latest->major + 1 : 1)
+                  : $latest
+                  ? $latest->major
+                  : 0;
+        my $minor = $signed
+                  ? $self->published->minor
+                  : $record
+                  ? 0
+                  : $latest
+                  ? $latest->minor + 1
+                  : 1;
         $version_new = $self->schema->resultset('Version')->create({
             doc_id   => $self->id,
-            major    => $latest ? $latest->major : 0,
-            minor    => $latest ? $latest->minor + 1 : 1,
+            major    => $major,
+            minor    => $minor,
+            signed   => $signed,
+            record   => $record,
             revision => 0,
+            notes    => $notes,
             created  => DateTime->now,
             blobext  => $ext,
             mimetype => $mimetype,
@@ -362,11 +408,17 @@ sub _version_add
             content      => $content,
             content_blob => $content_blob,
         });
+        $version_new->update({
+            reviewer => $options{user}->id,
+            approver => $options{user}->id,
+            notes    => $notes,
+        }) if $signed; # No formal publishing
     }
     else {
         $latest->update({
             created  => DateTime->now,
             mimetype => $mimetype,
+            notes    => $notes,
         });
         $latest->version_content->update({
             content      => $content,
@@ -380,6 +432,7 @@ sub _version_add
     $self->clear_review_due;
     $self->clear_review;
     $self->clear_review_due_warning;
+    $self->clear_signed;
     $self->clear_published;
     $self->clear_published_all;
     $self->clear_published_all_retired;
@@ -422,59 +475,49 @@ sub retire_version
 }
 
 sub file_save
-{   my ($self, $file) = @_;
-    my %options = (
-        file => $file,
-    );
+{   my ($self, %options) = @_;
+    $self->_version_add(%options);
+}
+
+sub signed_save
+{   my ($self, %options) = @_;
+    $options{signed} = 1;
+    $self->_version_add(%options);
+}
+
+sub record_save
+{   my ($self, %options) = @_;
+    $options{record} = 1;
     $self->_version_add(%options);
 }
 
 sub plain_save
-{   my ($self, $text) = @_;
-    my %options = (
-        text    => 1,
-        content => $text,
-    );
+{   my ($self, $text, %options) = @_;
     $self->_version_add(%options);
 }
 
 sub tex_save
-{   my ($self, $text) = @_;
-    my %options = (
-        tex     => 1,
-        text    => 1,
-        content => $text,
-    );
+{   my ($self, $text, %options) = @_;
+    $options{tex}     = 1;
     $self->_version_add(%options);
 }
 
 sub file_add
-{   my ($self, $file) = @_;
-    my %options = (
-        file => $file,
-        new  => 1,
-    );
+{   my ($self, %options) = @_;
+    $options{new}  = 1;
     $self->_version_add(%options);
 }
 
 sub plain_add
-{   my ($self, $text) = @_;
-    my %options = (
-        text    => 1,
-        content => $text,
-        new     => 1,
-    );
+{   my ($self, %options) = @_;
+    $options{new}     = 1;
     $self->_version_add(%options);
 }
 
 sub tex_add
-{   my ($self, $text) = @_;
-    my %options = (
-        tex     => 1,
-        text    => 1,
-        content => $text,
-        new     => 1,
-    );
+{   my ($self, %options) = @_;
+    $options{tex}     = 1;
+    $options{new}     = 1;
     $self->_version_add(%options);
 }
 
