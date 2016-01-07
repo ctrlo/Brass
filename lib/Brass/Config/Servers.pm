@@ -32,7 +32,13 @@ has all => (
 
 sub _build_all
 {   my $self = shift;
-    my @all = values %{$self->_index};
+    my $server_rs = $self->schema->resultset('Server')->search({},{
+        join     => 'domain',
+        prefetch => 'sites',
+        order_by => ['domain.name', 'me.name'],
+    });
+    $server_rs->result_class('Brass::Config::Server');
+    my @all = $server_rs->all;
     \@all;
 }
 
@@ -42,13 +48,7 @@ has _index => (
 
 sub _build__index
 {   my $self = shift;
-    my $server_rs = $self->schema->resultset('Server')->search({},{
-        join     => 'domain',
-        prefetch => 'sites',
-        order_by => ['domain.name', 'me.name'],
-    });
-    $server_rs->result_class('Brass::Config::Server');
-    my @all = $server_rs->all;
+    my @all = $self->all;
     my %index = map { $_->id => $_ } @all;
     \%index;
 }
