@@ -492,12 +492,12 @@ sub record_save
 }
 
 sub plain_save
-{   my ($self, $text, %options) = @_;
+{   my ($self, %options) = @_;
     $self->_version_add(%options);
 }
 
 sub tex_save
-{   my ($self, $text, %options) = @_;
+{   my ($self, %options) = @_;
     $options{tex}     = 1;
     $self->_version_add(%options);
 }
