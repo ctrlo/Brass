@@ -374,6 +374,24 @@ sub _version_add
     my $record = $options{record} ? 1 : 0;
     my $notes  = $options{notes};
 
+    if ($signed)
+    {
+        # See if there is an existing signed copy for the currently published
+        # version. We don't use $self->signed, as this may be an older copy.
+        my ($existing_signed) = $self->schema->resultset('Version')->search({
+            doc_id => $self->id,
+            signed => 1,
+            major  => $self->published->major,
+            minor  => 0,
+        })->all;
+        # If so, update that instead
+        if ($existing_signed)
+        {
+            $options{new} = 0;
+            $latest = $existing_signed;
+        }
+    }
+
     my $version_new;
     if ($options{new})
     {
