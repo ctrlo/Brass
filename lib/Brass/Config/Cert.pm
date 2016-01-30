@@ -60,9 +60,8 @@ has expiry => (
 
 sub set_expiry
 {   my ($self, $value) = @_;
-    $value or return;
     my $db_parser = $self->schema->storage->datetime_parser;
-    my $expiry = $db_parser->parse_date($value);
+    my $expiry = $value ? $db_parser->parse_date($value) : undef;
     $self->expiry($expiry);
 }
 
