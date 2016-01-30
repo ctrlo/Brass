@@ -316,6 +316,11 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
         session 'filtering' => $copy;
     }
 
+    if (my $sort = param('sort'))
+    {
+        session 'sort' => $sort;
+    }
+
     if (user_has_role 'issue_read_all')
     {
         # No further filtering needed
@@ -330,6 +335,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
         $filtering->{user_id} = logged_in_user->{id};
     }
     $issues->filtering($filtering);
+    $issues->sort(session 'sort');
 
     my $params = {
         issues     => $issues->all,

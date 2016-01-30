@@ -139,9 +139,9 @@
     </p>
     <table class="table table-striped">
         <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Opened</th>
+            <th><a href="?sort=id">ID</a></th>
+            <th><a href="?sort=title">Title</a></th>
+            <th><a href="?sort=opened">Opened</a></th>
             <th>Project</th>
             <th>Status</th>
             <th>Priority</th>

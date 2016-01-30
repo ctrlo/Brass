@@ -54,3 +54,6 @@ table.diff td del {
    font-weight: bold;
 }
 
+th > a {
+    color: #333;
+}

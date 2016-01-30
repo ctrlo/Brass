@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package Brass::Issues;
 
 use Brass::Issue;
+use DateTime;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 
@@ -63,10 +64,19 @@ has filtering => (
     },
 );
 
+has sort => (
+    is => 'rw',
+);
+
 sub _build_all
 {   my $self = shift;
     my $search = $self->filtering;
     $search->{'issuestatus_later.datetime'} = undef;
+    my $sort = $self->sort eq 'opened'
+             ? 'me.id' # Sort after build
+             : $self->sort eq 'id'
+             ? 'me.id'
+             : 'me.title';
     my $issues_rs = $self->schema->resultset('Issue')->search(
         $search
     ,{
@@ -78,11 +88,12 @@ sub _build_all
                 issue_statuses => 'issuestatus_later'
             }
         ],
-        order_by => 'me.title',
+        order_by => $sort,
     });
     $issues_rs->result_class('Brass::Issue');
     my @all = $issues_rs->all;
     $_->users($self->users) foreach @all;
+    @all = sort { DateTime->compare($a->opened, $b->opened) } @all if $self->sort eq 'opened';
     \@all;
 }
 
