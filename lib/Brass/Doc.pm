@@ -370,7 +370,9 @@ sub _version_add
     $options{new} = 1 if !$self->draft_for_review;
 
     # Don't allow saving of signed unless something published
-    my $signed = $options{signed} && $self->published ? 1 : 0;
+    die "Unable to save a signed file when no existing published doc exists"
+        if $options{signed} && !$self->published;
+    my $signed = $options{signed} ? 1 : 0;
     my $record = $options{record} ? 1 : 0;
     my $notes  = $options{notes};
 
