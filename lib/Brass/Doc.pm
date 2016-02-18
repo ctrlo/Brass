@@ -508,6 +508,7 @@ sub signed_save
 sub record_save
 {   my ($self, %options) = @_;
     $options{record} = 1;
+    $options{new} = 1; # Always save as new file
     $self->_version_add(%options);
 }
 
