@@ -568,9 +568,11 @@ get '/version/:id' => require_role doc => sub {
               . "." . $version->revision;
     if ($version->version_content->content_blob)
     {
+        my $mimetype = $version->mimetype;
+        $mimetype = 'application/pdf' if $mimetype eq 'application/x-tex'; # Blob so must now be converted PDF
         return send_file(
             \$version->version_content->content_blob,
-            content_type => $version->mimetype,
+            content_type => $mimetype,
             filename     => $vinfo.".".$version->blobext,
         );
     }
