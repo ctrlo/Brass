@@ -76,6 +76,16 @@ __PACKAGE__->table("cert");
   is_nullable: 1
   size: 256
 
+=head2 file_user
+
+  data_type: 'text'
+  is_nullable: 1
+
+=head2 file_group
+
+  data_type: 'text'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -93,6 +103,10 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 45 },
   "filename",
   { data_type => "varchar", is_nullable => 1, size => 256 },
+  "file_user",
+  { data_type => "text", is_nullable => 1 },
+  "file_group",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -125,8 +139,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-28 20:41:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6GSOa3+RB3W6CtpdrOKz6Q
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2016-07-07 11:25:17
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hWkjA6CKU4SvOtc17Ocdrg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

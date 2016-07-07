@@ -279,6 +279,8 @@ any '/config/cert/?:id?' => require_role 'config' => sub {
             $cert->set_expiry(param 'expiry');
             $cert->usedby(param 'usedby');
             $cert->filename(param 'filename');
+            $cert->file_user(param 'file_user');
+            $cert->file_group(param 'file_group');
             $cert->content(param 'content');
             $cert->write;
             redirect '/config/cert';

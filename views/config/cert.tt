@@ -23,6 +23,14 @@
                     <input type="text" class="form-control" id="filename" name="filename" value="[% cert.filename | html_entity %]">
                 </div>
                 <div class="form-group">
+                    <label for="file_user">File system user</label>
+                    <input type="text" class="form-control" id="file_user" name="file_user" value="[% cert.file_user | html_entity %]">
+                </div>
+                <div class="form-group">
+                    <label for="file_group">File system group</label>
+                    <input type="text" class="form-control" id="file_group" name="file_group" value="[% cert.file_group | html_entity %]">
+                </div>
+                <div class="form-group">
                     <label for="content">Content</label>
                     <textarea class="form-control" id="content" name="content" rows="20" style="font-family: monospace;">[% cert.content | html_entity %]</textarea>
                 </div>

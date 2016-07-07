@@ -77,6 +77,18 @@ has filename => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->filename; },
 );
 
+has file_user => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->file_user; },
+);
+
+has file_group => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->file_group; },
+);
+
 has content => (
     is      => 'rw',
     lazy    => 1,
@@ -91,12 +103,14 @@ sub _build__rset
 sub write
 {   my $self = shift;
     my $values = {
-        cn        => $self->cn,
-        type      => $self->type,
-        expiry    => $self->expiry,
-        usedby    => $self->usedby,
-        filename  => $self->filename,
-        content   => $self->content,
+        cn         => $self->cn,
+        type       => $self->type,
+        expiry     => $self->expiry,
+        usedby     => $self->usedby,
+        filename   => $self->filename,
+        file_user  => $self->file_user,
+        file_group => $self->file_group,
+        content    => $self->content,
     };
     if ($self->_rset)
     {
@@ -137,6 +151,8 @@ sub inflate_result {
         expiry      => $expiry,
         usedby      => $data->{usedby},
         filename    => $data->{filename},
+        file_user   => $data->{file_user},
+        file_group  => $data->{file_group},
         schema      => $_[1]->schema,
     );
 }
