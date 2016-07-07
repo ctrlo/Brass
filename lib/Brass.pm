@@ -32,6 +32,7 @@ use Brass::Config::UADs;
 use Brass::DB;
 use Brass::Docs;
 use Brass::DocDB;
+use Brass::Image;
 use Brass::Issue::Priorities;
 use Brass::Issue::Projects;
 use Brass::Issue::Statuses;
@@ -41,6 +42,7 @@ use Brass::Topics;
 use Brass::User;
 use Brass::Users;
 use File::Slurp;
+use File::Temp ();
 use IPC::ShellCmd;
 use Lingua::EN::Numbers::Ordinate;
 
@@ -557,6 +559,62 @@ get '/doc/latest/:id' => require_role doc => sub {
     redirect "/version/".$id;
 };
 
+any '/doc/image/:id?' => require_role doc => sub {
+
+    my $id     = param 'id';
+    my $schema = schema('doc');
+    my $image;
+    my $images;
+    my $new = 1 if defined $id && $id == 0;
+    if ($id)
+    {
+        $image = $schema->resultset('Image')->find($id);
+    }
+    elsif(!$new) {
+        $images = [$schema->resultset('Image')->search({},{
+            select => [qw/id doc_id title filename/]
+        })->all];
+    }
+
+    if (defined param('download'))
+    {
+        return send_file(
+            \$image->content,
+            content_type => $image->mimetype,
+            filename     => $image->filename,
+        );
+    }
+
+    if (param 'submit')
+    {
+        my $i = {
+            doc_id   => param('doc_id'),
+            title    => param('title'),
+        };
+        if (my $upload = request->upload('file'))
+        {
+            $i->{filename} = $upload->filename;
+            $i->{mimetype} = $upload->type;
+            $i->{content}  = $upload->content;
+        }
+        if ($image)
+        {
+            $image->update($i);
+        }
+        else {
+            $schema->resultset('Image')->create($i);
+        }
+        redirect '/doc/image/';
+    }
+
+    template 'doc/image' => {
+        new    => $new,
+        image  => $image,
+        images => $images,
+        page   => 'doc/image',
+    };
+};
+
 get '/version/:id' => require_role doc => sub {
 
     my $schema    = schema('doc');
@@ -589,6 +647,17 @@ get '/version/:id' => require_role doc => sub {
         $content     =~ s/%%thedate%%/$date/g;
         $content     =~ s!%%thename%%!$title ($vinfo / $date / $reviewer / $approver / $classification)!g;
         $content     =~ s!%%thereference%%!$vinfo!g;
+        my @images;
+        while ($content =~ /%%image\.([0-9]+)(\[.*\])%%/)
+        {
+            my $id = $1;
+            my $options = $2;
+            my $image = $schema->resultset('Image')->find($id);
+            my $tempfile = File::Temp->new();
+            print $tempfile $image->content;
+            push @images, $tempfile; # Stop temp file going out of scope immediately and being deleted
+            $content =~ s/%%image\.$id\Q$options%%/\\includegraphics${options}{$tempfile}/g;
+        }
         my $texdir   = config->{brass}->{tex};
         die "Tex build dir $texdir does not exist" unless -d $texdir;
         write_file("$texdir/$vinfo.tex", {binmode => ':utf8'}, $content);

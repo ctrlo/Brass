@@ -42,7 +42,13 @@
                                 <li><a href="/upload">Upload</a></li>
                                 <li><a href="/myip">My IP address</a></li>
                                 [% IF user %]
-                                    <li><a href="/doc">Documents</a></li>
+                                    <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documents <b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li [% IF page=="doc" %]class="active"[% END %]><a href="/doc">Documents</a></li>
+                                        <li [% IF page=="doc/image" %]class="active"[% END %]><a href="/doc/image/">Images</a></li>
+                                    </ul>
+                                    </li>
                                 [% END %]
                                 [% IF user %]
                                     <li><a href="/issue">Issues</a></li>
