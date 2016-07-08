@@ -23,6 +23,7 @@ use Brass::Issue::Priority;
 use Brass::Issue::Status;
 use Brass::Issue::Type;
 use Brass::User;
+use Carp;
 use DateTime;
 use Mail::Message;
 use Moo;
@@ -99,10 +100,12 @@ has set_approver => (
     isa     => Maybe[Int],
     lazy    => 1,
     builder => sub { $_[0]->_rset && $_[0]->_rset->get_column('approver'); },
+    coerce  => sub { $_[0] || undef }, # Allow empty strings from form
 );
 
 has type => (
     is      => 'rwp',
+    isa     => sub { !defined($_[0]) || ref $_[0] eq 'Brass::Issue::Type' or confess "Invalid type: $_[0]"; },
     lazy    => 1,
     builder => sub {
         my $self = shift;
@@ -169,17 +172,18 @@ has status => (
 
 has set_status => (
     is  => 'rw',
-    isa => Int,
+    isa => Maybe[Int],
     trigger => sub {
         my ($self, $value) = @_;
         $self->_set_status_changed(1)
-            if $self->status != $value;
-        my $s = Brass::Issue::Status->new(
+            if ($self->status xor $value) || $self->status != $value;
+        my $s = $value && Brass::Issue::Status->new(
             id          => $value,
             schema      => $self->schema,
         );
         $self->_set_status($s);
     },
+    coerce => sub { $_[0] || undef }, # Allow empty strings from form
 );
 
 has status_changed => (
@@ -231,17 +235,18 @@ has priority => (
 
 has set_priority => (
     is  => 'rw',
-    isa => Int,
+    isa => Maybe[Int],
     trigger => sub {
         my ($self, $value) = @_;
         $self->_set_priority_changed(1)
-            if $self->priority != $value;
-        my $s = Brass::Issue::Priority->new(
+            if ($self->priority xor $value) || $self->priority != $value;
+        my $s = $value && Brass::Issue::Priority->new(
             id          => $value,
             schema      => $self->schema,
         );
         $self->_set_priority($s);
     },
+    coerce => sub { $_[0] || undef }, # Allow empty strings from form
 );
 
 has priority_changed => (
@@ -289,7 +294,8 @@ sub approver
 
 sub set_type
 {   my ($self, $id) = @_;
-    $self->_set_type(Brass::Issue::Type->new(id => $id, schema => $self->schema));
+    $id ||= undef; # Allow empty string from form
+    $self->_set_type($id && Brass::Issue::Type->new(id => $id, schema => $self->schema));
 }
 
 sub set_project
