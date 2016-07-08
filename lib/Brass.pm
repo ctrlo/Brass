@@ -347,7 +347,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
         priorities => Brass::Issue::Priorities->new(schema => $schema)->all,
         statuses   => Brass::Issue::Statuses->new(schema => $schema)->all,
         types      => Brass::Issue::Types->new(schema => $schema)->all,
-        projects   => Brass::Issue::Projects->new(schema => $schema)->all,
+        projects   => Brass::Issue::Projects->new(schema => $schema, user_id => logged_in_user->{id})->all,
         users      => $users->all,
         page       => 'issue',
     };
@@ -367,7 +367,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
             $issue->description(param 'description');
             $issue->set_project(param 'project');
             $issue->set_priority(param 'priority');
-            if (user_has_role 'issue_write_all')
+            if (user_has_role('issue_write_all') || user_has_role('issue_write_project'))
             {
                 # Can only write to these fields if write_all
                 $issue->security(param 'security');

@@ -54,6 +54,10 @@ migrate {
             id          => 11,
             name        => 'config_write',
             description => 'User can write configuration information',
+        },{
+            id          => 12,
+            name        => 'issue_write_project',
+            description => 'User can create and update any issue for certain projects',
         },
     ]);
 };

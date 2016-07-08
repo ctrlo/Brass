@@ -29,7 +29,7 @@
                         [% END %]
                     </select>
                 </div>
-                [% UNLESS user.permission.issue_write_all %][% readonly = "readonly" %][% END %]
+                [% UNLESS user.permission.issue_write_all OR user.permission.issue_write_project %][% readonly = "readonly" %][% END %]
                 <div class="form-group">
                     <label for="type">Type</label>
                     <select class="form-control" id="type" name="type" [% readonly %]>
@@ -132,7 +132,7 @@
     <div>
 [% ELSE %]
     <p>
-        [% IF user.permission.issue_write OR user.permission.issue_write_all %]
+        [% IF user.permission.issue_write OR user.permission.issue_write_all OR user.permission.issue_write_project %]
             <a href="/issue/0" class="btn btn-default">New issue</a>
         [% END %]
         <a href="" data-toggle="modal" data-target="#modal_filter" class="btn btn-default">Filtering...</a>

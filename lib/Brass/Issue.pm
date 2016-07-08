@@ -257,7 +257,7 @@ has comments => (
 sub user_can_read
 {   my ($self, $user) = @_;
     return 1 if $user->{permission}->{issue_read_all};
-    return 1 if $user->{permission}->{issue_read} && !$self->id; # New issue
+    return 1 if ($user->{permission}->{issue_read} || $user->{permission}->{issue_read_project}) && !$self->id; # New issue
     return 1 if $user->{permission}->{issue_read_project} && $self->users->user($user->{id})->has_project($self->project->id);
     return 1 if $user->{permission}->{issue_read} &&
         ($self->owner == $user->{id} || $self->author == $user->{id} || $self->approver == $user->{id});
@@ -266,7 +266,8 @@ sub user_can_read
 sub user_can_write
 {   my ($self, $user) = @_;
     return 1 if $user->{permission}->{issue_write_all};
-    return 1 if $user->{permission}->{issue_write} && !$self->id; # New issue
+    return 1 if ($user->{permission}->{issue_write} || $user->{permission}->{issue_write_project}) && !$self->id; # New issue
+    return 1 if $user->{permission}->{issue_write_project} && $self->users->user($user->{id})->has_project($self->project->id);
     return 1 if $user->{permission}->{issue_write} &&
         ($self->owner == $user->{id} || $self->author == $user->{id} || $self->approver == $user->{id});
 }

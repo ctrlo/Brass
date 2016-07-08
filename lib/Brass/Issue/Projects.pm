@@ -30,9 +30,18 @@ has all => (
     is => 'lazy',
 );
 
+# Optionally limit to only those projects a user has access to
+has user_id => (
+    is => 'ro',
+);
+
 sub _build_all
 {   my $self = shift;
-    my $project_rs = $self->schema->resultset('Project')->search;
+    my $search = {};
+    $search->{user} = $self->user_id if $self->user_id;
+    my $project_rs = $self->schema->resultset('Project')->search($search,{
+        join => 'user_projects',
+    });
     $project_rs->result_class('Brass::Issue::Project');
     my @all = $project_rs->all;
     \@all;
