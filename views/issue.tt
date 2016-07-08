@@ -44,11 +44,12 @@
                 <div class="form-group">
                     <label for="status">Status</label>
                     <select class="form-control" id="status" name="status" [% readonly %]>
-                        [% UNLESS issue.status %]
-                            <option value=""></option>
+                        [% IF !issue.id AND !issue.status %]
+                            <option value="" selected></option>
                         [% END %]
+                        [% issue_selected = issue.status || 2 %]
                         [% FOREACH status IN statuses %]
-                            <option value="[% status.id %]" [% IF issue.status == status %]selected[% END %]>[% status.name | html_entity %]</option>
+                            <option value="[% status.id %]" [% IF issue_selected == status.id %]selected[% END %]>[% status.name | html_entity %]</option>
                         [% END %]
                     </select>
                 </div>
