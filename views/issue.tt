@@ -59,7 +59,7 @@
                             <option value=""></option>
                         [% END %]
                         [% FOREACH u IN users %]
-                            <option value="[% u.id %]" [% IF issue.author == u %]selected[% END %]>[% u | html_entity %]</option>
+                            <option value="[% u.id %]" [% IF issue.author == u OR (!issue.id AND user.id == u.id) %]selected[% END %]>[% u | html_entity %]</option>
                         [% END %]
                     </select>
                 </div>
@@ -70,7 +70,7 @@
                             <option value=""></option>
                         [% END %]
                         [% FOREACH u IN users %]
-                            <option value="[% u.id %]" [% IF issue.owner == u %]selected[% END %]>[% u | html_entity %]</option>
+                            <option value="[% u.id %]" [% IF issue.owner == u OR (!issue.id AND user.id == u.id) %]selected[% END %]>[% u | html_entity %]</option>
                         [% END %]
                     </select>
                 </div>
