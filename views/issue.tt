@@ -47,7 +47,7 @@
                         [% IF !issue.id AND !issue.status %]
                             <option value="" selected></option>
                         [% END %]
-                        [% issue_selected = issue.status || 2 %]
+                        [% issue_selected = issue.status.id || 2 %]
                         [% FOREACH status IN statuses %]
                             <option value="[% status.id %]" [% IF issue_selected == status.id %]selected[% END %]>[% status.name | html_entity %]</option>
                         [% END %]
