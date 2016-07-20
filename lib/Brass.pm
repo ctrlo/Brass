@@ -377,9 +377,10 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
                 $issue->set_owner(param 'owner');
                 $issue->set_approver(param 'approver');
             }
-            else {
-                $issue->set_author(logged_in_user->{id})
-                    if !$id; # New
+            elsif (!$id) # New and no proper write permissions
+            {
+                $issue->set_author(logged_in_user->{id}); # Default to current user
+                $issue->set_status(1); # Always new when user cannot set it themselves
             }
             $issue->write(logged_in_user->{id});
             $issue->send_notifications(
