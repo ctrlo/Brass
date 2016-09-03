@@ -78,7 +78,7 @@ Related object: L<Brass::Schema::Result::ServerServertype>
 __PACKAGE__->has_many(
   "server_servertypes",
   "Brass::Schema::Result::ServerServertype",
-  { "foreign.type_id" => "self.id" },
+  { "foreign.servertype_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
