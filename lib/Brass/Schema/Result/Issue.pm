@@ -1,9 +1,6 @@
 use utf8;
 package Brass::Schema::Result::Issue;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Brass::Schema::Result::Issue
@@ -262,13 +259,13 @@ __PACKAGE__->belongs_to(
 
 Type: belongs_to
 
-Related object: L<Brass::Schema::Result::Type>
+Related object: L<Brass::Schema::Result::Issuetype>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "type",
-  "Brass::Schema::Result::Type",
+  "Brass::Schema::Result::Issuetype",
   { id => "type" },
   {
     is_deferrable => 1,
@@ -278,10 +275,4 @@ __PACKAGE__->belongs_to(
   },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-08-28 16:40:45
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:cxYD4AmlP9wBhcEbuSEHzQ
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
