@@ -1,12 +1,9 @@
 use utf8;
-package Brass::ConfigSchema::Result::Pw;
-
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
+package Brass::Schema::Result::Pw;
 
 =head1 NAME
 
-Brass::ConfigSchema::Result::Pw
+Brass::Schema::Result::Pw
 
 =cut
 
@@ -118,13 +115,13 @@ __PACKAGE__->set_primary_key("id");
 
 Type: belongs_to
 
-Related object: L<Brass::ConfigSchema::Result::Server>
+Related object: L<Brass::Schema::Result::Server>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "server",
-  "Brass::ConfigSchema::Result::Server",
+  "Brass::Schema::Result::Server",
   { id => "server_id" },
   {
     is_deferrable => 1,
@@ -138,13 +135,13 @@ __PACKAGE__->belongs_to(
 
 Type: belongs_to
 
-Related object: L<Brass::ConfigSchema::Result::Uad>
+Related object: L<Brass::Schema::Result::Uad>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "uad",
-  "Brass::ConfigSchema::Result::Uad",
+  "Brass::Schema::Result::Uad",
   { id => "uad_id" },
   {
     is_deferrable => 1,
@@ -154,10 +151,4 @@ __PACKAGE__->belongs_to(
   },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-09 11:42:11
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mEURfR1zYXYP/DO5WIT4Hg
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

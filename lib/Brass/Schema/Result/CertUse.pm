@@ -1,12 +1,9 @@
 use utf8;
-package Brass::IssueSchema::Result::Type;
-
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
+package Brass::Schema::Result::CertUse;
 
 =head1 NAME
 
-Brass::IssueSchema::Result::Type
+Brass::Schema::Result::CertUse
 
 =cut
 
@@ -27,11 +24,11 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<type>
+=head1 TABLE: C<cert_use>
 
 =cut
 
-__PACKAGE__->table("type");
+__PACKAGE__->table("cert_use");
 
 =head1 ACCESSORS
 
@@ -70,25 +67,19 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 issues
+=head2 server_certs
 
 Type: has_many
 
-Related object: L<Brass::IssueSchema::Result::Issue>
+Related object: L<Brass::Schema::Result::ServerCert>
 
 =cut
 
 __PACKAGE__->has_many(
-  "issues",
-  "Brass::IssueSchema::Result::Issue",
-  { "foreign.type_id" => "self.id" },
+  "server_certs",
+  "Brass::Schema::Result::ServerCert",
+  { "foreign.use" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-25 23:59:58
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iWgJqjeRPAeKZJAzeuRbcg
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

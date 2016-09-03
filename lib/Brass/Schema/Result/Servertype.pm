@@ -1,12 +1,9 @@
 use utf8;
-package Brass::ConfigSchema::Result::Type;
-
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
+package Brass::Schema::Result::Servertype;
 
 =head1 NAME
 
-Brass::ConfigSchema::Result::Type
+Brass::Schema::Result::Servertype
 
 =cut
 
@@ -31,7 +28,7 @@ __PACKAGE__->load_components("InflateColumn::DateTime");
 
 =cut
 
-__PACKAGE__->table("type");
+__PACKAGE__->table("servertype");
 
 =head1 ACCESSORS
 
@@ -70,25 +67,19 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 server_types
+=head2 server_servertypes
 
-Type: has_many
+Servertype: has_many
 
-Related object: L<Brass::ConfigSchema::Result::ServerType>
+Related object: L<Brass::Schema::Result::ServerServertype>
 
 =cut
 
 __PACKAGE__->has_many(
-  "server_types",
-  "Brass::ConfigSchema::Result::ServerType",
+  "server_servertypes",
+  "Brass::Schema::Result::ServerServertype",
   { "foreign.type_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-28 20:41:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wM0CWDAytq/EYdiqqr80Vw
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

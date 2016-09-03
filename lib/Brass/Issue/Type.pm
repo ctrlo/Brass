@@ -45,7 +45,7 @@ has name => (
 
 sub _build__rset
 {   my $self = shift;
-    $self->schema->resultset('Type')->find($self->id);
+    $self->schema->resultset('Issuetype')->find($self->id);
 }
 
 sub as_string

@@ -1,12 +1,9 @@
 use utf8;
-package Brass::ConfigSchema::Result::Server;
-
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
+package Brass::Schema::Result::Server;
 
 =head1 NAME
 
-Brass::ConfigSchema::Result::Server
+Brass::Schema::Result::Server
 
 =cut
 
@@ -144,13 +141,13 @@ __PACKAGE__->add_unique_constraint("name_UNIQUE", ["name"]);
 
 Type: belongs_to
 
-Related object: L<Brass::ConfigSchema::Result::Domain>
+Related object: L<Brass::Schema::Result::Domain>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "domain",
-  "Brass::ConfigSchema::Result::Domain",
+  "Brass::Schema::Result::Domain",
   { id => "domain_id" },
   {
     is_deferrable => 1,
@@ -164,13 +161,13 @@ __PACKAGE__->belongs_to(
 
 Type: has_many
 
-Related object: L<Brass::ConfigSchema::Result::Pw>
+Related object: L<Brass::Schema::Result::Pw>
 
 =cut
 
 __PACKAGE__->has_many(
   "pws",
-  "Brass::ConfigSchema::Result::Pw",
+  "Brass::Schema::Result::Pw",
   { "foreign.server_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -179,28 +176,28 @@ __PACKAGE__->has_many(
 
 Type: has_many
 
-Related object: L<Brass::ConfigSchema::Result::ServerCert>
+Related object: L<Brass::Schema::Result::ServerCert>
 
 =cut
 
 __PACKAGE__->has_many(
   "server_certs",
-  "Brass::ConfigSchema::Result::ServerCert",
+  "Brass::Schema::Result::ServerCert",
   { "foreign.server_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 server_types
+=head2 server_servertypes
 
 Type: has_many
 
-Related object: L<Brass::ConfigSchema::Result::ServerType>
+Related object: L<Brass::Schema::Result::ServerServertype>
 
 =cut
 
 __PACKAGE__->has_many(
-  "server_types",
-  "Brass::ConfigSchema::Result::ServerType",
+  "server_servertypes",
+  "Brass::Schema::Result::ServerServertype",
   { "foreign.server_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -209,21 +206,15 @@ __PACKAGE__->has_many(
 
 Type: has_many
 
-Related object: L<Brass::ConfigSchema::Result::Site>
+Related object: L<Brass::Schema::Result::Site>
 
 =cut
 
 __PACKAGE__->has_many(
   "sites",
-  "Brass::ConfigSchema::Result::Site",
+  "Brass::Schema::Result::Site",
   { "foreign.server_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-08-30 12:53:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dEAO3sjtTdmJuK0v+4XkJQ
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

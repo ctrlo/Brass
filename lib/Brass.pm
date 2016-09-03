@@ -105,7 +105,7 @@ get '/myip' => sub {
 any '/config/server/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';
-    my $schema  = schema('config');
+    my $schema  = schema;
 
     my $params = {
         servers   => Brass::Config::Servers->new(schema => $schema)->all,
@@ -165,7 +165,7 @@ any '/config/server/?:id?' => require_role 'config' => sub {
 any '/config/uad/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';
-    my $schema  = schema('config');
+    my $schema  = schema;
     my $users   = Brass::Users->new(schema => schema); # Default schema
 
     my $params = {
@@ -206,7 +206,7 @@ any '/config/uad/?:id?' => require_role 'config' => sub {
 any '/config/pwd/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';
-    my $schema  = schema('config');
+    my $schema  = schema;
     my $users   = Brass::Users->new(schema => schema); # Default schema
     my $uads    = Brass::Config::UADs->new(schema => $schema, users => $users);
     my $servers = Brass::Config::Servers->new(schema => $schema);
@@ -261,7 +261,7 @@ any '/config/pwd/?:id?' => require_role 'config' => sub {
 any '/config/cert/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';
-    my $schema  = schema('config');
+    my $schema  = schema;
 
     my $params = {
         certs     => Brass::Config::Certs->new(schema => $schema)->all,

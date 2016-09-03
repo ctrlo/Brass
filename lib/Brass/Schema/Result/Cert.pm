@@ -1,12 +1,9 @@
 use utf8;
-package Brass::ConfigSchema::Result::Cert;
-
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
+package Brass::Schema::Result::Cert;
 
 =head1 NAME
 
-Brass::ConfigSchema::Result::Cert
+Brass::Schema::Result::Cert
 
 =cut
 
@@ -127,21 +124,15 @@ __PACKAGE__->set_primary_key("id");
 
 Type: has_many
 
-Related object: L<Brass::ConfigSchema::Result::ServerCert>
+Related object: L<Brass::Schema::Result::ServerCert>
 
 =cut
 
 __PACKAGE__->has_many(
   "server_certs",
-  "Brass::ConfigSchema::Result::ServerCert",
+  "Brass::Schema::Result::ServerCert",
   { "foreign.cert_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2016-07-07 11:25:17
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hWkjA6CKU4SvOtc17Ocdrg
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

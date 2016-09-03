@@ -1,0 +1,101 @@
+{
+   "might_have" : {
+      "fetch" : 0
+   },
+   "sets" : [
+      {
+         "quantity" : "all",
+         "class" : "Project"
+      },
+      {
+         "class" : "Pw",
+         "quantity" : "all"
+      },
+      {
+         "class" : "Comment",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Server"
+      },
+      {
+         "class" : "IssuePriority",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Servertype"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Priority"
+      },
+      {
+         "class" : "UserPermission",
+         "quantity" : "all"
+      },
+      {
+         "class" : "CertUse",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Permission"
+      },
+      {
+         "class" : "UserProject",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Domain"
+      },
+      {
+         "class" : "ServerServertype",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "ServerCert"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Cert"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Issue"
+      },
+      {
+         "class" : "Uad",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Issuetype"
+      },
+      {
+         "class" : "Site",
+         "quantity" : "all"
+      },
+      {
+         "class" : "Status",
+         "quantity" : "all"
+      },
+      {
+         "class" : "IssueStatus",
+         "quantity" : "all"
+      },
+      {
+         "class" : "User",
+         "quantity" : "all"
+      }
+   ],
+   "has_many" : {
+      "fetch" : 0
+   },
+   "belongs_to" : {
+      "fetch" : 0
+   }
+}

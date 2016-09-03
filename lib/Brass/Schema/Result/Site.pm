@@ -1,12 +1,9 @@
 use utf8;
-package Brass::IssueSchema::Result::Project;
-
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
+package Brass::Schema::Result::Site;
 
 =head1 NAME
 
-Brass::IssueSchema::Result::Project
+Brass::Schema::Result::Site
 
 =cut
 
@@ -27,11 +24,11 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<project>
+=head1 TABLE: C<site>
 
 =cut
 
-__PACKAGE__->table("project");
+__PACKAGE__->table("site");
 
 =head1 ACCESSORS
 
@@ -47,6 +44,12 @@ __PACKAGE__->table("project");
   is_nullable: 1
   size: 128
 
+=head2 server_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -54,6 +57,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "name",
   { data_type => "varchar", is_nullable => 1, size => 128 },
+  "server_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -70,25 +75,24 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 issues
+=head2 server
 
-Type: has_many
+Type: belongs_to
 
-Related object: L<Brass::IssueSchema::Result::Issue>
+Related object: L<Brass::Schema::Result::Server>
 
 =cut
 
-__PACKAGE__->has_many(
-  "issues",
-  "Brass::IssueSchema::Result::Issue",
-  { "foreign.project_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
+__PACKAGE__->belongs_to(
+  "server",
+  "Brass::Schema::Result::Server",
+  { id => "server_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
 );
 
-
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-06-26 17:45:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:NIOgZl8zkHIb6F2pME0Ojg
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

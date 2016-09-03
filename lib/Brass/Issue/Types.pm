@@ -32,7 +32,7 @@ has all => (
 
 sub _build_all
 {   my $self = shift;
-    my $type_rs = $self->schema->resultset('Type')->search;
+    my $type_rs = $self->schema->resultset('Issuetype')->search;
     $type_rs->result_class('Brass::Issue::Type');
     my @all = $type_rs->all;
     \@all;

@@ -149,12 +149,12 @@ has certs => (
 
 sub _build_types
 {   my $self = shift;
-    my @types = $self->schema->resultset('ServerType')->search({
+    my @types = $self->schema->resultset('ServerServertype')->search({
         server_id => $self->id,
     },{
-        prefetch => 'type',
+        prefetch => 'servertype',
     })->all;
-    my %types = map { $_->type->id => $_->type->name } @types;
+    my %types = map { $_->servertype->id => $_->servertype->name } @types;
     \%types;
 }
 
@@ -211,12 +211,12 @@ sub write
         $self->_set_id($self->_rset->id);
     }
     # Update all the server types.
-    $self->schema->resultset('ServerType')->search({
+    $self->schema->resultset('ServerServertype')->search({
         server_id => $self->id,
     })->delete;
     foreach my $t (keys %{$self->types})
     {
-        $self->schema->resultset('ServerType')->create({
+        $self->schema->resultset('ServerServertype')->create({
             server_id => $self->id,
             type_id   => $t,
         });
@@ -239,7 +239,7 @@ sub delete
 {   my $self = shift;
     my $guard = $self->schema->txn_scope_guard;
     $self->schema->resultset('ServerCert')->search({ server_id => $self->id })->delete;
-    $self->schema->resultset('ServerType')->search({ server_id => $self->id })->delete;
+    $self->schema->resultset('ServerServertype')->search({ server_id => $self->id })->delete;
     $self->schema->resultset('Pw')->search({ server_id => $self->id })->delete;
     $self->_rset->delete;
     $guard->commit;
