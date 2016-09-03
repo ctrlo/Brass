@@ -44,6 +44,7 @@ use Brass::Users;
 use File::Slurp;
 use File::Temp ();
 use IPC::ShellCmd;
+use LaTeX::Encode qw/latex_encode/;
 use Lingua::EN::Numbers::Ordinate;
 
 use Dancer2;
@@ -648,8 +649,11 @@ get '/version/:id' => require_role doc => sub {
         $date        =~ s/(\d+)/ordinate($1)/e;
         my $content  = $version->version_content->content;
         $content     =~ s/%%thedate%%/$date/g;
-        $content     =~ s!%%thename%%!$title ($vinfo / $date / $reviewer / $approver / $classification)!g;
+        my $setname  = latex_encode "$title ($vinfo / $date / $reviewer / $approver / $classification)";
+        $content     =~ s!%%thename%%!$setname!g;
         $content     =~ s!%%thereference%%!$vinfo!g;
+        # Escape any hashes not already escapted
+        $content     =~ s/(?<!\\)#/\\#/g;
         my @images;
         while ($content =~ /%%image\.([0-9]+)(\[.*\])%%/)
         {
