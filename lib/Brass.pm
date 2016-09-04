@@ -213,9 +213,9 @@ any '/config/pwd/?:id?' => require_role 'config' => sub {
 
     my $params = {
         pwds   => Brass::Config::Pwds->new(
-            schema  => $schema,
-            servers => $servers,
-            uads    => $uads,
+            schema      => $schema,
+            all_servers => $servers,
+            uads        => $uads,
         )->all,
         page   => 'config/pwd',
     };
@@ -223,10 +223,10 @@ any '/config/pwd/?:id?' => require_role 'config' => sub {
     if (defined $id)
     {
         my $pwd = Brass::Config::Pwd->new(
-            id      => $id,
-            schema  => $schema,
-            uads    => $uads,
-            servers => $servers,
+            id          => $id,
+            schema      => $schema,
+            uads        => $uads,
+            all_servers => $servers,
         );
         if (param 'save')
         {
@@ -239,7 +239,7 @@ any '/config/pwd/?:id?' => require_role 'config' => sub {
             $pwd->username(param 'username');
             $pwd->last_changed($strp->parse_datetime(param 'last_changed'));
             $pwd->set_uad(param 'uad');
-            $pwd->set_server(param 'server');
+            $pwd->set_servers(param 'server');
             $pwd->write;
             redirect '/config/pwd';
         }

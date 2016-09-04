@@ -23,15 +23,15 @@
                         [% END %]
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="server">Server</label>
-                    <select class="form-control" id="server" name="server">
-                        <option value=""></option>
-                        [% FOREACH server IN servers %]
-                            <option value="[% server.id %]" [% IF pwd.server == server %]selected[% END %]>[% server | html_entity %]</option>
-                        [% END %]
-                    </select>
-                </div>
+                [% FOR server IN servers %]
+                    <div class="checkbox">
+                        <label>
+                            [% st = server.id %]
+                            <input name="server" type="checkbox" value="[% server.id %]" [% IF pwd.servers.$st %]checked[% END %]>
+                            [% server.name %]
+                        </label>
+                    </div>
+                [% END %]
                 [% IF user.permission.config_write %]
                     <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
                     [% IF pwd.id %]
@@ -62,7 +62,7 @@
                 <td>[% pwd.type | html_entity %]</td>
                 <td>[% pwd.username %]</td>
                 <td>[% pwd.uad %]</td>
-                <td>[% pwd.server %]</td>
+                <td>[% pwd.servers.values.join(', ') %]</td>
                 <td>[% pwd.last_changed.ymd %]</td>
             </tr>
         [% END %]

@@ -35,7 +35,7 @@ has uads => (
 );
 
 # All servers. Must be populated before doing any server calls
-has servers => (
+has all_servers => (
     is => 'rw',
 );
 
@@ -120,7 +120,7 @@ sub uad
 sub server
 {   my $self = shift;
     return unless $self->set_server;
-    $self->servers->server($self->set_server);
+    $self->all_servers->server($self->set_server);
 }
 
 sub write
@@ -141,6 +141,17 @@ sub write
         $self->_set__rset($self->schema->resultset('Pw')->create($values));
         $self->_set_id($self->_rset->id);
     }
+    # Update all the servers
+    $self->schema->resultset('ServerPw')->search({
+        pw_id => $self->id,
+    })->delete;
+    foreach my $s (keys %{$self->servers})
+    {
+        $self->schema->resultset('ServerPw')->create({
+            pw_id     => $self->id,
+            server_id => $s,
+        });
+    }
     $guard->commit;
 }
 
@@ -159,6 +170,36 @@ sub as_string
 sub as_integer
 {   my $self = shift;
     $self->id;
+}
+
+has servers => (
+    is      => 'rwp',
+    isa     => HashRef,
+    lazy    => 1,
+    builder => 1,
+);
+
+sub set_servers
+{   my ($self, $new) = @_;
+    $new = ref $new ? $new : [$new || ()];
+    my %new = map { $_ => 1 } @$new;
+    my @all = @{Brass::Config::Servers->new(schema => $self->schema)->all};
+    @all = grep { exists $new{$_->id} } @all;
+    my %servers = map { $_->id => $_->name } @all;
+    $self->_set_servers(\%servers);
+}
+
+sub _build_servers
+{   my $self = shift;
+    my @servers = $self->schema->resultset('ServerPw')->search({
+        pw_id     => $self->id,
+        server_id => { '!=' => undef },
+    },{
+        prefetch => 'server',
+    })->all;
+    my %servers = map { $_->server->id => $_->server->name } @servers;
+    use Data::Dumper; say STDERR Dumper \%servers;
+    \%servers;
 }
 
 1;

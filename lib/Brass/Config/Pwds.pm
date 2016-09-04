@@ -26,7 +26,7 @@ has schema => (
     required => 1,
 );
 
-has servers => (
+has all_servers => (
     is       => 'ro',
     required => 1,
 );
@@ -51,7 +51,7 @@ sub _build_all
     my @all = $pwd_rs->all;
     foreach (@all)
     {
-        $_->servers($self->servers);
+        $_->all_servers($self->all_servers);
         $_->uads($self->uads);
     }
     \@all;
