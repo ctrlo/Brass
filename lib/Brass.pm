@@ -654,6 +654,7 @@ get '/version/:id' => require_role doc => sub {
         $content     =~ s!%%thereference%%!$vinfo!g;
         # Escape any hashes not already escapted
         $content     =~ s/(?<!\\)#/\\#/g;
+        $content     =~ s/(?<!\\)%/\\%/g;
         my @images;
         while ($content =~ /%%image\.([0-9]+)(\[.*\])%%/)
         {
