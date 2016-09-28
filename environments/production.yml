@@ -4,11 +4,7 @@
 log: "warning"
 
 # log message to a file in logs/
-logger: "syslog"
-
-syslog:
-  facility: 'local0'
-  ident: 'Brass'
+logger: "console"
 
 # don't consider warnings critical
 warnings: 0
