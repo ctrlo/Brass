@@ -660,7 +660,8 @@ get '/version/:id' => require_role doc => sub {
             my $id = $1;
             my $options = $2;
             my $image = $schema->resultset('Image')->find($id);
-            my $tempfile = File::Temp->new();
+            my ($ext) = $image->filename =~ /(\.[^.]+)$/;
+            my $tempfile = File::Temp->new(SUFFIX => $ext);
             print $tempfile $image->content;
             push @images, $tempfile; # Stop temp file going out of scope immediately and being deleted
             $content =~ s/%%image\.$id\Q$options%%/\\includegraphics${options}{$tempfile}/g;
