@@ -20,6 +20,7 @@ package Brass::Issue;
 
 use Brass::Issue::Comment;
 use Brass::Issue::Priority;
+use Brass::Issue::Project;
 use Brass::Issue::Status;
 use Brass::Issue::Type;
 use Brass::User;
@@ -357,8 +358,30 @@ __PLAIN
 }
 
 sub inflate_result {
-    my $data   = $_[2];
-    my $schema = $_[1]->schema;
+    my $data     = $_[2];
+    my $schema   = $_[1]->schema;
+    my $prefetch = $_[3];
+
+    my $pri      = $prefetch->{issue_priorities}->[0]->[1]->{priority}->[0];
+    my $priority = Brass::Issue::Priority->new(
+        id          => $pri->{id},
+        name        => $pri->{name},
+        schema      => $schema,
+    );
+
+    my $stat   = $prefetch->{issue_statuses}->[0]->[1]->{status}->[0];
+    my $status = Brass::Issue::Status->new(
+        id          => $stat->{id},
+        name        => $stat->{name},
+        schema      => $schema,
+    );
+
+    my $project = Brass::Issue::Project->new(
+        id          => $prefetch->{project}->[0]->{id},
+        name        => $prefetch->{project}->[0]->{name},
+        schema      => $schema,
+    );
+
     $_[0]->new(
         id             => $data->{id},
         title          => $data->{title},
@@ -366,10 +389,12 @@ sub inflate_result {
         reference      => $data->{reference},
         security       => $data->{security},
         set_type       => $data->{type},
-        set_project    => $data->{project},
         set_owner      => $data->{owner},
         set_author     => $data->{author},
         set_approver   => $data->{approver},
+        priority       => $priority,
+        status         => $status,
+        project        => $project,
         schema         => $schema,
     );
 }

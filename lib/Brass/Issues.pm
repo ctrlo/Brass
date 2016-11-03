@@ -72,6 +72,7 @@ sub _build_all
 {   my $self = shift;
     my $search = $self->filtering;
     $search->{'issuestatus_later.datetime'} = undef;
+    $search->{'issuepriority_later.datetime'} = undef;
     my $sort = $self->sort eq 'opened'
              ? 'me.id' # Sort after build
              : $self->sort eq 'id'
@@ -80,13 +81,21 @@ sub _build_all
     my $issues_rs = $self->schema->resultset('Issue')->search(
         $search
     ,{
+        join => {
+            project => 'user_projects',
+        },
         prefetch => [
+            'project',
             {
-                project => 'user_projects',
+                issue_statuses => [
+                    'status', 'issuestatus_later',
+                ],
             },
             {
-                issue_statuses => 'issuestatus_later'
-            }
+                issue_priorities => [
+                    'priority', 'issuepriority_later',
+                ],
+            },
         ],
         order_by => $sort,
     });

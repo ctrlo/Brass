@@ -152,6 +152,18 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-26 23:58:56
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mAGWGGA1ymkrWx/sHGul4g
 
+# Enable finding of latest status for an issue
+__PACKAGE__->might_have(
+    issuestatus_later => 'IssueStatus',
+    sub {
+        my $args = shift;
+
+        return {
+            "$args->{foreign_alias}.issue"  => { -ident => "$args->{self_alias}.issue" },
+            "$args->{foreign_alias}.datetime" => { '>' => \"$args->{self_alias}.datetime" },
+        };
+    }
+);
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

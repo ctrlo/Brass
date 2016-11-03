@@ -29,7 +29,6 @@ use Brass::Config::Servers;
 use Brass::Config::Server::Types;
 use Brass::Config::UAD;
 use Brass::Config::UADs;
-use Brass::DB;
 use Brass::Docs;
 use Brass::DocDB;
 use Brass::Image;
@@ -65,8 +64,6 @@ hook before => sub {
     return if param 'error';
 
     my $db = Brass::DocDB->new(schema => schema('doc'));
-    $db->setup;
-    $db = Brass::DB->new(schema => schema);
     $db->setup;
 };
 
