@@ -77,6 +77,8 @@ sub _build_all
              ? 'me.id' # Sort after build
              : $self->sort eq 'id'
              ? 'me.id'
+             : $self->sort eq 'priority'
+             ? 'priority.id'
              : 'me.title';
     my $issues_rs = $self->schema->resultset('Issue')->search(
         $search
