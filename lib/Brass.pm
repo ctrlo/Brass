@@ -46,14 +46,17 @@ use File::Temp ();
 use IPC::ShellCmd;
 use LaTeX::Encode qw/latex_encode/;
 use Lingua::EN::Numbers::Ordinate;
+use Log::Report::DBIC::Profiler;
 
 use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Auth::Extensible;
+use Dancer2::Plugin::LogReport;
 
 our $VERSION = '0.1';
 
-schema('doc')->storage->debug(1);
+schema->storage->debugobj(new Log::Report::DBIC::Profiler);
+schema->storage->debug(1);
 
 hook before => sub {
 
