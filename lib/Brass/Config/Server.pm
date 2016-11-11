@@ -217,8 +217,8 @@ sub write
     foreach my $t (keys %{$self->types})
     {
         $self->schema->resultset('ServerServertype')->create({
-            server_id => $self->id,
-            type_id   => $t,
+            server_id     => $self->id,
+            servertype_id => $t,
         });
     }
     # Update all the sites
