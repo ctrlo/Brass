@@ -33,11 +33,43 @@ engines:
 plugins:
   DBIC:
     default:
-      dsn: dbi:mysql:database=scap;mysql_enable_utf8=1;host=localhost
+      dsn: dbi:mysql:database=brass
       schema_class: Brass::Schema
-      user: username
-      pass: pass
+      user: brass
+      password: XXX
       options:
         RaiseError: 1
         PrintError: 1
-
+        mysql_enable_utf8: 1
+        quote_names: 1
+    doc:
+      dsn: dbi:mysql:dbname=docdb;
+      schema_class: Brass::DocSchema
+      user: brass
+      pass: XXX
+      options:
+        RaiseError: 1
+        PrintError: 1
+        mysql_enable_utf8: 1
+  Auth::Extensible:
+    mailer:
+      module: Mail::Message # Email module to use
+      options:              # Options for module
+        via: sendmail     # Options passed to $msg->send
+    mail_from: '"Ctrl O Brass" <info@example.com>' # From email address
+    reset_password_handler: 1
+    record_lastlogin: 1
+    realms:
+      users:
+        provider: DBIC
+        users_table: user
+        roles_table: permission
+        user_roles_table: user_permission
+        roles_role_column: name
+        users_lastlogin_column: lastlogin
+        users_pwresetcode_column: pwresetcode
+        users_pwchanged_column: pwchanged
+        password_expiry_days: 90
+        roles_key: permission
+        user_valid_conditions:
+          deleted: ~
