@@ -70,8 +70,6 @@ hook before => sub {
 hook before_template => sub {
     my $tokens = shift;
     $tokens->{user}     = logged_in_user;
-    $tokens->{messages} = session('messages');
-    session 'messages' => [];
 };
 
 get '/' => sub {
