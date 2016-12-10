@@ -144,9 +144,9 @@
             <th><a href="?sort=title">Title</a></th>
             <th><a href="?sort=opened">Opened</a></th>
             <th>Project</th>
+            <th>Type</th>
             <th>Status</th>
             <th><a href="?sort=priority">Priority</a></th>
-            <th>Owner</th>
         </tr>
         [% FOREACH issue IN issues %]
             <tr>
@@ -154,9 +154,9 @@
                 <td><a href="/issue/[% issue.id %]">[% issue.title | html_entity %]</a></td>
                 <td>[% issue.opened | html_entity %]</td>
                 <td>[% issue.project | html_entity %]</td>
+                <td>[% issue.type | html_entity %]</td>
                 <td>[% issue.status | html_entity %]</td>
                 <td>[% issue.priority | html_entity %]</td>
-                <td>[% issue.owner | html_entity %]</td>
             </tr>
         [% END %]
     </table>
