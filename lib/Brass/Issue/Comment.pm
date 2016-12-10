@@ -75,6 +75,7 @@ sub text_html_links
         $text,
         urls      => 1,
         email     => 1,
+        lines     => 1,
         metachars => 1,
         paras     => 1,
     );
