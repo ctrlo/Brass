@@ -364,6 +364,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
                 unless $issue->user_can_write(logged_in_user);
             $issue->title(param 'title');
             $issue->description(param 'description');
+            $issue->completion_time(param 'completion_time');
             $issue->set_project(param 'project');
             $issue->set_priority(param 'priority');
             if (user_has_role('issue_write_all') || user_has_role('issue_write_project'))
