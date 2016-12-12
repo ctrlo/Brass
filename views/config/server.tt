@@ -86,10 +86,8 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Domain</th>
             <th>Types</th>
             <th>Version</th>
-            <th>Sites</th>
             <th>Backup verification</th>
             <th>Last update</th>
             <th>Result</th>
@@ -99,14 +97,8 @@
             <tr>
                 <td>[% server.id %]</td>
                 <td><a href="/config/server/[% server.id %]">[% server.name | html_entity %]</a></td>
-                <td>[% server.domain %]</td>
                 <td>[% server.types.values.join %]</td>
                 <td>[% server.os_version %]</td>
-                <td>
-                    [% FOREACH site IN server.sites %]
-                    <a href="[% site %]">[% site %]</a><br>
-                    [% END %]
-                </td>
                 <td>
                     [% matches = server.backup_verify.match('^File (.*) retrieved at (.*) with differences(.*)and /root/testfile are identical\s?$') %]
                     [% IF NOT server.types.values.grep('^backup$').size %]
@@ -128,7 +120,16 @@
                         [% server.update_result %]
                     [% END %]
                 </td>
-                <td>[% server.restart_required %]</td>
+                <td>
+                    [% matches = server.restart_required.match('^Found ([0-9]+) processes') %]
+                    [% IF matches.0 == "0" %]
+                        No processes require a restart
+                    [% ELSE %]
+                        <a style="cursor: pointer" class="personpop" data-toggle="popover"
+                        title="Restart results"
+                        data-content="[% server.restart_required | html_entity %]">[% matches.0 %] process(es) require a restart</a>
+                    [% END %]
+                </td>
             </tr>
         [% END %]
     </table>
