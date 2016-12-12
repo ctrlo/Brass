@@ -240,6 +240,7 @@ sub delete
     my $guard = $self->schema->txn_scope_guard;
     $self->schema->resultset('ServerCert')->search({ server_id => $self->id })->delete;
     $self->schema->resultset('ServerServertype')->search({ server_id => $self->id })->delete;
+    $self->schema->resultset('ServerPw')->search({ server_id => $self->id })->delete;
     $self->schema->resultset('Pw')->search({ server_id => $self->id })->delete;
     $self->_rset->delete;
     $guard->commit;
