@@ -116,6 +116,19 @@
                     </div>
                     [% END %]
                 </div>
+                [% IF issue.priority_history.size %]
+                    <div class="form-group">
+                        <label for="comment">Priority history</label>
+                        [% FOR priority IN issue.priority_history %]
+                        <div class="well well-sm">
+                            <strong>
+                                [% priority %]
+                            </strong>
+                            By [% priority.user | html_entity %] ([% priority.datetime %])
+                        </div>
+                        [% END %]
+                    </div>
+                [% END %]
                 <div class="form-group">
                     <label for="comment">Comments</label>
                     [% FOR comment IN issue.comments %]

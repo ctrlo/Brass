@@ -267,6 +267,30 @@ has comments => (
     isa => ArrayRef,
 );
 
+has priority_history => (
+    is  => 'lazy',
+    isa => ArrayRef,
+);
+
+sub _build_priority_history
+{   my $self = shift;
+    my @history = $self->schema->resultset('IssuePriority')->search({
+        issue => $self->id,
+    },{
+        order_by => { -desc => 'datetime' },
+    })->all;
+    # Shift one off, which will be the current status
+    shift @history;
+    [ map {
+        Brass::Issue::Priority->new(
+            id          => $_->get_column('priority'),
+            datetime    => $_->datetime,
+            user        => $self->users->user($_->get_column('user')),
+            schema      => $self->schema,
+        )
+    } @history ];
+}
+
 sub user_can_read
 {   my ($self, $user) = @_;
     return 1 if $user->{permission}->{issue_read_all};
