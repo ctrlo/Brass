@@ -651,8 +651,10 @@ get '/version/:id' => require_role doc => sub {
         my $setname  = latex_encode "$title ($vinfo / $date / $reviewer / $approver / $classification)";
         $content     =~ s!%%thename%%!$setname!g;
         $content     =~ s!%%thereference%%!$vinfo!g;
-        # Escape any hashes not already escapted
-        $content     =~ s/(?<!\\)#/\\#/g;
+        # Escape any hashes not already escaped, unless document
+        # defines not to do so
+        $content     =~ s/(?<!\\)#/\\#/g
+            unless $content =~ s/%%no_hash_escape%%//;
         my @images;
         while ($content =~ /%%image\.([0-9]+)(\[.*\])%%/)
         {
