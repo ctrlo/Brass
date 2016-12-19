@@ -150,16 +150,16 @@ elsif ($type eq 'server')
 {
     if ($action eq 'summary')
     {
-        my @types = $sch->resultset('Type')->search({},{
-            prefetch => { server_types => 'server' },
+        my @types = $sch->resultset('Servertype')->search({},{
+            prefetch => { server_servertypes => 'server' },
         })->all;
 
         foreach my $type (@types)
         {
-            next unless $type->server_types->count;
+            next unless $type->server_servertypes->count;
             print $type->name.":";
             my @servers;
-            foreach my $server ($type->server_types)
+            foreach my $server ($type->server_servertypes)
             {
                 push @servers, $server->server->name;
             }
