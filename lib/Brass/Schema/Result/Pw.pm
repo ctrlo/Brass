@@ -62,6 +62,11 @@ __PACKAGE__->table("pw");
   is_nullable: 1
   size: 45
 
+=head2 pwencrypt
+
+  data_type: 'blob'
+  is_nullable: 1
+
 =head2 type
 
   data_type: 'varchar'
@@ -87,6 +92,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 45 },
   "password",
   { data_type => "varchar", is_nullable => 1, size => 45 },
+  "pwencrypt",
+  { data_type => "blob", is_nullable => 1 },
   "type",
   { data_type => "varchar", is_nullable => 1, size => 128 },
   "last_changed",

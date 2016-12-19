@@ -24,6 +24,7 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 
 use Brass::ConfigDB;
+use Crypt::CBC;
 use DateTime;
 use String::Random;
 use Getopt::Long;
@@ -51,6 +52,10 @@ $action or die "Please specify action with --action";
 
 if ($type eq 'pwd')
 {
+
+    my $passphrase = $ENV{CDB_PASSPHRASE}
+        or die "Need CDB_PASSPHRASE to be set for retrieving and setting passwords";
+
     $server or die "Please specify server with --server";
 
     $action eq 'sqldb' || $action eq 'admonitor'
@@ -66,17 +71,22 @@ if ($type eq 'pwd')
         join => 'server',
     });
 
+    my $cipher = Crypt::CBC->new(
+        -key => $passphrase,
+        -cipher => 'Blowfish'
+    );
+
     if ($username)
     {
-        print $username->password;
+        print $cipher->decrypt($username->password);
         exit;
     }
 
-    my $pw = randompw;
+    my $pw = $cipher->encrypt(randompw);
 
     my $s = $sch->resultset('Server')->find_or_create({ name => $server });
     my $u = $sch->resultset('Pw')->create({ server_id => $s->id, username => $param, password => $pw, type => $action });
-    print $u->password;
+    print $cipher->decrypt($u->password);
 }
 elsif ($type eq 'cert')
 {
