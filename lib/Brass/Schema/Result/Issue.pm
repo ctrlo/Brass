@@ -49,6 +49,11 @@ __PACKAGE__->table("issue");
   data_type: 'text'
   is_nullable: 1
 
+=head2 completion_time
+
+  data_type: 'text'
+  is_nullable: 1
+
 =head2 type
 
   data_type: 'integer'
@@ -99,6 +104,8 @@ __PACKAGE__->add_columns(
   "title",
   { data_type => "varchar", is_nullable => 1, size => 256 },
   "description",
+  { data_type => "text", is_nullable => 1 },
+  "completion_time",
   { data_type => "text", is_nullable => 1 },
   "type",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },

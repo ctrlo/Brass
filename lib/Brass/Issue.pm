@@ -20,6 +20,7 @@ package Brass::Issue;
 
 use Brass::Issue::Comment;
 use Brass::Issue::Priority;
+use Brass::Issue::Project;
 use Brass::Issue::Status;
 use Brass::Issue::Type;
 use Brass::User;
@@ -65,6 +66,13 @@ has description => (
     isa     => Maybe[Str],
     lazy    => 1,
     builder => sub { $_[0]->_rset && $_[0]->_rset->description; },
+);
+
+has completion_time => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->completion_time; },
 );
 
 has reference => (
@@ -259,6 +267,30 @@ has comments => (
     isa => ArrayRef,
 );
 
+has priority_history => (
+    is  => 'lazy',
+    isa => ArrayRef,
+);
+
+sub _build_priority_history
+{   my $self = shift;
+    my @history = $self->schema->resultset('IssuePriority')->search({
+        issue => $self->id,
+    },{
+        order_by => { -desc => 'datetime' },
+    })->all;
+    # Shift one off, which will be the current status
+    shift @history;
+    [ map {
+        Brass::Issue::Priority->new(
+            id          => $_->get_column('priority'),
+            datetime    => $_->datetime,
+            user        => $self->users->user($_->get_column('user')),
+            schema      => $self->schema,
+        )
+    } @history ];
+}
+
 sub user_can_read
 {   my ($self, $user) = @_;
     return 1 if $user->{permission}->{issue_read_all};
@@ -357,20 +389,45 @@ __PLAIN
 }
 
 sub inflate_result {
-    my $data   = $_[2];
-    my $schema = $_[1]->schema;
+    my $data     = $_[2];
+    my $schema   = $_[1]->schema;
+    my $prefetch = $_[3];
+
+    my $pri      = $prefetch->{issue_priorities}->[0]->[1]->{priority}->[0];
+    my $priority = Brass::Issue::Priority->new(
+        id          => $pri->{id},
+        name        => $pri->{name},
+        schema      => $schema,
+    );
+
+    my $stat   = $prefetch->{issue_statuses}->[0]->[1]->{status}->[0];
+    my $status = Brass::Issue::Status->new(
+        id          => $stat->{id},
+        name        => $stat->{name},
+        schema      => $schema,
+    );
+
+    my $project = Brass::Issue::Project->new(
+        id          => $prefetch->{project}->[0]->{id},
+        name        => $prefetch->{project}->[0]->{name},
+        schema      => $schema,
+    );
+
     $_[0]->new(
-        id             => $data->{id},
-        title          => $data->{title},
-        description    => $data->{description},
-        reference      => $data->{reference},
-        security       => $data->{security},
-        set_type       => $data->{type},
-        set_project    => $data->{project},
-        set_owner      => $data->{owner},
-        set_author     => $data->{author},
-        set_approver   => $data->{approver},
-        schema         => $schema,
+        id              => $data->{id},
+        title           => $data->{title},
+        description     => $data->{description},
+        completion_time => $data->{completion_time},
+        reference       => $data->{reference},
+        security        => $data->{security},
+        set_type        => $data->{type},
+        set_owner       => $data->{owner},
+        set_author      => $data->{author},
+        set_approver    => $data->{approver},
+        priority        => $priority,
+        status          => $status,
+        project         => $project,
+        schema          => $schema,
     );
 }
 
@@ -385,15 +442,16 @@ sub _build__rset
 sub write
 {   my ($self, $user_id) = @_;
     my $values = {
-        title       => $self->title,
-        description => $self->description,
-        reference   => $self->reference,
-        security    => $self->security,
-        type        => ($self->type && $self->type->id),
-        project     => $self->project->id,
-        owner       => $self->set_owner,
-        author      => $self->set_author,
-        approver    => $self->set_approver,
+        title           => $self->title,
+        description     => $self->description,
+        completion_time => $self->completion_time,
+        reference       => $self->reference,
+        security        => $self->security,
+        type            => ($self->type && $self->type->id),
+        project         => $self->project->id,
+        owner           => $self->set_owner,
+        author          => $self->set_author,
+        approver        => $self->set_approver,
     };
     if ($self->id)
     {

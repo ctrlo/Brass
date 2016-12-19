@@ -54,6 +54,10 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="completion_time">Estimated completion time</label>
+                    <input type="text" class="form-control" id="completion_time" name="completion_time" value="[% issue.completion_time | html_entity %]">
+                </div>
+                <div class="form-group">
                     <label for="status">Author</label>
                     <select class="form-control" id="author" name="author" [% readonly %]>
                         [% UNLESS issue.author %]
@@ -112,6 +116,19 @@
                     </div>
                     [% END %]
                 </div>
+                [% IF issue.priority_history.size %]
+                    <div class="form-group">
+                        <label for="comment">Priority history</label>
+                        [% FOR priority IN issue.priority_history %]
+                        <div class="well well-sm">
+                            <strong>
+                                [% priority %]
+                            </strong>
+                            By [% priority.user | html_entity %] ([% priority.datetime %])
+                        </div>
+                        [% END %]
+                    </div>
+                [% END %]
                 <div class="form-group">
                     <label for="comment">Comments</label>
                     [% FOR comment IN issue.comments %]
@@ -144,9 +161,9 @@
             <th><a href="?sort=title">Title</a></th>
             <th><a href="?sort=opened">Opened</a></th>
             <th>Project</th>
+            <th>Type</th>
             <th>Status</th>
-            <th>Priority</th>
-            <th>Owner</th>
+            <th><a href="?sort=priority">Priority</a></th>
         </tr>
         [% FOREACH issue IN issues %]
             <tr>
@@ -154,9 +171,9 @@
                 <td><a href="/issue/[% issue.id %]">[% issue.title | html_entity %]</a></td>
                 <td>[% issue.opened | html_entity %]</td>
                 <td>[% issue.project | html_entity %]</td>
+                <td>[% issue.type | html_entity %]</td>
                 <td>[% issue.status | html_entity %]</td>
                 <td>[% issue.priority | html_entity %]</td>
-                <td>[% issue.owner | html_entity %]</td>
             </tr>
         [% END %]
     </table>

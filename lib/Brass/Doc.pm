@@ -411,6 +411,9 @@ sub _version_add
                   : $latest
                   ? $latest->minor + 1
                   : 1;
+        $self->_rset->update({
+            review => undef, # Remove previous review date if publishing new
+        }) if $minor == 0;
         $version_new = $self->schema->resultset('Version')->create({
             doc_id   => $self->id,
             major    => $major,

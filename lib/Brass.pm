@@ -29,7 +29,6 @@ use Brass::Config::Servers;
 use Brass::Config::Server::Types;
 use Brass::Config::UAD;
 use Brass::Config::UADs;
-use Brass::DB;
 use Brass::Docs;
 use Brass::DocDB;
 use Brass::Image;
@@ -46,14 +45,17 @@ use File::Temp ();
 use IPC::ShellCmd;
 use LaTeX::Encode qw/latex_encode/;
 use Lingua::EN::Numbers::Ordinate;
+use Log::Report::DBIC::Profiler;
 
 use Dancer2;
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Auth::Extensible;
+use Dancer2::Plugin::LogReport;
 
 our $VERSION = '0.1';
 
-schema('doc')->storage->debug(1);
+schema->storage->debugobj(new Log::Report::DBIC::Profiler);
+schema->storage->debug(1);
 
 hook before => sub {
 
@@ -63,15 +65,11 @@ hook before => sub {
 
     my $db = Brass::DocDB->new(schema => schema('doc'));
     $db->setup;
-    $db = Brass::DB->new(schema => schema);
-    $db->setup;
 };
 
 hook before_template => sub {
     my $tokens = shift;
     $tokens->{user}     = logged_in_user;
-    $tokens->{messages} = session('messages');
-    session 'messages' => [];
 };
 
 get '/' => sub {
@@ -366,6 +364,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
                 unless $issue->user_can_write(logged_in_user);
             $issue->title(param 'title');
             $issue->description(param 'description');
+            $issue->completion_time(param 'completion_time');
             $issue->set_project(param 'project');
             $issue->set_priority(param 'priority');
             if (user_has_role('issue_write_all') || user_has_role('issue_write_project'))
@@ -652,19 +651,23 @@ get '/version/:id' => require_role doc => sub {
         my $setname  = latex_encode "$title ($vinfo / $date / $reviewer / $approver / $classification)";
         $content     =~ s!%%thename%%!$setname!g;
         $content     =~ s!%%thereference%%!$vinfo!g;
-        # Escape any hashes not already escapted
-        $content     =~ s/(?<!\\)#/\\#/g;
+        # Escape any hashes not already escaped, unless document
+        # defines not to do so
+        $content     =~ s/(?<!\\)#/\\#/g
+            unless $content =~ s/%%no_hash_escape%%//;
         my @images;
         while ($content =~ /%%image\.([0-9]+)(\[.*\])%%/)
         {
             my $id = $1;
             my $options = $2;
             my $image = $schema->resultset('Image')->find($id);
-            my $tempfile = File::Temp->new();
+            my ($ext) = $image->filename =~ /(\.[^.]+)$/;
+            my $tempfile = File::Temp->new(SUFFIX => $ext);
             print $tempfile $image->content;
             push @images, $tempfile; # Stop temp file going out of scope immediately and being deleted
             $content =~ s/%%image\.$id\Q$options%%/\\includegraphics${options}{$tempfile}/g;
         }
+        $content     =~ s/(?<!\\)%/\\%/g;
         my $texdir   = config->{brass}->{tex};
         die "Tex build dir $texdir does not exist" unless -d $texdir;
         write_file("$texdir/$vinfo.tex", {binmode => ':utf8'}, $content);
