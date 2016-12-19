@@ -34,6 +34,7 @@ sub new($%)
     $self->{dbname} = $cfg->val($namespace, 'dbname')   or die "dbname not defined";
     my $dbhost      = $cfg->val($namespace, 'dbhost')   or die "dbhost not defined";
     my $certdir     = $cfg->val($namespace, 'certdir')  or die "certdir not defined";
+    $ENV{CDB_PASSPHRASE} ||= $cfg->val($namespace, 'passphrase');
     $self->{dbhost} = "$dbhost;mysql_ssl=1;mysql_ssl_client_key=$certdir/client-key.pem;mysql_ssl_client_cert=$certdir/client-cert.pem;mysql_ssl_ca_file=$certdir/ca-cert.pem;";
     $self;
 }
