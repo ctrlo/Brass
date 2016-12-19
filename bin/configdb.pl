@@ -78,15 +78,15 @@ if ($type eq 'pwd')
 
     if ($username)
     {
-        print $cipher->decrypt($username->password);
+        print $cipher->decrypt($username->pwencrypt);
         exit;
     }
 
     my $pw = $cipher->encrypt(randompw);
 
     my $s = $sch->resultset('Server')->find_or_create({ name => $server });
-    my $u = $sch->resultset('Pw')->create({ server_id => $s->id, username => $param, password => $pw, type => $action });
-    print $cipher->decrypt($u->password);
+    my $u = $sch->resultset('Pw')->create({ server_id => $s->id, username => $param, pwencrypt => $pw, type => $action });
+    print $cipher->decrypt($u->pwencrypt);
 }
 elsif ($type eq 'cert')
 {
