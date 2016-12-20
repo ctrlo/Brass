@@ -256,6 +256,45 @@ any '/config/pwd/?:id?' => require_role 'config' => sub {
     template 'config/pwd' => $params;
 };
 
+any '/config/customer/?:id?' => require_role 'config' => sub {
+
+    my $id      = param 'id';
+    my $schema  = schema;
+    my $users   = Brass::Users->new(schema => schema); # Default schema
+
+    my $params = {
+        customers => [rset('Customer')->all],
+        page      => 'config/customer',
+    };
+
+    if (defined $id)
+    {
+        my $customer = $id ? rset('Customer')->find($id) : rset('Customer')->new({});
+
+        if (param 'save')
+        {
+            die "No permission to update customer details"
+                unless user_has_role 'config_write';
+            $customer->name(param 'name');
+            $customer->authnames(param 'authnames');
+            $customer->updated(DateTime->now);
+            $customer->updated_by(logged_in_user->{id});
+            $customer->update_or_insert;
+            forwardHome({ success => "The customer has been updated successfully" }, "config/customer" );
+        }
+        if (param 'delete')
+        {
+            die "No permission to update password details"
+                unless user_has_role 'config_write';
+            $customer->delete;
+            forwardHome({ success => "The customer has been deleted successfully" }, "config/customer" );
+        }
+        $params->{customer} = $customer;
+    }
+
+    template 'config/customer' => $params;
+};
+
 any '/config/cert/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';

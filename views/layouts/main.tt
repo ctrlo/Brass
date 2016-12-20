@@ -61,6 +61,7 @@
                                         <li [% IF page=="config/uad" %]class="active"[% END %]><a href="/config/uad">UADs</a></li>
                                         <li [% IF page=="config/cert" %]class="active"[% END %]><a href="/config/cert">Certificates</a></li>
                                         <li [% IF page=="config/pwd" %]class="active"[% END %]><a href="/config/pwd">Passwords</a></li>
+                                        <li [% IF page=="config/customer" %]class="active"[% END %]><a href="/config/customer">Customers</a></li>
                                     </ul>
                                     </li>
                                 [% END %]
