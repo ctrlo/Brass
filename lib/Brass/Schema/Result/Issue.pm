@@ -192,6 +192,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 files
+
+Type: has_many
+
+Related object: L<Brass::Schema::Result::File>
+
+=cut
+
+__PACKAGE__->has_many(
+  "files",
+  "Brass::Schema::Result::File",
+  { "foreign.issue" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 issue_priorities
 
 Type: has_many

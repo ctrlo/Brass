@@ -398,10 +398,47 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
                 logged_in_user_id => logged_in_user->{id},
             );
         }
+        if (param 'attach')
+        {
+            # Allow any user to attach a file
+            my $file = request->upload('newattach');
+            my $attach = {
+                name        => $file->basename,
+                issue       => $id,
+                content     => $file->content,
+                mimetype    => $file->type,
+                datetime    => DateTime->now,
+                uploaded_by => logged_in_user->{id},
+            };
+
+            if (process sub { rset('File')->create($attach) })
+            {
+                forwardHome({ success => "The file has been attached successfully" }, "issue/$id" );
+            }
+        }
         $params->{issue} = $issue;
     }
 
     template 'issue' => $params;
+};
+
+get '/file/:file' => require_login sub {
+
+    my $file = rset('File')->find(param 'file')
+        or error __x"File ID {id} not found", id => param('file');
+
+    my $issue_id = $file->get_column('issue');
+    my $users    = Brass::Users->new(schema => schema);
+    my $issue    = Brass::Issue->new(id => $issue_id, users => $users, schema => schema);
+
+    if ($issue->user_can_read(logged_in_user))
+    {
+        my $data = $file->content;
+        send_file( \$data, content_type => $file->mimetype, filename => $file->name );
+    } else {
+        forwardHome(
+            { danger => 'You do not have permission to view this file' } );
+    }
 };
 
 get '/doc' => require_role doc => sub {
@@ -717,24 +754,26 @@ get '/version/:id' => require_role doc => sub {
 };
 
 sub forwardHome {
-    if (my $message = shift)
+    my ($message, $page, %options) = @_;
+
+    if ($message)
     {
-        my $text = ( values %$message )[0];
-        my $type = ( keys %$message )[0];
+        my ($type) = keys %$message;
+        my $lroptions = {};
+        # Check for option to only display to user (e.g. passwords)
+        $lroptions->{to} = 'error_handler' if $options{user_only};
 
-        messageAdd($message);
+        if ($type eq 'danger')
+        {
+            $lroptions->{is_fatal} = 0;
+            report $lroptions, ERROR => $message->{$type};
+        }
+        else {
+            report $lroptions, NOTICE => $message->{$type}, _class => 'success';
+        }
     }
-    my $page = shift || '';
+    $page ||= '';
     redirect "/$page";
-}
-
-sub messageAdd($) {
-    my $message = shift;
-    my $text    = ( values %$message )[0];
-    my $type    = ( keys %$message )[0];
-    my $msgs    = session 'messages';
-    push @$msgs, { text => $text, type => $type };
-    session 'messages' => $msgs;
 }
 
 true;

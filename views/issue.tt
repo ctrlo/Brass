@@ -130,6 +130,20 @@
                     </div>
                 [% END %]
                 <div class="form-group">
+                    <label for="attachments">Attachments</label>
+                    [% FOR file IN issue.files %]
+                    <div class="well well-sm">
+                        <strong>
+                            [% file.datetime %]
+                        </strong><br />
+                        <a href="/file/[% file.id %]">[% file.name | html_entity %]</a>
+                    </div>
+                    [% END %]
+                </div>
+                <div class="form-group">
+                    <a href="" data-toggle="modal" data-target="#modal_attach" class="btn btn-default">Attach file...</a>
+                </div>
+                <div class="form-group">
                     <label for="comment">Comments</label>
                     [% FOR comment IN issue.comments %]
                     <div class="well well-sm">
@@ -226,6 +240,30 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" name="submit_filtering" value="submit" class="btn btn-primary">Update</button>
+            </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="modal_attach" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form role="form" method="post" enctype="multipart/form-data">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Add attachment</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newattach">Attach new file</label>
+                    <input type="file" id="newattach" name="newattach"></input>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="submit" name="attach" value="attach" class="btn btn-primary">Attach</button>
             </div>
             </form>
         </div><!-- /.modal-content -->

@@ -267,6 +267,11 @@ has comments => (
     isa => ArrayRef,
 );
 
+has files => (
+    is  => 'lazy',
+    isa => ArrayRef,
+);
+
 has priority_history => (
     is  => 'lazy',
     isa => ArrayRef,
@@ -344,6 +349,14 @@ sub _build_comments
     my @all = $comments_rs->all;
     $_->users($self->users) foreach @all;
     \@all;
+}
+
+sub _build_files
+{   my $self = shift;
+    my @files = $self->schema->resultset('File')->search({
+        issue => $self->id,
+    })->all;
+    \@files;
 }
 
 sub comment_add
