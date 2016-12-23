@@ -422,7 +422,7 @@ sub _version_add
             record   => $record,
             revision => 0,
             notes    => $notes,
-            created  => DateTime->now,
+            created  => $options{datetime} || DateTime->now,
             blobext  => $ext,
             mimetype => $mimetype,
         });
