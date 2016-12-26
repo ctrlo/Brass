@@ -28,7 +28,8 @@ has schema => (
 );
 
 has all => (
-    is => 'lazy',
+    is      => 'lazy',
+    clearer => 1,
 );
 
 sub _build_all
@@ -39,6 +40,11 @@ sub _build_all
     $docs_rs->result_class('Brass::Doc');
     my @all = $docs_rs->all;
     \@all;
+}
+
+sub clear
+{   my $self = shift;
+    $self->clear_all;
 }
 
 sub topic
