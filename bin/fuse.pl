@@ -256,8 +256,18 @@ sub e_release
     }
     elsif (my ($text) = grep { $_->contentType eq 'text/plain' || $_->contentType eq 'text/html' } @parts)
     {
-        my $scrubber = HTML::Scrubber->new;
-        my $plain = $text->contentType eq 'text/plain' ? $text->decoded : $scrubber->scrub($text->decoded->string);
+        my $scrubber = HTML::Scrubber->new(allow => [qw/br/]);
+        my $plain;
+        if ($text->contentType eq 'text/html')
+        {
+            $plain = $scrubber->scrub($text->decoded->string);
+            # Convert BR to new lines. I thought there'd be a module to do this, but couldn't find one.
+            # Hopefully this will catch everything.
+            $plain =~ s,<\s*br\s*/?>,\n,gi;
+        }
+        else {
+            $plain = $text->decoded;
+        }
         if ($plain =~ /transaction id:.*?([0-9]+)/i)
         {
             $notes = $1;
@@ -269,6 +279,12 @@ sub e_release
                 $notes .= " - $subject";
             }
         }
+        elsif ($plain =~ /^service:\h*(.*)$/im)
+        {
+            $notes = $1;
+        }
+        $notes
+            or return write_error($doc_id, "Error: failed to retrieve receipt details from email content");
     }
     else {
         return write_error($doc_id, "Error: failed to retrieve invoice or receipt number from subject");
