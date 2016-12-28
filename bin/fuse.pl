@@ -343,6 +343,6 @@ while (1)
         );
     };
     $@->reportFatal(is_fatal => 0);
-    sleep 1;
+    sleep 10;
 };
 
