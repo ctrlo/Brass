@@ -553,7 +553,7 @@ any '/doc/edit/:id' => require_role doc => sub {
         schema => $schema,
     );
 
-    $doc->user_can('read')
+    !$id || $doc->user_can('read')
         or error "Sorry, you do not have access to this documentation topic";
 
     my $topics = Brass::Topics->new(schema => $schema);
@@ -562,7 +562,7 @@ any '/doc/edit/:id' => require_role doc => sub {
     if (my $submit = param 'submit')
     {
         error "Editing a document's properties requires the document save permission"
-            unless $doc->user_can('save');
+            unless !$id || $doc->user_can('save');
         $doc->title(param 'title');
         $doc->set_topic(param 'topic');
         $doc->set_classification(param 'classification');
