@@ -10,7 +10,7 @@
                     <label for="authnames">Authorised personnel</label>
                     <textarea name="authnames" id="authnames" class="form-control" rows="3">[% customer.authnames | html_entity %]</textarea>
                 </div>
-                [% IF user.permission.config_write %]
+                [% IF user.has_permission('config_write') %]
                     <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
                     [% IF customer.id %]
                         <button type="submit" name="delete" value="delete" class="btn btn-default">Delete</button>
@@ -21,7 +21,7 @@
     <div>
 [% ELSE %]
     <p>
-        [% IF user.permission.config_write %]
+        [% IF user.has_permission('config_write') %]
             <a href="/config/customer/0" class="btn btn-default">New customer</a>
         [% END %]
     </p>

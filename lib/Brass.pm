@@ -29,6 +29,7 @@ use Brass::Config::Servers;
 use Brass::Config::Server::Types;
 use Brass::Config::UAD;
 use Brass::Config::UADs;
+use Brass::CurrentUser;
 use Brass::Docs;
 use Brass::DocDB;
 use Brass::Image;
@@ -57,11 +58,16 @@ our $VERSION = '0.1';
 schema->storage->debugobj(new Log::Report::DBIC::Profiler);
 schema->storage->debug(1);
 
+Brass::CurrentUser->instance; # This singleton class always contains the current user making the request
+
 hook before => sub {
 
     # Static content
     return if request->uri =~ m!^/(error|js|css|login|images|fonts)!;
     return if param 'error';
+
+    my $user = Brass::CurrentUser->instance;
+    $user->user(logged_in_user);
 
     my $db = Brass::DocDB->new(schema => schema('doc'));
     $db->setup;
@@ -278,7 +284,7 @@ any '/config/customer/?:id?' => require_role 'config' => sub {
             $customer->name(param 'name');
             $customer->authnames(param 'authnames');
             $customer->updated(DateTime->now);
-            $customer->updated_by(logged_in_user->{id});
+            $customer->updated_by(logged_in_user->id);
             $customer->update_or_insert;
             forwardHome({ success => "The customer has been updated successfully" }, "config/customer" );
         }
@@ -370,11 +376,11 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
     elsif (user_has_role 'issue_read_project')
     {
         # Only show issues for user's projects
-        $filtering->{project_user_id} = logged_in_user->{id};
+        $filtering->{project_user_id} = logged_in_user->id;
     }
     else {
         # Only show own issues
-        $filtering->{user_id} = logged_in_user->{id};
+        $filtering->{user_id} = logged_in_user->id;
     }
     $issues->filtering($filtering);
     $issues->sort(session 'sort');
@@ -385,7 +391,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
         priorities => Brass::Issue::Priorities->new(schema => $schema)->all,
         statuses   => Brass::Issue::Statuses->new(schema => $schema)->all,
         types      => Brass::Issue::Types->new(schema => $schema)->all,
-        projects   => Brass::Issue::Projects->new(schema => $schema, user_id => logged_in_user->{id})->all,
+        projects   => Brass::Issue::Projects->new(schema => $schema, user_id => logged_in_user->id)->all,
         users      => $users->all,
         page       => 'issue',
     };
@@ -412,29 +418,29 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
                 $issue->security(param 'security');
                 $issue->set_type(param 'type');
                 $issue->set_status(param 'status');
-                $issue->set_author(param('author') || logged_in_user->{id});
+                $issue->set_author(param('author') || logged_in_user->id);
                 $issue->set_owner(param 'owner');
                 $issue->set_approver(param 'approver');
             }
             elsif (!$id) # New and no proper write permissions
             {
-                $issue->set_author(logged_in_user->{id}); # Default to current user
+                $issue->set_author(logged_in_user->id); # Default to current user
                 $issue->set_status(1); # Always new when user cannot set it themselves
             }
-            $issue->write(logged_in_user->{id});
+            $issue->write(logged_in_user->id);
             $issue->send_notifications(
                 uri_base          => request->uri_base,
-                logged_in_user_id => logged_in_user->{id},
+                logged_in_user_id => logged_in_user->id,
             );
             redirect '/issue';
         }
         if (param 'comment_add')
         {
             # Allow any reader to add a comment
-            $issue->comment_add(text => param('comment'), user_id => logged_in_user->{id});
+            $issue->comment_add(text => param('comment'), user_id => logged_in_user->id);
             $issue->send_notifications(
                 uri_base          => request->uri_base,
-                logged_in_user_id => logged_in_user->{id},
+                logged_in_user_id => logged_in_user->id,
             );
         }
         if (param 'attach')
@@ -447,7 +453,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
                 content     => $file->content,
                 mimetype    => $file->type,
                 datetime    => DateTime->now,
-                uploaded_by => logged_in_user->{id},
+                uploaded_by => logged_in_user->id,
             };
 
             if (process sub { rset('File')->create($attach) })
@@ -504,26 +510,29 @@ any '/doc/view/:id' => require_role doc => sub {
         schema => $schema,
     );
 
+    $doc->user_can('read')
+        or error "Sorry, you do not have access to this documentation topic";
+
     if (param 'retire')
     {
-        die "Retiring a document requires the publishing permission"
-            unless user_has_role('doc_publish');
+        error "Retiring a document requires the publishing permission"
+            unless $doc->user_can('publish');
         $doc->retire;
         redirect '/doc';
     }
 
     if (my $version_id = param 'retire_version')
     {
-        die "Retiring a document requires the publishing permission"
-            unless user_has_role('doc_publish');
+        error "Retiring a document requires the publishing permission"
+            unless $doc->user_can('publish');
         $doc->retire_version($version_id);
         redirect '/doc';
     }
 
     if (param 'review')
     {
-        die "Setting review date requires the publishing permission"
-            unless user_has_role('doc_publish');
+        error "Setting review date requires the publishing permission"
+            unless $doc->user_can('publish');
         $doc->review(DateTime->now->add(months => 12));
         $doc->write;
         redirect '/doc';
@@ -544,11 +553,16 @@ any '/doc/edit/:id' => require_role doc => sub {
         schema => $schema,
     );
 
+    $doc->user_can('read')
+        or error "Sorry, you do not have access to this documentation topic";
+
     my $topics = Brass::Topics->new(schema => $schema);
     my $classifications = Brass::Classifications->new(schema => $schema);
 
     if (my $submit = param 'submit')
     {
+        error "Editing a document's properties requires the document save permission"
+            unless $doc->user_can('save');
         $doc->title(param 'title');
         $doc->set_topic(param 'topic');
         $doc->set_classification(param 'classification');
@@ -574,6 +588,10 @@ any '/doc/content/:id' => require_role doc => sub {
         schema => $schema,
     );
 
+    # First check for read
+    $doc->user_can('read')
+        or error "Sorry, you do not have access to this documentation topic";
+
     if (my $submit = param 'submit')
     {
         my $doctype = param 'doctype';
@@ -581,17 +599,17 @@ any '/doc/content/:id' => require_role doc => sub {
         # Always set new option on publish. If the content
         # is exactly the same, a new one won't actually be created
         my $publish = $submit eq 'publish' ? 1 : 0;
-        die "No permission to publish document"
-            if $publish && !user_has_role('doc_publish');
-        die "No permission to publish signed copy"
-            if $doctype eq 'signed' && !user_has_role('doc_publish');
-        die "No permission to publish record"
-            if $doctype eq 'record' && !user_has_role('doc_record');
-        die "No permission to save draft"
-            if $doctype ne 'record' && !user_has_role('doc_save');
+        error "No permission to publish document"
+            if $publish && !$doc->user_can('publish');
+        error "No permission to publish signed copy"
+            if $doctype eq 'signed' && !$doc->user_can('publish');
+        error "No permission to publish record"
+            if $doctype eq 'record' && !$doc->user_can('record');
+        error "No permission to save draft"
+            if $doctype ne 'record' && !$doc->user_can('save');
         $submit = 'draft' if $publish && $doctype ne 'binary';
 
-        my $user = Brass::User->new(schema => schema, id => logged_in_user->{id});
+        my $user = logged_in_user;
         my $notes = param 'notes';
 
         my $new_version_id = $submit eq 'save' && $doctype eq 'binary'
@@ -635,6 +653,7 @@ get '/doc/latest/:id' => require_role doc => sub {
 
     my $id = $doc->signed ? $doc->signed->id : $doc->published->id;
 
+    # No need to check permissions here - will be done after redirect
     redirect "/version/".$id;
 };
 
@@ -698,6 +717,15 @@ get '/version/:id' => require_role doc => sub {
 
     my $schema    = schema('doc');
     my ($version) = $schema->resultset('Version')->find(param 'id');
+
+    my $doc    = Brass::Doc->new(
+        id     => $version->doc->id,
+        schema => $schema,
+    );
+
+    $doc->user_can('read')
+        or error "Sorry, you do not have access to this documentation topic";
+
     my $vinfo     = $version->doc->topic->name
               . "-" . $version->doc->id
               . "-" . $version->major

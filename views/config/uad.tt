@@ -17,7 +17,7 @@
                         [% END %]
                     </select>
                 </div>
-                [% IF user.permission.config_write %]
+                [% IF user.has_permission('config_write') %]
                     <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
                     [% IF uad.id %]
                         <button type="submit" name="delete" value="delete" class="btn btn-default">Delete</button>
@@ -28,7 +28,7 @@
     <div>
 [% ELSE %]
     <p>
-        [% IF user.permission.config_write %]
+        [% IF user.has_permission('config_write') %]
             <a href="/config/uad/0" class="btn btn-default">New UAD</a>
         [% END %]
     </p>

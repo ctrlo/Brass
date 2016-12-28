@@ -1,9 +1,6 @@
 use utf8;
 package Brass::Schema::Result::User;
 
-# Created by DBIx::Class::Schema::Loader
-# DO NOT MODIFY THE FIRST PART OF THIS FILE
-
 =head1 NAME
 
 Brass::Schema::Result::User
@@ -266,10 +263,36 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 user_topics
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-06-27 15:25:49
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AafZZlUX0ugA7RJQaFLk8g
+Type: has_many
 
+Related object: L<Brass::Schema::Result::UserTopic>
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+=cut
+
+__PACKAGE__->has_many(
+  "user_topics",
+  "Brass::Schema::Result::UserTopic",
+  { "foreign.user" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+sub has_permission
+{   my ($self, $permission) = @_;
+    (grep { $_->permission->name eq $permission } $self->user_permissions) ? 1 : 0;
+}
+
+sub has_project
+{   my ($self, $project_id) = @_;
+    (grep { $_->project->id == $project_id } $self->user_projects) ? 1 : 0;
+}
+
+sub has_topic_permission
+{   my ($self, $topic_id, $permission) = @_;
+    my @user_topics = $self->user_topics
+        or return 1; # If not limited, user will have no topics
+    (grep { $_->topic == $topic_id && $_->permission->name eq $permission } @user_topics) ? 1 : 0;
+}
+
 1;

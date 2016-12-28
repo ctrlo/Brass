@@ -64,7 +64,7 @@
         <div class="form-group">
             <button type="submit" name="submit" value="save" class="btn btn-default">Submit</button>
         </div>
-        [% IF user.permission.doc_publish AND doc.draft_for_review %]
+        [% IF doc.user_can('publish') AND doc.draft_for_review %]
             <div class="form-group">
                 <label for="file">Current draft</label>
                 <p>Draft file waiting to be published: <a href="/version/[% doc.draft.id %]">ID [% doc.draft.id %]</a> </p>
@@ -82,7 +82,7 @@
             <button type="submit" name="submit" value="save" class="btn btn-default">Save</button>
         [% END %]
         <button type="submit" name="submit" value="draft" class="btn btn-default">Save as new draft</button>
-        [% IF user.permission.doc_publish %]
+        [% IF doc.user_can('publish') %]
             <button type="submit" name="submit" value="publish" class="btn btn-default">Publish</button>
         [% END %]
     </div>

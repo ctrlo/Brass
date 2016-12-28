@@ -32,7 +32,7 @@
                         </label>
                     </div>
                 [% END %]
-                [% IF user.permission.config_write %]
+                [% IF user.has_permission('config_write') %]
                     <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
                     [% IF pwd.id %]
                         <button type="submit" name="delete" value="delete" class="btn btn-default">Delete</button>
@@ -43,7 +43,7 @@
     <div>
 [% ELSE %]
     <p>
-        [% IF user.permission.config_write %]
+        [% IF user.has_permission('config_write') %]
             <a href="/config/pwd/0" class="btn btn-default">New password</a>
         [% END %]
     </p>

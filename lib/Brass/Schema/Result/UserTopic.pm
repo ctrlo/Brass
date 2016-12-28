@@ -16,6 +16,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "topic",
   { data_type => "integer", is_nullable => 0 },
+  "permission",
+  { data_type => "integer", is_nullable => 0 },
 );
 
 __PACKAGE__->set_primary_key("id");
@@ -24,6 +26,13 @@ __PACKAGE__->belongs_to(
   "user",
   "Brass::Schema::Result::User",
   { id => "user" },
+  { is_deferrable => 1, on_delete => "NO ACTION", on_update => "NO ACTION" },
+);
+
+__PACKAGE__->belongs_to(
+  "permission",
+  "Brass::Schema::Result::Permission",
+  { id => "permission" },
   { is_deferrable => 1, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 

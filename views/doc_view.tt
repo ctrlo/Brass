@@ -64,9 +64,11 @@
     </ul>
 [% END %]
 <form method="post">
-    <a href="/doc/content/[% doc.id %]" class="btn btn-default">Edit content</a>
-    <a href="/doc/edit/[% doc.id %]" class="btn btn-default">Edit properties</a>
-    [% IF user.permission.doc_publish %]
+    [% IF doc.user_can('save') %]
+        <a href="/doc/content/[% doc.id %]" class="btn btn-default">Edit content</a>
+        <a href="/doc/edit/[% doc.id %]" class="btn btn-default">Edit properties</a>
+    [% END %]
+    [% IF doc.user_can('publish') %]
         <button type="submit" name="retire" value="retire" class="btn btn-default">Retire</button>
         <button type="submit" name="review" value="12" class="btn btn-default">Review in 12 months</button>
     [% END %]

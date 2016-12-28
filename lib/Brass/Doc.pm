@@ -586,5 +586,19 @@ sub _version_compare
     return -1;
 }
 
+sub user_can
+{   my ($self, $permission) = @_;
+    my $user = Brass::CurrentUser->instance->user
+        or panic "logged_in_user not set for user_can";
+    $permission =~ /^(read|publish|save|record)$/
+        or panic "Invalid permission $permission passed to user_can";
+    # First check for required global permission
+    $permission = $permission eq 'read' ? 'doc' : "doc_$permission";
+    $user->has_permission($permission)
+        or return 0;
+    # Now check for access to this topic
+    $user->has_topic_permission($self->topic->id, $permission);
+}
+
 1;
 
