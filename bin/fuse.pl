@@ -12,6 +12,7 @@ use Brass::DocSchema;
 use Brass::User;
 use Fcntl ':mode'; # For file mode constants
 use Fuse qw(fuse_get_context);
+use HTML::Scrubber;
 use Log::Report mode => 'DEBUG';
 use Mail::Message;
 use POSIX qw(ENOENT EISDIR EINVAL);
@@ -247,6 +248,19 @@ sub e_release
     elsif ($subject =~ /invoice\h+([a-z0-9]+)[\h\.]+/i)
     {
         $notes = $1;
+    }
+    elsif (my ($text) = grep { $_->contentType eq 'text/plain' || $_->contentType eq 'text/html' } @parts)
+    {
+        my $scrubber = HTML::Scrubber->new;
+        my $plain = $text->contentType eq 'text/plain' ? $text->decoded : $scrubber->scrub($text->decoded->string);
+        if ($plain =~ /transaction ID:.*?([0-9]+)/)
+        {
+            $notes = $1;
+            if ($plain =~ /Description:\h+(.*)/)
+            {
+                $notes .= " - $1";
+            }
+        }
     }
     else {
         return write_error($doc_id, "Error: failed to retrieve invoice or receipt number from subject");
