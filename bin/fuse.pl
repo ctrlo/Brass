@@ -198,15 +198,20 @@ sub e_release
     return write_error($doc_id, "Failed to parse email")
         unless $msg->timestamp && $msg->subject;
 
-    # Every part in the email.
-    my @parts = $msg->parts('RECURSE');
+    # Every part in the email. Strip out images.
+    # (sigh, broken email clients sending images as application/octet-stream)
+    my @parts = grep {
+        (!$_->body->dispositionFilename || $_->body->dispositionFilename !~ /\.jpg$/)
+        && $_->contentType !~ /^image/
+    } $msg->parts('RECURSE');
 
     # See if we recognise this. We are quite restrictive to prevent rubbish being written.
     my $to_save;
     if (my @unknown = grep { $_->contentType !~ m!^(text/plain|text/html|application/pdf)$! } @parts)
     {
         # We have something other than normal text or PDF
-        my $unrecognised = join ', ', @unknown;
+        # Remove any slashes so that mimetype can be displayed in status as filename
+        my $unrecognised = join ', ', map { $_->contentType =~ s!/!-!r } @unknown;
         return write_error($doc_id, "Error: unrecognised mime types: $unrecognised");
     }
     elsif (my @pdfs =  grep { $_->contentType eq 'application/pdf' } @parts)
@@ -253,12 +258,15 @@ sub e_release
     {
         my $scrubber = HTML::Scrubber->new;
         my $plain = $text->contentType eq 'text/plain' ? $text->decoded : $scrubber->scrub($text->decoded->string);
-        if ($plain =~ /transaction ID:.*?([0-9]+)/)
+        if ($plain =~ /transaction id:.*?([0-9]+)/i)
         {
             $notes = $1;
-            if ($plain =~ /Description:\h+(.*)/)
+            if ($plain =~ /description:\h+(.*)/i)
             {
                 $notes .= " - $1";
+            }
+            else {
+                $notes .= " - $subject";
             }
         }
     }
