@@ -246,11 +246,11 @@ sub e_release
     $subject
         or return write_error($doc_id, "Error: message has no subject");
     my $notes;
-    if ($subject =~ /receipt\h+([a-z0-9]+)[\h\.]+/i)
+    if ($subject =~ /receipt\h+#?([a-z0-9]+)(\h|\.|\z)+/i)
     {
         $notes = $1;
     }
-    elsif ($subject =~ /invoice\h+([a-z0-9]+)[\h\.]+/i)
+    elsif ($subject =~ /invoice\h+#?([a-z0-9]+)(\h|\.|\z)+/i)
     {
         $notes = $1;
     }
