@@ -432,7 +432,9 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
                 uri_base          => request->uri_base,
                 logged_in_user_id => logged_in_user->id,
             );
-            redirect '/issue';
+            my $action = $id ? 'udpated' : 'created';
+            $id = $issue->id;
+            forwardHome({ success => "The issue has been $action successfully" }, "issue/$id" );
         }
         if (param 'comment_add')
         {
