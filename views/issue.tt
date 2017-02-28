@@ -32,7 +32,7 @@
                 [% UNLESS user.has_permission('issue_write_all') OR user.has_permission('issue_write_project') %][% readonly = "readonly" %][% END %]
                 <div class="form-group">
                     <label for="type">Type</label>
-                    <select class="form-control" id="type" name="type" [% readonly %]>
+                    <select class="form-control" id="type" name="type">
                         [% UNLESS issue.type %]
                             <option value=""></option>
                         [% END %]
@@ -43,13 +43,16 @@
                 </div>
                 <div class="form-group">
                     <label for="status">Status</label>
-                    <select class="form-control" id="status" name="status" [% readonly %]>
+                    <select class="form-control" id="status" name="status" [% IF NOT issue.id %][% readonly %][% END %]>
                         [% IF !issue.id AND !issue.status %]
                             <option value="" selected></option>
                         [% END %]
-                        [% issue_selected = issue.status.id || 2 %]
+                        [% issue_selected = issue.status.id || 1 %]
                         [% FOREACH status IN statuses %]
-                            <option value="[% status.id %]" [% IF issue_selected == status.id %]selected[% END %]>[% status.name | html_entity %]</option>
+                            <option value="[% status.id %]"
+                                [% IF issue_selected == status.id %]selected[% END %]
+                                [% IF issue.id AND status.id != 1 AND status.id != 3 AND readonly %]disabled[% END %]
+                            >[% status.name | html_entity %]</option>
                         [% END %]
                     </select>
                 </div>
