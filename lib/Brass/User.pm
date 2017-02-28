@@ -55,6 +55,12 @@ has firstname => (
     builder => sub { $_[0]->_rset->firstname },
 );
 
+has deleted => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset->deleted },
+);
+
 sub _build__rset
 {   my $self = shift;
     $self->schema->resultset('User')->find($self->id);

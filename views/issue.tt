@@ -66,6 +66,9 @@
                         [% UNLESS issue.author %]
                             <option value=""></option>
                         [% END %]
+                        [% IF issue.author.deleted %]
+                            <option value="[% issue.author.id %]" selected>[% issue.author | html_entity %]</option>
+                        [% END %]
                         [% FOREACH u IN users %]
                             <option value="[% u.id %]" [% IF issue.author == u OR (!issue.id AND user.id == u.id) %]selected[% END %]>[% u | html_entity %]</option>
                         [% END %]
@@ -77,6 +80,9 @@
                         [% UNLESS issue.owner %]
                             <option value=""></option>
                         [% END %]
+                        [% IF issue.owner.deleted %]
+                            <option value="[% issue.owner.id %]" selected>[% issue.owner | html_entity %]</option>
+                        [% END %]
                         [% FOREACH u IN users %]
                             <option value="[% u.id %]" [% IF issue.owner == u OR (!issue.id AND user.id == u.id) %]selected[% END %]>[% u | html_entity %]</option>
                         [% END %]
@@ -87,6 +93,9 @@
                     <select class="form-control" id="approver" name="approver" [% readonly %]>
                         [% UNLESS issue.approver %]
                             <option value=""></option>
+                        [% END %]
+                        [% IF issue.approver.deleted %]
+                            <option value="[% issue.approver.id %]" selected>[% issue.approver | html_entity %]</option>
                         [% END %]
                         [% FOREACH u IN users %]
                             <option value="[% u.id %]" [% IF issue.approver == u %]selected[% END %]>[% u | html_entity %]</option>

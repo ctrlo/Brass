@@ -31,19 +31,30 @@ has _index => (
     is => 'lazy',
 );
 
-sub all
+has _all => (
+    is => 'lazy',
+);
+
+sub _build__all
 {   my $self = shift;
-    my @all = values %{$self->_index};
+    my $users_rs = $self->schema->resultset('User')->search({}, {
+        order_by => ['me.surname', 'me.firstname'],
+    });
+    $users_rs->result_class('Brass::User');
+    [ $users_rs->all ];
+}
+
+sub all
+{   my ($self, %options) = shift;
+    my @all = @{$self->_all};
+    @all = grep { !$_->deleted } @all
+        unless $options{include_deleted};
     \@all;
 }
 
 sub _build__index
 {   my $self = shift;
-    my $users_rs = $self->schema->resultset('User')->search({
-    });
-    $users_rs->result_class('Brass::User');
-    my @all = $users_rs->all;
-    my %index = map { $_->id => $_ } @all;
+    my %index = map { $_->id => $_ } @{$self->_all};
     \%index;
 }
 
