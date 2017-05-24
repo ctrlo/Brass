@@ -41,7 +41,8 @@
                 [% IF user.has_permission('config_write') %]
                     <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
                     [% IF server.id %]
-                        <button type="submit" name="delete" value="delete" class="btn btn-default">Delete</button>
+                        <button type="submit" name="delete" value="delete" class="btn btn-default"
+                            onclick="return confirm('Are you sure you want to delete this server?');">Delete</button>
                     [% END %]
                 [% END %]
                 [% IF server.id %]
