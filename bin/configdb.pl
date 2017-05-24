@@ -193,7 +193,7 @@ elsif ($type eq 'server')
         my ($serv) = $sch->resultset('Server')->search({
             'me.name' => $server,
         });
-        print $serv->sudo;
+        print $serv->sudo if $serv->sudo;
     }
     elsif ($action eq 'update')
     {
