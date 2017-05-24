@@ -50,6 +50,11 @@ __PACKAGE__->table("server");
   is_foreign_key: 1
   is_nullable: 1
 
+=head2 sudo
+
+  data_type: 'text'
+  is_nullable: 1
+
 =head2 update_datetime
 
   data_type: 'datetime'
@@ -91,6 +96,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 128 },
   "domain_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "sudo",
+  { data_type => "text", is_nullable => 1 },
   "update_datetime",
   {
     data_type => "datetime",

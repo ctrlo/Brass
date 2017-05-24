@@ -49,6 +49,13 @@ has name => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->name; },
 );
 
+has sudo => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->sudo; },
+);
+
 has update_datetime => (
     is      => 'ro',
     isa     => Maybe[DateAndTime],
@@ -182,6 +189,7 @@ sub inflate_result {
         id             => $data->{id},
         name           => $data->{name},
         set_domain     => $data->{domain_id},
+        sudo           => $data->{sudo},
         schema         => $schema,
     );
 }
@@ -200,6 +208,7 @@ sub write
     my $values = {
         name        => $self->name,
         domain_id   => $self->domain->id,
+        sudo        => $self->sudo,
         notes       => $self->notes,
     };
     if ($self->id)

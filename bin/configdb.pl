@@ -187,6 +187,14 @@ elsif ($type eq 'server')
         });
         print $serv->domain->name;
     }
+    elsif ($action eq 'sudo')
+    {
+        $server or die "Please specify server with --server";
+        my ($serv) = $sch->resultset('Server')->search({
+            'me.name' => $server,
+        });
+        print $serv->sudo;
+    }
     elsif ($action eq 'update')
     {
         $server or die "Please specify server with --server";

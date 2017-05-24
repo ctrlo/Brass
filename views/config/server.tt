@@ -15,6 +15,10 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="sudo">User to connect as if using sudo (optional)</label>
+                    <input type="text" class="form-control" id="sudo" name="sudo" value="[% server.sudo | html_entity %]">
+                </div>
+                <div class="form-group">
                     <label for="sites">Sites</label>
                     <textarea name="sites" id="sites" class="form-control" rows="3">[% server.sites.join("\n") %]</textarea>
                 </div>

@@ -147,6 +147,7 @@ any '/config/server/?:id?' => require_role 'config' => sub {
                 unless user_has_role 'config_write';
             $server->name(param 'name');
             $server->set_domain(param 'domain');
+            $server->sudo(param 'sudo');
             $server->set_types(param 'type');
             $server->set_sites(param 'sites');
             $server->notes(param 'notes');
