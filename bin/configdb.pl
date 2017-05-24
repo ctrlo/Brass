@@ -132,23 +132,25 @@ elsif ($type eq 'cert')
     elsif ($action eq 'servers')
     {
         $param or die "Please specify certificate ID with --param";
-        my ($cert) = $sch->resultset('Cert')->search({
-            'me.id' => $param,
+        my @servers = $sch->resultset('Server')->search({
+            'cert.id' => $param,
         },{
             prefetch => {
-                server_certs => ['server', 'use'],
+                server_certs => 'cert' ,
             },
         })->all;
 
+        my ($server_cert) = $servers[0]->server_certs;
+        my $cert = $server_cert->cert;
         # Add final newline if it doesn't exist
         my $content = $cert->content;
         $content .= "\n" unless $content =~ /\n$/;
-        my @servers = map { $_->server->name } $cert->server_certs;
+        my @server_names = map { $_->name } @servers;
         my $output = {
             filename => $cert->filename,
             content  => $content,
             type     => $cert->type,
-            servers  => \@servers,
+            servers  => \@server_names,
         };
         print encode_json $output;
     }
