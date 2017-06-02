@@ -222,6 +222,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 issue_tags
+
+Type: has_many
+
+Related object: L<Brass::Schema::Result::IssueTag>
+
+=cut
+
+__PACKAGE__->has_many(
+  "issue_tags",
+  "Brass::Schema::Result::IssueTag",
+  { "foreign.issue" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 issue_statuses
 
 Type: has_many

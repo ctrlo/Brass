@@ -111,6 +111,11 @@ has set_approver => (
     coerce  => sub { $_[0] || undef }, # Allow empty strings from form
 );
 
+has set_tags => (
+    is  => 'rw',
+    isa => ArrayRef,
+);
+
 has type => (
     is      => 'rwp',
     isa     => sub { !defined($_[0]) || ref $_[0] eq 'Brass::Issue::Type' or confess "Invalid type: $_[0]"; },
@@ -340,6 +345,14 @@ sub set_project
     $self->_set_project(Brass::Issue::Project->new(id => $id, schema => $self->schema));
 }
 
+sub has_tag
+{   my ($self, $tag_id) = @_;
+    $self->schema->resultset('IssueTag')->search({
+        issue => $self->id,
+        tag   => $tag_id,
+    })->count;
+}
+
 sub _build_comments
 {   my $self = shift;
     my $comments_rs = $self->schema->resultset('Comment')->search({
@@ -493,6 +506,23 @@ sub write
             user     => $user_id,
             datetime => DateTime->now,
         });
+    }
+    my %has_tags = map { $_ => 1 } @{$self->set_tags};
+    foreach my $tag ($self->schema->resultset('Tag')->all)
+    {
+        if ($has_tags{$tag->id})
+        {
+            $self->schema->resultset('IssueTag')->find_or_create({
+                issue => $self->id,
+                tag   => $tag->id,
+            });
+        }
+        else {
+            $self->schema->resultset('IssueTag')->search({
+                issue => $self->id,
+                tag   => $tag->id,
+            })->delete;
+        }
     }
 }
 

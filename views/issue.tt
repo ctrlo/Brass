@@ -61,6 +61,17 @@
                     <input type="text" class="form-control" id="completion_time" name="completion_time" value="[% issue.completion_time | html_entity %]">
                 </div>
                 <div class="form-group">
+                    <label>Tags</label>
+                    [% FOREACH tag IN tags %]
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="tag" value="[% tag.id %]"
+                                    [% IF issue.has_tag(tag.id) %]checked[% END %]>[% tag.name | html_entity %]
+                            </label>
+                        </div>
+                    [% END %]
+                </div>
+                <div class="form-group">
                     <label for="status">Author</label>
                     <select class="form-control" id="author" name="author" [% readonly %]>
                         [% UNLESS issue.author %]

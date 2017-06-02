@@ -388,6 +388,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
 
     my $params = {
         issues     => $issues->all,
+        tags       => [rset('Tag')->all],
         filtering  => $filtering,
         priorities => Brass::Issue::Priorities->new(schema => $schema)->all,
         statuses   => Brass::Issue::Statuses->new(schema => $schema)->all,
@@ -422,6 +423,7 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
                 $issue->set_author(param('author') || logged_in_user->id);
                 $issue->set_owner(param 'owner');
                 $issue->set_approver(param 'approver');
+                $issue->set_tags([body_parameters->get_all('tag')]);
             }
             else {
                 if ($id)
