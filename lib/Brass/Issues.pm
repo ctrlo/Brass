@@ -53,6 +53,8 @@ has filtering => (
             if $in->{status};
         $return->{'me.type'} = $in->{type}
             if $in->{type};
+        $return->{'issue_tags.tag'} = $in->{tag}
+            if $in->{tag};
         $return->{'-or'} = {
             owner    => $in->{user_id},
             author   => $in->{user_id},
@@ -83,9 +85,12 @@ sub _build_all
     my $issues_rs = $self->schema->resultset('Issue')->search(
         $search
     ,{
-        join => {
-            project => 'user_projects',
-        },
+        join => [
+            'issue_tags',
+            {
+                project => 'user_projects',
+            },
+        ],
         prefetch => [
             'project',
             {

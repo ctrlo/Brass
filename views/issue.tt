@@ -264,6 +264,17 @@
                         [% END %]
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>Tags</label>
+                    [% FOREACH tag IN tags %]
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="filtering_tag" value="[% tag.id %]"
+                                    [% IF filtering.tag.grep(tag.id) %]checked[% END %]>[% tag.name | html_entity %]
+                            </label>
+                        </div>
+                    [% END %]
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="submit" name="submit_filtering" value="submit" class="btn btn-primary">Update</button>
