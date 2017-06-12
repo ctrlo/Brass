@@ -247,13 +247,15 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="filtering_status">Status</label>
-                    <select class="form-control" id="filtering_status" name="filtering_status">
-                        <option value="" [% UNLESS filtering.status %]selected[% END %]>&lt;Ignore&gt;</option>
-                        [% FOREACH status IN statuses %]
-                            <option value="[% status.id %]" [% IF filtering.status == status.id %]selected[% END %]>[% status %]</option>
-                        [% END %]
-                    </select>
+                    <label>Status</label>
+                    [% FOREACH status IN statuses %]
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="filtering_status" value="[% status.id %]"
+                                    [% IF filtering.status.grep(status.id).size %]checked[% END %]>[% status | html_entity %]
+                            </label>
+                        </div>
+                    [% END %]
                 </div>
                 <div class="form-group">
                     <label for="filtering_type">Type</label>
@@ -270,7 +272,7 @@
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="filtering_tag" value="[% tag.id %]"
-                                    [% IF filtering.tag.grep(tag.id) %]checked[% END %]>[% tag.name | html_entity %]
+                                    [% IF filtering.tag.grep(tag.id).size %]checked[% END %]>[% tag.name | html_entity %]
                             </label>
                         </div>
                     [% END %]

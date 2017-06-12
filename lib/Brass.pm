@@ -355,14 +355,15 @@ any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_r
     my $filtering = { %{session('filtering') || {}} };
     if (param 'submit_filtering')
     {
-        my @tags = body_parameters->get_all('filtering_tag');
+        my @tags     = body_parameters->get_all('filtering_tag');
+        my @statuses = body_parameters->get_all('filtering_status');
         $filtering = {
             project  => param('filtering_project'),
-            status   => param('filtering_status'),
             security => param('filtering_security'),
             type     => param('filtering_type'),
         };
-        $filtering->{tag} = [@tags] if @tags;
+        $filtering->{tag}    = [@tags] if @tags;
+        $filtering->{status} = [@statuses] if @statuses;
         my $copy = { %$filtering };
         session 'filtering' => $copy;
     }
