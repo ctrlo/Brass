@@ -202,6 +202,7 @@ sub e_release
     # (sigh, broken email clients sending images as application/octet-stream)
     my @parts = grep {
         (!$_->body->dispositionFilename || $_->body->dispositionFilename !~ /\.jpg$/)
+        && $_->contentType !~ m!application/pgp-signature!
         && $_->contentType !~ /^image/
     } $msg->parts('RECURSE');
 
