@@ -112,8 +112,9 @@ has set_approver => (
 );
 
 has set_tags => (
-    is  => 'rw',
-    isa => ArrayRef,
+    is      => 'rw',
+    isa     => ArrayRef,
+    default => sub { [] },
 );
 
 has type => (
