@@ -207,7 +207,7 @@ sub e_release
     } $msg->parts('RECURSE');
 
     # See if we recognise this. We are quite restrictive to prevent rubbish being written.
-    my $to_save;
+    my $to_save; my $notes;
     if (my @unknown = grep { $_->contentType !~ m!^(text/plain|text/html|application/pdf)$! } @parts)
     {
         # We have something other than normal text or PDF
@@ -226,6 +226,8 @@ sub e_release
             content  => $pdf->decoded->string,
             ext      => 'pdf',
         };
+        $notes = $1
+            if $pdf->body->dispositionFilename =~ /STATEMENT([0-9]+)/;
     }
     else {
         # Must be email with both/either plain/html parts.
@@ -246,10 +248,14 @@ sub e_release
 
     $subject
         or return write_error($doc_id, "Error: message has no subject");
-    my $notes;
-    if ($subject =~ /receipt\h+#?([a-z0-9]+)(\h|\.|\z)+/i)
+    my $notes_temp;
+    if ($notes)
     {
-        $notes = $1;
+        # Do nothing, already parsed
+    }
+    elsif ($subject =~ /receipt\h+#?([a-z0-9]+)(\h|\.|\z)+/i && ($notes_temp = $1) && $notes_temp =~ /[0-9]+/ && $notes_temp =~ /[a-z]+/i)
+    {
+        $notes = $notes_temp;
     }
     elsif ($subject =~ /invoice\h+#?([a-z0-9]+)(\h|\.|\z)+/i)
     {
@@ -269,7 +275,7 @@ sub e_release
         else {
             $plain = $text->decoded;
         }
-        if ($plain =~ /transaction id:.*?([0-9]+)/i)
+        if ($plain =~ /transaction id:\s*([a-z0-9]+)/i)
         {
             $notes = $1;
             if ($plain =~ /description:\h+(.*)/i)
