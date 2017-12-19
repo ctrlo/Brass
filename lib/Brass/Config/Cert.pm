@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass::Config::Cert;
 
+use Log::Report;
+
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 use MooX::Types::MooseLike::DateTime qw/DateAndTime/;
@@ -125,6 +127,12 @@ sub write
 
 sub delete
 {   my $self = shift;
+    if ($self->_rset->server_certs->count)
+    {
+        my $servers = join ', ', map { $_->server->name } $self->_rset->server_certs;
+        error __x"Cannot delete certificate, used by the following servers: {servers}",
+            servers => $servers;
+    }
     $self->_rset->delete;
 }
 
