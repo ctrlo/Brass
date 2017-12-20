@@ -50,12 +50,12 @@ foreach my $cert (@{$certs->all})
     $cert->expiry or next;
     if ($cert->expiry < DateTime->now)
     {
-        push @messages, sprinti "Certificate {name} has now expired\n",
+        push @messages, sprinti "Certificate {name} has now expired",
             name => $cert->cn;
     }
     elsif ($cert->expiry < DateTime->now->add(days => 30))
     {
-        push @messages, sprinti "Certificate {name} expires in less than 30 days\n",
+        push @messages, sprinti "Certificate {name} expires in less than 30 days",
             name => $cert->cn;
     }
 }
