@@ -91,6 +91,51 @@ has backup_verify => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->backup_verify; },
 );
 
+has _backup_params => (
+    is => 'lazy',
+);
+
+sub _build__backup_params
+{   my $self = shift;
+    my $params;
+    if (!$self->has_type('backup'))
+    {
+        $params->{text} = 'N/A';
+    }
+    elsif ($self->backup_verify =~ m!^File (.*) retrieved at (.*) with differences(.*)and /root/testfile (differ|are identical)\s?$!)
+    {
+        $params->{text} = $4 eq 'are identical' ? 'Identical' : 'Different';
+        my $time = $2;
+        if ($time && $time =~ /^[0-9]+$/)
+        {
+            $params->{time} = DateTime->from_epoch(epoch => $time);
+        }
+    }
+    else {
+        $params->{text} = $self->backup_verify;
+    }
+
+    return $params;
+}
+
+has backup_status => (
+    is => 'lazy',
+);
+
+sub _build_backup_status
+{   my $self = shift;
+    $self->_backup_params->{text};
+}
+
+has backup_verify_time => (
+    is => 'lazy',
+);
+
+sub _build_backup_verify_time
+{   my $self = shift;
+    $self->_backup_params->{time};
+}
+
 has notes => (
     is      => 'rw',
     isa     => Maybe[Str],
@@ -136,6 +181,11 @@ has types => (
     lazy    => 1,
     builder => 1,
 );
+
+sub has_type
+{   my ($self, $type) = @_;
+    !!grep { $_ eq $type } values %{$self->types};
+}
 
 sub set_types
 {   my ($self, $new) = @_;

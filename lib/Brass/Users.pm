@@ -45,10 +45,12 @@ sub _build__all
 }
 
 sub all
-{   my ($self, %options) = shift;
+{   my ($self, %options) = @_;
     my @all = @{$self->_all};
     @all = grep { !$_->deleted } @all
         unless $options{include_deleted};
+    @all = grep { $_->has_role($options{role}) } @all
+        if $options{role};
     \@all;
 }
 

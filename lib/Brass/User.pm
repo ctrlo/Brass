@@ -74,6 +74,16 @@ sub has_project
     })->count;
 }
 
+sub has_role
+{   my ($self, $role_name) = @_;
+    $self->schema->resultset('UserPermission')->search({
+        'permission.name' => $role_name,
+        user              => $self->id,
+    },{
+        join => 'permission',
+    })->count;
+}
+
 sub inflate_result {
     my $data   = $_[2];
     my $schema = $_[1]->schema;

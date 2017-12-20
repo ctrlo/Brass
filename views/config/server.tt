@@ -105,16 +105,15 @@
                 <td>[% server.types.values.join %]</td>
                 <td>[% server.os_version %]</td>
                 <td>
-                    [% matches = server.backup_verify.match('^File (.*) retrieved at (.*) with differences(.*)and /root/testfile are identical\s?$') %]
-                    [% IF NOT server.types.values.grep('^backup$').size %]
+                    [% IF server.backup_status == "N/A" %]
                         N/A
-                    [% ELSIF matches.size == 3 %]
+                    [% ELSIF server.backup_status == "Identical" OR server.backup_status == "Different" %]
                         Identical
                         <a style="cursor: pointer" class="personpop" data-toggle="popover"
-                        title="File identical"
-                        data-content="[% server.backup_verify | html_entity %]">[% matches.1 %]</a>
+                        title="File [% server.backup_status | html %]"
+                        data-content="[% server.backup_verify | html_entity %]">[% server.backup_verify_time | html %]</a>
                     [% ELSE %]
-                        [% server.backup_verify | html_entity %]
+                        [% server.backup_status | html_entity %]
                     [% END %]
                 </td>
                 <td>[% server.update_datetime %]</td>
