@@ -560,6 +560,67 @@ any '/doc/view/:id' => require_role doc => sub {
     };
 };
 
+any '/doc/send/:id' => require_role doc => sub {
+
+    my $id     = param 'id';
+    my $schema = schema('doc');
+    my $doc    = Brass::Doc->new(
+        id           => $id,
+        schema       => $schema,
+        schema_brass => schema,
+    );
+
+    error "Sending a document requires the publishing permission"
+        unless $doc->user_can('publish');
+
+    if (param 'send')
+    {
+        $doc->send(to => param('email'), uri_base => request->uri_base);
+        forwardHome({ success => "Thank you, a link to the file has been sent via email" }, "doc/view/$id");
+    }
+
+    template 'doc_send' => {
+        doc  => $doc,
+        page => 'doc_send',
+    };
+};
+
+any '/doc/download/:code' => sub {
+
+    my $code = param 'code';
+
+    my $docsend = schema->resultset('Docsend')->search({
+        code => $code,
+    })->next
+        or error "Document not found";
+
+    $docsend->download_time
+        and error "This document has already been downloaded";
+
+    my $doc    = Brass::Doc->new(
+        id     => $docsend->doc_id,
+        schema => schema('doc'),
+    );
+
+    if (param 'download')
+    {
+        $docsend->update({
+            download_time       => DateTime->now,
+            download_ip_address => request->remote_address,
+        });
+
+        my $version_id = $doc->signed ? $doc->signed->id : $doc->published->id;
+        my $version    = schema('doc')->resultset('Version')->find($version_id);
+
+        _send_doc($doc, $version);
+    }
+
+    template 'doc_download' => {
+        doc  => $doc,
+        page => 'doc_download',
+    };
+};
+
 any '/doc/edit/:id' => require_role doc => sub {
 
     my $id     = param 'id';
@@ -742,6 +803,13 @@ get '/version/:id' => require_role doc => sub {
     $doc->user_can('read')
         or error "Sorry, you do not have access to this documentation topic";
 
+    _send_doc($doc, $version);
+};
+
+sub _send_doc
+{   my ($doc, $version) = @_;
+
+    my $schema    = schema('doc');
     my $vinfo     = $version->doc->topic->name
               . "-" . $version->doc->id
               . "-" . $version->major

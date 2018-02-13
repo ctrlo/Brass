@@ -71,6 +71,7 @@
     [% IF doc.user_can('publish') %]
         <button type="submit" name="retire" value="retire" class="btn btn-default">Retire</button>
         <button type="submit" name="review" value="12" class="btn btn-default">Review in 12 months</button>
+        <a href="/doc/send/[% doc.id %]" class="btn btn-default">Send via email link</a>
     [% END %]
 </form>
 

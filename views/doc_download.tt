@@ -1,0 +1,5 @@
+<h2>[% doc.title %] <small>Download document</small></h2>
+
+<form method="post">
+    <button type="submit" name="download" value="download" class="btn btn-default">Click here to download document</button>
+</form>

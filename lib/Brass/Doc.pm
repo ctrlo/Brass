@@ -22,9 +22,11 @@ use DateTime;
 use Brass::Classification;
 use Brass::Topic;
 use Log::Report;
+use Mail::Message;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 use MooX::Types::MooseLike::DateTime qw/DateAndTime/;
+use Session::Token;
 use Text::Diff::FormattedHTML;
 
 use overload 'bool' => sub { 1 }, '""'  => 'as_string', '0+' => 'as_integer', fallback => 1;
@@ -32,6 +34,10 @@ use overload 'bool' => sub { 1 }, '""'  => 'as_string', '0+' => 'as_integer', fa
 has schema => (
     is       => 'ro',
     required => 1,
+);
+
+has schema_brass => (
+    is => 'ro',
 );
 
 has id => (
@@ -598,6 +604,36 @@ sub user_can
         or return 0;
     # Now check for access to this topic
     $user->has_topic_permission($self->topic->id, $permission);
+}
+
+sub send
+{   my ($self, %params) = @_;
+
+    my $email = $params{to}
+        or error "Please supply an email address";
+
+    my $code = Session::Token->new( length => 32 )->get;
+
+    # code has unique constraint so will bork if duplicate
+    $self->schema_brass->resultset('Docsend')->create({
+        doc_id => $self->id,
+        email  => $email,
+        code   => $code,
+    });
+
+    my $user = Brass::CurrentUser->instance->user;
+    my $name = $user->firstname.' '.$user->surname;
+
+    Mail::Message->build(
+        To             => $email,
+        'Content-Type' => 'text/plain',
+        Subject        => 'A document has been sent: '.$self->title,
+        data           => <<__PLAIN,
+$name has sent you a document via a single-use download link:
+
+$params{uri_base}/doc/download/$code
+__PLAIN
+    )->send(via => 'sendmail');
 }
 
 1;
