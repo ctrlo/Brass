@@ -19,6 +19,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "code",
   { data_type => "varchar", is_nullable => 1, size => 32 },
+  "created",
+  { data_type => "datetime", is_nullable => 1, datetime_undef_if_invalid => 1 },
   "download_time",
   { data_type => "datetime", is_nullable => 1, datetime_undef_if_invalid => 1 },
   "download_ip_address",

@@ -589,8 +589,11 @@ any '/doc/download/:code' => sub {
 
     my $code = param 'code';
 
+    my $from = schema->storage->datetime_parser
+        ->format_datetime(DateTime->now->subtract(days => 1));
     my $docsend = schema->resultset('Docsend')->search({
-        code => $code,
+        code    => $code,
+        created => { '>' => $from }, # Only last 24 hours
     })->next
         or error "Document not found";
 

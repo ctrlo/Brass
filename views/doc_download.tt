@@ -1,5 +1,7 @@
 <h2>[% doc.title %] <small>Download document</small></h2>
 
+<p>This link is only valid for one use. Once the document has been downloaded it will no longer be valid.</p>
+
 <form method="post">
     <button type="submit" name="download" value="download" class="btn btn-default">Click here to download document</button>
 </form>

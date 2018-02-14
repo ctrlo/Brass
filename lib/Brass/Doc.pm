@@ -616,9 +616,10 @@ sub send
 
     # code has unique constraint so will bork if duplicate
     $self->schema_brass->resultset('Docsend')->create({
-        doc_id => $self->id,
-        email  => $email,
-        code   => $code,
+        doc_id  => $self->id,
+        email   => $email,
+        code    => $code,
+        created => DateTime->now,
     });
 
     my $user = Brass::CurrentUser->instance->user;
@@ -629,7 +630,9 @@ sub send
         'Content-Type' => 'text/plain',
         Subject        => 'A document has been sent: '.$self->title,
         data           => <<__PLAIN,
-$name has sent you a document via a single-use download link:
+$name has sent you a document via a link.
+
+The link is valid for 24 hours and can only be used once:
 
 $params{uri_base}/doc/download/$code
 __PLAIN
