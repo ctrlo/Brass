@@ -386,28 +386,16 @@ sub comment_add
 sub send_notifications
 {   my ($self, %options) = @_;
     my $id = $self->id;
-    if ($self->author == $options{logged_in_user_id})
+    foreach my $person ($self->author, $self->owner, $self->approver)
     {
-        # Author editing. Send to admin
-        my $msg = Mail::Message->build(
-            To             => 'root',
-            'Content-Type' => 'text/plain',
-            Subject        => 'Ticket updated',
-            data           => <<__PLAIN,
-A ticket that you are the author of has been updated:
+        next if $person == $options{logged_in_user_id};
 
-$options{uri_base}/issue/$id
-__PLAIN
-        )->send(via => 'sendmail');
-    }
-    else {
-        # Otherwise update original author
         my $msg = Mail::Message->build(
-            To             => $self->author->email,
+            To             => $person->email,
             'Content-Type' => 'text/plain',
             Subject        => 'Ticket updated',
             data           => <<__PLAIN,
-A ticket has been updated:
+A ticket that you are involved in has been updated:
 
 $options{uri_base}/issue/$id
 __PLAIN
