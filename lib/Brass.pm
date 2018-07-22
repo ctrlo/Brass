@@ -847,7 +847,7 @@ sub _send_doc
         $content     =~ s/(?<!\\)#/\\#/g
             unless $content =~ s/%%no_hash_escape%%//;
         my @images;
-        while ($content =~ /%%image\.([0-9]+)(\[.*\])%%/)
+        while ($content =~ /%%image\.([0-9]+)(\[.*\])?%%/)
         {
             my $id = $1;
             my $options = $2;
