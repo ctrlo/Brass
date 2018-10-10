@@ -2,7 +2,7 @@
 [% IF doc.draft_for_review %]
 <div class="alert alert-warning">This document has a <a href="/version/[% doc.draft.id %]">draft awaiting review</a>
     [% IF doc.draft.notes %]
-        ([% doc.draft.notes %])
+        ([% doc.draft.notes | html %])
     [% END %]
 </div>
 [% END %]
@@ -16,7 +16,7 @@
         <li>
             <a href=/version/[% version.id %]>[% version.created %]</a>
             [% IF version.notes %]
-                - [% version.notes %]
+                - [% version.notes | html %]
             [% END %]
             (<a href="" data-toggle="modal" data-target="#modal_retire" data-retire="[% version.id %]">retire</a>)
         </li>
@@ -28,7 +28,7 @@
         [% FOREACH version IN doc.published_all_retired %]
             <li><a href=/version/[% version.id %]>[% version.created %]</a>
                 [% IF version.notes %]
-                    - [% version.notes %]
+                    - [% version.notes | html %]
                 [% END %]
             </li>
         [% END %]
@@ -39,7 +39,7 @@
         [% version = doc.published %]
         <p><label>Latest published:</label> <a href="/version/[% version.id %]">[% version.created.ymd %]</a>
             [% IF version.notes %]
-                - [% version.notes %]
+                - [% version.notes | html %]
             [% END %]
         </p>
     [% END %]
@@ -47,7 +47,7 @@
         [% version = doc.signed %]
         <p><label>Latest signed:</label> <a href="/version/[% version.id %]">[% version.created.ymd %]</a>
             [% IF version.notes %]
-                - [% version.notes %]
+                - [% version.notes | html %]
             [% END %]
         </p>
     [% END %]
@@ -57,7 +57,7 @@
         [% NEXT IF version.id == doc.published.id OR version.id == doc.signed.id %]
         <li><a href=/version/[% version.id %]>[% version.created %]</a>
             [% IF version.notes %]
-                - [% version.notes %]
+                - [% version.notes | html %]
             [% END %]
         </li>
     [% END %]

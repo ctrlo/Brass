@@ -42,7 +42,7 @@
             <tr>
                 <td>[% uad.id %]</td>
                 <td><a href="/config/uad/[% uad.id %]">[% uad.name | html_entity %]</a></td>
-                <td>[% uad.owner %]</td>
+                <td>[% uad.owner | html %]</td>
             </tr>
         [% END %]
     </table>

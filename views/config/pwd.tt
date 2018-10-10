@@ -60,8 +60,8 @@
             <tr>
                 <td><a href="/config/pwd/[% pwd.id %]">[% pwd.id %]</a></td>
                 <td>[% pwd.type | html_entity %]</td>
-                <td>[% pwd.username %]</td>
-                <td>[% pwd.uad %]</td>
+                <td>[% pwd.username | html %]</td>
+                <td>[% pwd.uad | html %]</td>
                 <td>[% pwd.servers.values.join(', ') %]</td>
                 <td>[% pwd.last_changed.ymd %]</td>
             </tr>

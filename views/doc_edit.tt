@@ -9,13 +9,13 @@
 <form method="post">
     <div class="form-group">
         <label for="title">Title</label>
-        <input type="text" class="form-control" id="title" name="title" value="[% doc.title %]">
+        <input type="text" class="form-control" id="title" name="title" value="[% doc.title | html %]">
     </div>
     <div class="form-group">
         <label for="topic">Topic</label>
         <select class="form-control" id="topic" name="topic">
             [% FOREACH topic IN topics %]
-                <option value="[% topic.id %]" [% IF doc.topic == topic %]selected[% END %]>[% topic.name %] ([% topic.description %])</option>
+                <option value="[% topic.id %]" [% IF doc.topic == topic %]selected[% END %]>[% topic.name | html %] ([% topic.description | html %])</option>
             [% END %]
         </select>
     </div>
@@ -23,7 +23,7 @@
         <label for="classification">Classification</label>
         <select class="form-control" id="classification" name="classification">
             [% FOREACH classification IN classifications %]
-                <option value="[% classification.id %]" [% IF doc.classification == classification %]selected[% END %]>[% classification.name %]</option>
+                <option value="[% classification.id %]" [% IF doc.classification == classification %]selected[% END %]>[% classification.name | html %]</option>
             [% END %]
         </select>
     </div>

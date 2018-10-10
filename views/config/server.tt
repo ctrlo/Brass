@@ -20,11 +20,11 @@
                 </div>
                 <div class="form-group">
                     <label for="sites">Sites</label>
-                    <textarea name="sites" id="sites" class="form-control" rows="3">[% server.sites.join("\n") %]</textarea>
+                    <textarea name="sites" id="sites" class="form-control" rows="3">[% server.sites.join("\n") | html %]</textarea>
                 </div>
                 <div class="form-group">
                     <label for="notes">Notes</label>
-                    <textarea name="notes" id="sites" class="form-control" rows="5">[% server.notes %]</textarea>
+                    <textarea name="notes" id="sites" class="form-control" rows="5">[% server.notes | html %]</textarea>
                 </div>
                 <div class="form-group">
                     <label>Types</label>
@@ -33,7 +33,7 @@
                             <label>
                                 [% st = type.id %]
                                 <input name="type" type="checkbox" value="[% st %]" [% IF server.types.$st %]checked[% END %]>
-                                [% type.name %]
+                                [% type.name | html %]
                             </label>
                         </div>
                     [% END %]
@@ -69,10 +69,10 @@
                                         </a>
                                     </td>
                                 [% END %]
-                                <td>[% cert.cert.cn %]</td>
-                                <td>[% cert.cert.type %]</td>
-                                <td>[% cert.cert.usedby %]</td>
-                                <td>[% cert.use.name %]</td>
+                                <td>[% cert.cert.cn | html %]</td>
+                                <td>[% cert.cert.type | html %]</td>
+                                <td>[% cert.cert.usedby | html %]</td>
+                                <td>[% cert.use.name | html %]</td>
                             </tr>
                         [% END %]
                         </table>
@@ -102,8 +102,8 @@
             <tr>
                 <td>[% server.id %]</td>
                 <td><a href="/config/server/[% server.id %]">[% server.name | html_entity %]</a></td>
-                <td>[% server.types.values.join %]</td>
-                <td>[% server.os_version %]</td>
+                <td>[% server.types.values.join | html %]</td>
+                <td>[% server.os_version | html %]</td>
                 <td>
                     [% IF server.backup_status == "N/A" %]
                         N/A
@@ -121,7 +121,7 @@
                     [% IF server.update_result.match('0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.$') %]
                         Already up to date
                     [% ELSE %]
-                        [% server.update_result %]
+                        [% server.update_result | html %]
                     [% END %]
                 </td>
                 <td>

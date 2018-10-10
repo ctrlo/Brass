@@ -7,7 +7,7 @@
         <label for="topic">Topic:</label>
         <select class="form-control" id="topic" name="topic" onchange="this.form.submit()">
             [% FOREACH topic IN topics %]
-                <option value="[% topic.id %]" [% IF topic.id == topic_id %]selected[% END %]>[% topic.name %] ([% topic.description %])</option>
+                <option value="[% topic.id %]" [% IF topic.id == topic_id %]selected[% END %]>[% topic.name | html %] ([% topic.description | html %])</option>
             [% END %]
         </select>
     </div>
@@ -33,7 +33,7 @@
                 [% warn = "" %]
             [% END %]
             <td>[% doc.id %]</td>
-            <td><a href="/doc/view/[% doc.id %]">[% doc.title %]</a></td>
+            <td><a href="/doc/view/[% doc.id %]">[% doc.title | html %]</a></td>
             <td>
                 [% IF doc.draft_for_review %]Yes[% ELSE %]No[% END %]
             </td>

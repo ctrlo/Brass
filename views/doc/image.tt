@@ -10,7 +10,7 @@
     <form method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="title">Title</label>
-            <input type="text" class="form-control" id="title" name="title" value="[% image.title %]">
+            <input type="text" class="form-control" id="title" name="title" value="[% image.title | html %]">
         </div>
         <div class="form-group">
             <label for="doc_id">Document ID</label>
@@ -38,8 +38,8 @@
             <tr>
                 <td><a href="/doc/image/[% image.id %]">[% image.id %]</a></td>
                 <td>[% image.doc_id %]</td>
-                <td>[% image.title %]</td>
-                <td><a href="[% image.id %]?download">[% image.filename %]</a></td>
+                <td>[% image.title | html %]</td>
+                <td><a href="[% image.id %]?download">[% image.filename | html %]</a></td>
             </tr>
         [% END %]
     </table>
