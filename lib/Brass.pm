@@ -767,7 +767,7 @@ any '/doc/image/:id?' => require_role doc => sub {
     if (param 'submit')
     {
         my $i = {
-            doc_id   => param('doc_id'),
+            doc_id   => param('doc_id') || undef,
             title    => param('title'),
         };
         if (my $upload = request->upload('file'))
