@@ -1,4 +1,4 @@
-<h2>[% doc.title %] <small>Download document</small></h2>
+<h2>[% doc.title | html %] <small>Download document</small></h2>
 
 <p>This link is only valid for one use. Once the document has been downloaded it will no longer be valid.</p>
 

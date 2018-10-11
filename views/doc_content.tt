@@ -1,4 +1,4 @@
-<h2>[% doc.title %]</h2>
+<h2>[% doc.title | html %]</h2>
 [% IF doc.draft_for_review %]
     <h4>This is a draft waiting review.
        [% IF doc.diff %]Differences to published version as follows:[% END %]

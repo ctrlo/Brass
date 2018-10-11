@@ -1,6 +1,6 @@
 <h2>
     [% IF doc.id %]
-        [% doc.title %]
+        [% doc.title | html %]
     [% ELSE %]
         New document
     [% END %]

@@ -1,4 +1,4 @@
-<h2>[% doc.title %] <small>Send document via email link</small></h2>
+<h2>[% doc.title | html %] <small>Send document via email link</small></h2>
 
 <form method="post">
     <div class="form-group">
