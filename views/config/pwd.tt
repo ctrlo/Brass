@@ -28,7 +28,7 @@
                         <label>
                             [% st = server.id %]
                             <input name="server" type="checkbox" value="[% server.id %]" [% IF pwd.servers.$st %]checked[% END %]>
-                            [% server.name %]
+                            [% server.name | html %]
                         </label>
                     </div>
                 [% END %]
@@ -62,7 +62,7 @@
                 <td>[% pwd.type | html_entity %]</td>
                 <td>[% pwd.username | html %]</td>
                 <td>[% pwd.uad | html %]</td>
-                <td>[% pwd.servers.values.join(', ') %]</td>
+                <td>[% pwd.servers.values.join(', ') | html %]</td>
                 <td>[% pwd.last_changed.ymd %]</td>
             </tr>
         [% END %]
