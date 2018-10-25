@@ -114,6 +114,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "notes",
   { data_type => "text", is_nullable => 1 },
+  "is_production",
+  { data_type => "smallint", is_nullable => 0, default_value => 0 },
 );
 
 =head1 PRIMARY KEY
