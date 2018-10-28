@@ -1,0 +1,145 @@
+{
+   "belongs_to" : {
+      "fetch" : 0
+   },
+   "has_many" : {
+      "fetch" : 0
+   },
+   "sets" : [
+      {
+         "quantity" : "all",
+         "class" : "UserPermission"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Docsend"
+      },
+      {
+         "class" : "Priority",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Cert"
+      },
+      {
+         "class" : "CertUse",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "UserServertype"
+      },
+      {
+         "class" : "Customer",
+         "quantity" : "all"
+      },
+      {
+         "class" : "IssuePriority",
+         "quantity" : "all"
+      },
+      {
+         "class" : "Domain",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "User"
+      },
+      {
+         "class" : "Pw",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Servertype"
+      },
+      {
+         "class" : "IssueStatus",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "ServerCert"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Issuetype"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Comment"
+      },
+      {
+         "quantity" : "all",
+         "class" : "IssueTag"
+      },
+      {
+         "class" : "Project",
+         "quantity" : "all"
+      },
+      {
+         "class" : "Site",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "File"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Status"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Tag"
+      },
+      {
+         "quantity" : "all",
+         "class" : "UserProject"
+      },
+      {
+         "class" : "Server",
+         "quantity" : "all"
+      },
+      {
+         "class" : "UserTopic",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "ServerServertype"
+      },
+      {
+         "quantity" : "all",
+         "class" : "EventPerson"
+      },
+      {
+         "class" : "ServerPw",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Eventtype"
+      },
+      {
+         "class" : "Uad",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Event"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Permission"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Issue"
+      }
+   ],
+   "might_have" : {
+      "fetch" : 0
+   }
+}

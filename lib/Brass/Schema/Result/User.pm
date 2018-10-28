@@ -263,6 +263,36 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 user_servertypes
+
+Type: has_many
+
+Related object: L<Brass::Schema::Result::UserServertype>
+
+=cut
+
+__PACKAGE__->has_many(
+  "user_servertypes",
+  "Brass::Schema::Result::UserServertype",
+  { "foreign.user" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 user_pws
+
+Type: has_many
+
+Related object: L<Brass::Schema::Result::Pw>
+
+=cut
+
+__PACKAGE__->has_many(
+  "pws",
+  "Brass::Schema::Result::Pw",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 user_topics
 
 Type: has_many

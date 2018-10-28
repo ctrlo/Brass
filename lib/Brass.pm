@@ -222,7 +222,8 @@ any '/config/pwd/?:id?' => require_role 'config' => sub {
             all_servers => $servers,
             uads        => $uads,
         )->all,
-        page   => 'config/pwd',
+        users => $users,
+        page  => 'config/pwd',
     };
 
     if (defined $id)
@@ -241,7 +242,7 @@ any '/config/pwd/?:id?' => require_role 'config' => sub {
                 pattern   => '%F',
             );
             $pwd->type(param 'type');
-            $pwd->username(param 'username');
+            $pwd->user_id(param('user_id') || undef);
             $pwd->last_changed($strp->parse_datetime(param 'last_changed'));
             $pwd->set_uad(param 'uad');
             $pwd->set_servers(param 'server');

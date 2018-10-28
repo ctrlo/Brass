@@ -64,6 +64,13 @@ has username => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->username; },
 );
 
+has user_id => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->user_id; },
+);
+
 has set_uad => (
     is      => 'rw',
     isa     => Maybe[Int],
@@ -96,6 +103,7 @@ sub inflate_result {
         id             => $data->{id},
         type           => $data->{type},
         username       => $data->{username},
+        user_id        => $data->{user_id},
         set_uad        => $data->{uad_id},
         set_server     => $data->{server_id},
         last_changed   => $last_changed,
@@ -129,6 +137,7 @@ sub write
     my $values = {
         type         => $self->type,
         username     => $self->username,
+        user_id      => $self->user_id,
         uad_id       => $self->set_uad,
         server_id    => $self->set_server,
         last_changed => $self->last_changed,

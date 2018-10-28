@@ -82,4 +82,19 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 user_servertypes
+
+Servertype: has_many
+
+Related object: L<Brass::Schema::Result::UserServertype>
+
+=cut
+
+__PACKAGE__->has_many(
+  "user_servertypes",
+  "Brass::Schema::Result::UserServertype",
+  { "foreign.servertype" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 1;
