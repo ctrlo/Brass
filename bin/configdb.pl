@@ -189,6 +189,16 @@ elsif ($type eq 'server')
         });
         print $serv->domain->name;
     }
+    elsif ($action eq 'is_production')
+    {
+        $server or die "Please specify server with --server";
+        my ($serv) = $sch->resultset('Server')->search({
+            'me.name' => $server,
+        },{
+            prefetch => 'domain',
+        });
+        print $serv->is_production;
+    }
     elsif ($action eq 'sudo')
     {
         $server or die "Please specify server with --server";
