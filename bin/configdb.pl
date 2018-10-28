@@ -203,7 +203,8 @@ elsif ($type eq 'server')
     {
         $server or die "Please specify server with --server";
         my ($serv) = $sch->resultset('Server')->search({
-            'me.name' => $server,
+            'me.name'      => $server,
+            'user.deleted' => undef,
         },{
             prefetch => {
                 server_servertypes => {
