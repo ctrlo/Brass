@@ -199,6 +199,37 @@ elsif ($type eq 'server')
         });
         print $serv->is_production;
     }
+    elsif ($action eq 'sshkeys')
+    {
+        $server or die "Please specify server with --server";
+        my ($serv) = $sch->resultset('Server')->search({
+            'me.name' => $server,
+        },{
+            prefetch => {
+                server_servertypes => {
+                    servertype => {
+                        user_servertypes => {
+                            user => 'pws',
+                        },
+                    },
+                },
+            },
+        });
+        my %keys;
+        foreach my $st ($serv->server_servertypes)
+        {
+            foreach my $ust ($st->servertype->user_servertypes)
+            {
+                foreach my $pw ($ust->user->pws)
+                {
+                    my $key = $pw->publickey or next;
+                    $key =~ s/\s+$//; # May or may not have trailing space
+                    $keys{$key} = 1 if $key;
+                }
+            }
+        }
+        print "$_\n" foreach keys %keys;
+    }
     elsif ($action eq 'sudo')
     {
         $server or die "Please specify server with --server";
