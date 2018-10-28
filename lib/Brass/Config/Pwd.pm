@@ -176,6 +176,9 @@ sub write
 sub delete
 {   my $self = shift;
     my $guard = $self->schema->txn_scope_guard;
+    $self->schema->resultset('ServerPw')->search({
+        pw_id => $self->id,
+    })->delete;
     $self->_rset->delete;
     $guard->commit;
 }
