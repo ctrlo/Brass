@@ -57,6 +57,13 @@ has type => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->type; },
 );
 
+has publickey => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->publickey; },
+);
+
 has username => (
     is      => 'rw',
     isa     => Maybe[Str],
@@ -102,6 +109,7 @@ sub inflate_result {
     $_[0]->new(
         id             => $data->{id},
         type           => $data->{type},
+        publickey      => $data->{publickey},
         username       => $data->{username},
         user_id        => $data->{user_id},
         set_uad        => $data->{uad_id},
@@ -136,6 +144,7 @@ sub write
     my $guard = $self->schema->txn_scope_guard;
     my $values = {
         type         => $self->type,
+        publickey    => $self->publickey,
         username     => $self->username,
         user_id      => $self->user_id,
         uad_id       => $self->set_uad,

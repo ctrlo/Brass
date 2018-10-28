@@ -32,6 +32,10 @@
                         [% END %]
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="publickey">SSH public key</label>
+                    <textarea name="publickey" id="publickey" class="form-control" rows="10">[% pwd.publickey | html %]</textarea>
+                </div>
                 [% FOR server IN servers %]
                     <div class="checkbox">
                         <label>

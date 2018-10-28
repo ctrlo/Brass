@@ -243,6 +243,7 @@ any '/config/pwd/?:id?' => require_role 'config' => sub {
             );
             $pwd->type(param 'type');
             $pwd->user_id(param('user_id') || undef);
+            $pwd->publickey(param 'publickey');
             $pwd->last_changed($strp->parse_datetime(param 'last_changed'));
             $pwd->set_uad(param 'uad');
             $pwd->set_servers(param 'server');
