@@ -1,4 +1,7 @@
 <h2>[% doc.title | html %]</h2>
+[% IF NOT doc.classification %]
+    <div class="alert alert-warning">This document does not have a security classification defined</div>
+[% END %]
 [% IF doc.draft_for_review %]
 <div class="alert alert-warning">This document has a <a href="/version/[% doc.draft.id %]">draft awaiting review</a>
     [% IF doc.draft.notes %]
