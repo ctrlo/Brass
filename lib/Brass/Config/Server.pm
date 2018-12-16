@@ -143,6 +143,13 @@ has notes => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->notes; },
 );
 
+has local_ip => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->local_ip; },
+);
+
 has sites => (
     is      => 'rw',
     isa     => ArrayRef,
@@ -260,6 +267,7 @@ sub write
         domain_id   => $self->domain->id,
         sudo        => $self->sudo,
         notes       => $self->notes,
+        local_ip    => $self->local_ip,
     };
     if ($self->id)
     {

@@ -151,6 +151,7 @@ any '/config/server/?:id?' => require_role 'config' => sub {
             $server->set_types(param 'type');
             $server->set_sites(param 'sites');
             $server->notes(param 'notes');
+            $server->local_ip(param 'local_ip');
             $server->write;
             redirect '/config/server';
         }
