@@ -1,6 +1,7 @@
 <h2>[% doc.title | html %] <small>Send document via email link</small></h2>
 
 <form method="post">
+    <input type="hidden" name="csrf_token" value="[% csrf_token %]">
     <div class="form-group">
         <label for="email">Email</label>
         <input type="text" class="form-control" id="email" name="email">

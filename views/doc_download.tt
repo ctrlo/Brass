@@ -3,5 +3,6 @@
 <p>This link is only valid for one use. Once the document has been downloaded it will no longer be valid.</p>
 
 <form method="post">
+    <input type="hidden" name="csrf_token" value="[% csrf_token %]">
     <button type="submit" name="download" value="download" class="btn btn-default">Click here to download document</button>
 </form>

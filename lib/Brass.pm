@@ -47,6 +47,7 @@ use IPC::ShellCmd;
 use LaTeX::Encode qw/latex_encode/;
 use Lingua::EN::Numbers::Ordinate;
 use Log::Report::DBIC::Profiler;
+use Session::Token;
 
 use Dancer2;
 use Dancer2::Plugin::DBIC;
@@ -60,11 +61,33 @@ schema->storage->debug(1);
 
 Brass::CurrentUser->instance; # This singleton class always contains the current user making the request
 
+sub _update_csrf_token
+{   session csrf_token => Session::Token->new(length => 32)->get;
+}
+
 hook before => sub {
 
     # Static content
     return if request->uri =~ m!^/(error|js|css|login|images|fonts)!;
     return if param 'error';
+
+    if (!session 'csrf_token')
+    {
+        _update_csrf_token();
+    }
+
+    if (request->is_post)
+    {
+        # Protect against CSRF attacks
+        panic __x"csrf-token missing for path {path}", path => request->path
+            if !param 'csrf_token';
+        error __x"Suspected attack: CSRF token does not match that in the session"
+            if param('csrf_token') ne session('csrf_token');
+
+        # If it's a potential login, change the token
+        _update_csrf_token()
+            if request->path eq '/login';
+    }
 
     my $user = Brass::CurrentUser->instance;
     $user->user(logged_in_user);
@@ -75,7 +98,8 @@ hook before => sub {
 
 hook before_template => sub {
     my $tokens = shift;
-    $tokens->{user}     = logged_in_user;
+    $tokens->{user}       = logged_in_user;
+    $tokens->{csrf_token} = session 'csrf_token';
 };
 
 get '/' => sub {
@@ -84,7 +108,7 @@ get '/' => sub {
     };
 };
 
-any '/upload' => sub {
+any ['get', 'post'] => '/upload' => sub {
 
     if (param 'submit')
     {
@@ -106,7 +130,7 @@ get '/myip' => sub {
     };
 };
 
-any '/config/server/?:id?' => require_role 'config' => sub {
+any ['get', 'post'] => '/config/server/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';
     my $schema  = schema;
@@ -168,7 +192,7 @@ any '/config/server/?:id?' => require_role 'config' => sub {
     template 'config/server' => $params;
 };
 
-any '/config/uad/?:id?' => require_role 'config' => sub {
+any ['get', 'post'] => '/config/uad/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';
     my $schema  = schema;
@@ -209,7 +233,7 @@ any '/config/uad/?:id?' => require_role 'config' => sub {
     template 'config/uad' => $params;
 };
 
-any '/config/pwd/?:id?' => require_role 'config' => sub {
+any ['get', 'post'] => '/config/pwd/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';
     my $schema  = schema;
@@ -266,7 +290,7 @@ any '/config/pwd/?:id?' => require_role 'config' => sub {
     template 'config/pwd' => $params;
 };
 
-any '/config/customer/?:id?' => require_role 'config' => sub {
+any ['get', 'post'] => '/config/customer/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';
     my $schema  = schema;
@@ -305,7 +329,7 @@ any '/config/customer/?:id?' => require_role 'config' => sub {
     template 'config/customer' => $params;
 };
 
-any '/config/cert/?:id?' => require_role 'config' => sub {
+any ['get', 'post'] => '/config/cert/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';
     my $schema  = schema;
@@ -346,7 +370,7 @@ any '/config/cert/?:id?' => require_role 'config' => sub {
     template 'config/cert' => $params;
 };
 
-any '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_read_all)] => sub {
+any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_read_all)] => sub {
 
     my $id      = param 'id';
     my $schema  = schema;
@@ -520,7 +544,7 @@ get '/doc' => require_role doc => sub {
     };
 };
 
-any '/doc/view/:id' => require_role doc => sub {
+any ['get', 'post'] => '/doc/view/:id' => require_role doc => sub {
 
     my $id     = param 'id';
     my $schema = schema('doc');
@@ -563,7 +587,7 @@ any '/doc/view/:id' => require_role doc => sub {
     };
 };
 
-any '/doc/send/:id' => require_role doc => sub {
+any ['get', 'post'] => '/doc/send/:id' => require_role doc => sub {
 
     my $id     = param 'id';
     my $schema = schema('doc');
@@ -588,7 +612,7 @@ any '/doc/send/:id' => require_role doc => sub {
     };
 };
 
-any '/doc/download/:code' => sub {
+any ['get', 'post'] => '/doc/download/:code' => sub {
 
     my $code = param 'code';
 
@@ -627,7 +651,7 @@ any '/doc/download/:code' => sub {
     };
 };
 
-any '/doc/edit/:id' => require_role doc => sub {
+any ['get', 'post'] => '/doc/edit/:id' => require_role doc => sub {
 
     my $id     = param 'id';
     my $schema = schema('doc');
@@ -662,7 +686,7 @@ any '/doc/edit/:id' => require_role doc => sub {
     };
 };
 
-any '/doc/content/:id' => require_role doc => sub {
+any ['get', 'post'] => '/doc/content/:id' => require_role doc => sub {
 
     my $id     = param 'id';
     my $schema = schema('doc');
@@ -741,7 +765,7 @@ get '/doc/latest/:id' => require_role doc => sub {
     redirect "/version/".$id;
 };
 
-any '/doc/image/:id?' => require_role doc => sub {
+any ['get', 'post'] => '/doc/image/:id?' => require_role doc => sub {
 
     my $id     = param 'id';
     my $schema = schema('doc');

@@ -14,6 +14,7 @@
     [% doctype = "binary" %]
 [% END %]
 <form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="[% csrf_token %]">
     <div class="form-group">
         <label for="file">Document type</label>
         <div class="radio">

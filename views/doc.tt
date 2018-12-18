@@ -3,6 +3,7 @@
 </p>
 <p>
 <form class="form-inline">
+    <input type="hidden" name="csrf_token" value="[% csrf_token %]">
     <div class="form-group">
         <label for="topic">Topic:</label>
         <select class="form-control" id="topic" name="topic" onchange="this.form.submit()">

@@ -2,6 +2,7 @@
     <div class="row">
         <div class="col-md-6">
             <form method="post">
+                <input type="hidden" name="csrf_token" value="[% csrf_token %]">
                 <div class="form-group">
                     <label for="title">Title</label>
                     <input type="text" class="form-control" id="title" name="title" value="[% issue.title | html_entity %]">
@@ -129,6 +130,7 @@
         [% IF issue.id %]
             <div class="col-md-6">
                 <form method="post">
+                    <input type="hidden" name="csrf_token" value="[% csrf_token %]">
                     <div class="form-group">
                         <label for="comment">Statuses</label>
                         [% FOR status IN issue.status_history %]
@@ -224,6 +226,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form role="form" method="post">
+            <input type="hidden" name="csrf_token" value="[% csrf_token %]">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="modal_permissions-title">Filtering</h4>
@@ -291,6 +294,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form role="form" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="[% csrf_token %]">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="myModalLabel">Add attachment</h4>
