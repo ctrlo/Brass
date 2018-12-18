@@ -219,7 +219,6 @@ sub _build_servers
         prefetch => 'server',
     })->all;
     my %servers = map { $_->server->id => $_->server->name } @servers;
-    use Data::Dumper; say STDERR Dumper \%servers;
     \%servers;
 }
 
