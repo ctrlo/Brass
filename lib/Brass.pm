@@ -48,6 +48,7 @@ use LaTeX::Encode qw/latex_encode/;
 use Lingua::EN::Numbers::Ordinate;
 use Log::Report::DBIC::Profiler;
 use Session::Token;
+use Sys::Hostname;
 
 use Dancer2;
 use Dancer2::Plugin::DBIC;
@@ -86,6 +87,13 @@ hook before => sub {
         _update_csrf_token()
             if request->path eq '/login';
     }
+
+    # Hack to prevent Host Header Injection attacks. Ideally the host name
+    # would be overridden, but this is not too easy as DPAE extracts it
+    # directly from the submitted host for the password reset email
+    error __x"Requested host name {host} does not match server name {server}",
+        host => request->base->host, server => hostname
+            if hostname ne request->base->host;
 
     my $user = Brass::CurrentUser->instance;
     $user->user(logged_in_user);
