@@ -67,8 +67,6 @@ sub _update_csrf_token
 
 hook before => sub {
 
-    # Static content
-    return if request->uri =~ m!^/(error|js|css|login|images|fonts)!;
     return if param 'error';
 
     if (!session 'csrf_token')
