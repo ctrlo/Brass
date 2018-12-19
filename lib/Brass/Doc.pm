@@ -441,7 +441,7 @@ sub _version_add
             reviewer => $options{user}->id,
             approver => $options{user}->id,
             notes    => $notes,
-        }) if $signed; # No formal publishing
+        }) if $signed || $record; # No formal publishing
     }
     else {
         $latest->update({
