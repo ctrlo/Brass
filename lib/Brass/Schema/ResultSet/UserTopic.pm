@@ -11,7 +11,10 @@ sub topic
 {   my ($self, $topic_id) = @_;
 
     $self->search({
-        topic => $topic_id,
+        'me.topic'     => $topic_id,
+        'user.deleted' => undef,
+    },{
+        join => 'user',
     });
 }
 

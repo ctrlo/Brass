@@ -344,7 +344,6 @@ sub update_topics
 {   my ($self, %params) = @_;
     $self->user_topics->delete; # lazy
 
-    use Data::Dumper; say STDERR Dumper \%params;
     foreach my $topic_id (@{$params{doc}})
     {
         my $permission = $self->result_source->schema->resultset('Permission')->search({

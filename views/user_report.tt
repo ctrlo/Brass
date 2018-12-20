@@ -8,7 +8,6 @@
             [% NEXT UNLESS permission.user_permissions.size %]
             <dt>[% permission.description | html %]</dt>
             [% FOREACH ut IN permission.user_permissions %]
-                [% NEXT IF ut.user.deleted %]
                 <dd>
                     [% ut.user.name %]
                     [% IF permission.description.match("certain") %]
@@ -28,7 +27,6 @@
             [% NEXT UNLESS project.user_projects.size %]
             <dt>[% project.name | html %]</dt>
             [% FOREACH ut IN project.user_projects %]
-                [% NEXT IF ut.user.deleted %]
                 <dd>[% ut.user.name %]</dd>
             [% END %]
         [% END %]
@@ -41,7 +39,6 @@
             [% NEXT UNLESS servertype.user_servertypes.size %]
             <dt>[% servertype.name | html %]</dt>
             [% FOREACH ut IN servertype.user_servertypes %]
-                [% NEXT IF ut.user.deleted %]
                 <dd>[% ut.user.name %]</dd>
             [% END %]
         [% END %]
@@ -51,11 +48,10 @@
 
     <dl class="dl-horizontal">
         [% FOREACH topic IN topics %]
-            [% user_topics = user_topics.topic(topic.id) %]
+            [% user_topics = user_topics_rs.topic(topic.id) %]
             [% NEXT UNLESS user_topics %]
-            <dt>[% topic.name | html %]</dt>
+            <dt>[% topic.description | html %]</dt>
             [% FOREACH ut IN user_topics %]
-                [% NEXT IF ut.user.deleted %]
                 <dd>[% ut.user.name %] ([% ut.permission.description | html %])</dd>
             [% END %]
         [% END %]

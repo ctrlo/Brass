@@ -152,13 +152,13 @@ get '/user_report' => require_role 'user_admin' => sub {
     my $schema_doc = schema('doc');
 
     template 'user_report' => {
-        users       => [$schema->resultset('User')->active->all],
-        permissions => [$schema->resultset('Permission')->all],
-        servertypes => [$schema->resultset('Servertype')->all],
-        projects    => [$schema->resultset('Project')->all],
-        topics      => [$schema_doc->resultset('Topic')->all],
-        user_topics => $schema->resultset('UserTopic'),
-        page        => 'user',
+        users          => [$schema->resultset('User')->active->all],
+        permissions    => [$schema->resultset('Permission')->active_users],
+        servertypes    => [$schema->resultset('Servertype')->active_users],
+        projects       => [$schema->resultset('Project')->active_users],
+        topics         => [$schema_doc->resultset('Topic')->all],
+        user_topics_rs => $schema->resultset('UserTopic'),
+        page           => 'user',
     };
 };
 
