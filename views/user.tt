@@ -1,0 +1,95 @@
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <input type="hidden" name="csrf_token" value="[% csrf_token %]">
+            <div class="form-group">
+                <label for="firstname">Forename</label>
+                <input type="text" class="form-control" id="firstname" name="firstname" value="[% u.firstname | html %]">
+            </div>
+            <div class="form-group">
+                <label for="surname">Surname</label>
+                <input type="text" class="form-control" id="surname" name="surname" value="[% u.surname | html %]">
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" value="[% u.username | html %]">
+            </div>
+
+            <div class="form-group">
+                <label>Permissions</label>
+                [% FOREACH permission IN permissions %]
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="permissions" value="[% permission.id %]"
+                                [% IF u.has_permission(permission.name) %]checked[% END %]>[% permission.description | html %]
+                        </label>
+                    </div>
+                [% END %]
+            </div>
+
+            <div class="form-group">
+                <label>Projects</label>
+                [% FOREACH project IN projects %]
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="projects" value="[% project.id %]"
+                                [% IF u.has_project(project.id) %]checked[% END %]>[% project.name | html %]
+                        </label>
+                    </div>
+                [% END %]
+            </div>
+
+            <div class="form-group">
+                <label>Server types</label>
+                [% FOREACH servertype IN servertypes %]
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="servertypes" value="[% servertype.id %]"
+                                [% IF u.has_servertype(servertype.id) %]checked[% END %]>[% servertype.name | html %]
+                        </label>
+                    </div>
+                [% END %]
+            </div>
+
+            <div class="form-group">
+                <label>Topics</label>
+                <table class="table">
+                    <tr>
+                        <th>Topic</th>
+                        <th>Read</th>
+                        <th>Publish</th>
+                        <th>Save</th>
+                        <th>Record</th>
+                    </tr>
+                [% FOREACH topic IN topics %]
+                    <tr>
+                        <td>[% topic.name | html %] [% topic.id %]</td>
+                        <td>
+                            <input type="checkbox" name="doc" value="[% topic.id %]"
+                                [% IF u.has_topic_permission(topic.id, "doc") %]checked[% END %]>
+                        </td>
+                        <td>
+                            <input type="checkbox" name="doc_publish" value="[% topic.id %]"
+                                [% IF u.has_topic_permission(topic.id, "doc_publish") %]checked[% END %]>
+                        </td>
+                        <td>
+                            <input type="checkbox" name="doc_save" value="[% topic.id %]"
+                                [% IF u.has_topic_permission(topic.id, "doc_save") %]checked[% END %]>
+                        </td>
+                        <td>
+                            <input type="checkbox" name="doc_record" value="[% topic.id %]"
+                                [% IF u.has_topic_permission(topic.id, "doc_record") %]checked[% END %]>
+                        </td>
+                        </label>
+                    </tr>
+                [% END %]
+                </table>
+            </div>
+
+            <button type="submit" name="save" value="save" class="btn btn-primary">Save</button>
+            [% IF u.id %]
+                <button type="submit" name="delete" value="delete" class="btn btn-default">Delete</button>
+            [% END %]
+        </form>
+    </div>
+<div>

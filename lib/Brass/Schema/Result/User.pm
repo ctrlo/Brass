@@ -308,6 +308,68 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+sub update_permissions
+{   my ($self, @permission_ids) = @_;
+    $self->user_permissions->delete; # lazy - should search first
+    foreach my $permission_id (@permission_ids)
+    {
+        $self->create_related('user_permissions', {permission => $permission_id});
+    }
+}
+
+sub update_projects
+{   my ($self, @project_ids) = @_;
+    $self->user_projects->delete; # lazy
+    foreach my $project_id (@project_ids)
+    {
+        $self->create_related('user_projects', {project => $project_id});
+    }
+}
+
+sub update_servertypes
+{   my ($self, @servertype_ids) = @_;
+    $self->user_servertypes->delete; # lazy
+    foreach my $servertype_id (@servertype_ids)
+    {
+        $self->create_related('user_servertypes', {servertype => $servertype_id});
+    }
+}
+
+sub update_topics
+{   my ($self, %params) = @_;
+    $self->user_topics->delete; # lazy
+
+    use Data::Dumper; say STDERR Dumper \%params;
+    foreach my $topic_id (@{$params{doc}})
+    {
+        my $permission = $self->result_source->schema->resultset('Permission')->search({
+            name => 'doc',
+        })->next;
+        $self->create_related('user_topics', {topic => $topic_id, permission => $permission->id});
+    }
+    foreach my $topic_id (@{$params{doc_publish}})
+    {
+        my $permission = $self->result_source->schema->resultset('Permission')->search({
+            name => 'doc_publish',
+        })->next;
+        $self->create_related('user_topics', {topic => $topic_id, permission => $permission->id});
+    }
+    foreach my $topic_id (@{$params{doc_save}})
+    {
+        my $permission = $self->result_source->schema->resultset('Permission')->search({
+            name => 'doc_save',
+        })->next;
+        $self->create_related('user_topics', {topic => $topic_id, permission => $permission->id});
+    }
+    foreach my $topic_id (@{$params{doc_record}})
+    {
+        my $permission = $self->result_source->schema->resultset('Permission')->search({
+            name => 'doc_record',
+        })->next;
+        $self->create_related('user_topics', {topic => $topic_id, permission => $permission->id});
+    }
+}
+
 sub has_permission
 {   my ($self, $permission) = @_;
     (grep { $_->permission->name eq $permission } $self->user_permissions) ? 1 : 0;
@@ -316,6 +378,11 @@ sub has_permission
 sub has_project
 {   my ($self, $project_id) = @_;
     (grep { $_->project->id == $project_id } $self->user_projects) ? 1 : 0;
+}
+
+sub has_servertype
+{   my ($self, $servertype_id) = @_;
+    (grep { $_->servertype->id == $servertype_id } $self->user_servertypes) ? 1 : 0;
 }
 
 sub has_topic_permission

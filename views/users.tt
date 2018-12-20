@@ -1,0 +1,19 @@
+<p>
+    <a href="/user/0" class="btn btn-default">New user</a>
+</p>
+<table class="table table-striped">
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Surname</th>
+        <th>Forename</th>
+    </tr>
+    [% FOREACH u IN users %]
+        <tr>
+            <td><a href="/user/[% u.id %]">[% u.id %]</a></td>
+            <td>[% u.username | html %]</td>
+            <td>[% u.surname | html %]</td>
+            <td>[% u.firstname | html %]</td>
+        </tr>
+    [% END %]
+</table>

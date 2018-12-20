@@ -136,6 +136,65 @@ get '/myip' => sub {
     };
 };
 
+get '/users' => require_role 'user_admin' => sub {
+
+    my $schema  = schema;
+
+    template 'users' => {
+        users => [$schema->resultset('User')->active->all],
+        page  => 'user',
+    };
+};
+
+any ['get', 'post'] => '/user/:id' => require_role 'config' => sub {
+
+    my $id         = param 'id';
+    my $schema     = schema;
+    my $schema_doc = schema('doc');
+
+    my $user = $id
+        ? $schema->resultset('User')->active->find($id)
+        : $schema->resultset('User')->new({});
+
+    if (body_parameters->get('save'))
+    {
+        my $guard = $schema->txn_scope_guard;
+
+        $user->insert if !$id;
+
+        $user->update({
+            firstname => body_parameters->get('firstname'),
+            surname   => body_parameters->get('surname'),
+            username  => body_parameters->get('username'),
+            email     => body_parameters->get('username'),
+        });
+
+        $user->update_permissions(body_parameters->get_all('permissions'));
+        $user->update_projects(body_parameters->get_all('projects'));
+        $user->update_servertypes(body_parameters->get_all('servertypes'));
+        $user->update_servertypes(body_parameters->get_all('servertypes'));
+        $user->update_topics(
+            doc         => [body_parameters->get_all('doc')],
+            doc_publish => [body_parameters->get_all('doc_publish')],
+            doc_save    => [body_parameters->get_all('doc_save')],
+            doc_record  => [body_parameters->get_all('doc_record')],
+        );
+
+        $guard->commit;
+
+        logged_in_user->discard_changes if logged_in_user->id == $user->id; # Update for template
+    }
+
+    template 'user' => {
+        u           => $user,
+        permissions => [$schema->resultset('Permission')->all],
+        projects    => [$schema->resultset('Project')->all],
+        servertypes => [$schema->resultset('Servertype')->all],
+        topics      => [$schema_doc->resultset('Topic')->all],
+        page        => 'user',
+    };
+};
+
 any ['get', 'post'] => '/config/server/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';

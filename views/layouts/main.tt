@@ -62,6 +62,9 @@
                                         <li [% IF page=="config/cert" %]class="active"[% END %]><a href="/config/cert">Certificates</a></li>
                                         <li [% IF page=="config/pwd" %]class="active"[% END %]><a href="/config/pwd">Passwords</a></li>
                                         <li [% IF page=="config/customer" %]class="active"[% END %]><a href="/config/customer">Customers</a></li>
+                                        [% IF user.has_permission('user_admin') %]
+                                            <li [% IF page=="user" %]class="active"[% END %]><a href="/users">Manage users</a></li>
+                                        [% END %]
                                     </ul>
                                     </li>
                                 [% END %]
