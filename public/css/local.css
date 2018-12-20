@@ -57,3 +57,11 @@ table.diff td del {
 th > a {
     color: #333;
 }
+
+.user_report dt {
+    text-align: left;
+    width: 350px;
+}
+.user_report dd {
+    margin-left: 350px;
+}

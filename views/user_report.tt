@@ -1,0 +1,63 @@
+<h1>Users report</h1>
+
+<div class="user_report">
+    <h2>Permissions</h2>
+
+    <dl class="dl-horizontal">
+        [% FOREACH permission IN permissions %]
+            [% NEXT UNLESS permission.user_permissions.size %]
+            <dt>[% permission.description | html %]</dt>
+            [% FOREACH ut IN permission.user_permissions %]
+                [% NEXT IF ut.user.deleted %]
+                <dd>
+                    [% ut.user.name %]
+                    [% IF permission.description.match("certain") %]
+                        ([% FOREACH up IN ut.user.user_projects %]
+                            [% up.project.name | html %]
+                        [% END %])
+                    [% END %]
+                </dd>
+            [% END %]
+        [% END %]
+    </dl>
+
+    <h2>Projects</h2>
+
+    <dl class="dl-horizontal">
+        [% FOREACH project IN projects %]
+            [% NEXT UNLESS project.user_projects.size %]
+            <dt>[% project.name | html %]</dt>
+            [% FOREACH ut IN project.user_projects %]
+                [% NEXT IF ut.user.deleted %]
+                <dd>[% ut.user.name %]</dd>
+            [% END %]
+        [% END %]
+    </dl>
+
+    <h2>Server types</h2>
+
+    <dl class="dl-horizontal">
+        [% FOREACH servertype IN servertypes %]
+            [% NEXT UNLESS servertype.user_servertypes.size %]
+            <dt>[% servertype.name | html %]</dt>
+            [% FOREACH ut IN servertype.user_servertypes %]
+                [% NEXT IF ut.user.deleted %]
+                <dd>[% ut.user.name %]</dd>
+            [% END %]
+        [% END %]
+    </dl>
+
+    <h2>Topics</h2>
+
+    <dl class="dl-horizontal">
+        [% FOREACH topic IN topics %]
+            [% user_topics = user_topics.topic(topic.id) %]
+            [% NEXT UNLESS user_topics %]
+            <dt>[% topic.name | html %]</dt>
+            [% FOREACH ut IN user_topics %]
+                [% NEXT IF ut.user.deleted %]
+                <dd>[% ut.user.name %] ([% ut.permission.description | html %])</dd>
+            [% END %]
+        [% END %]
+    </dl>
+</div>

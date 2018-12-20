@@ -1,5 +1,6 @@
 <p>
     <a href="/user/0" class="btn btn-default">New user</a>
+    <a href="/user_report" class="btn btn-default">Users report</a>
 </p>
 <table class="table table-striped">
     <tr>

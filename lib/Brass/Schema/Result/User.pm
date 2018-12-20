@@ -308,6 +308,11 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+sub name
+{   my $self = shift;
+    return $self->firstname." ".$self->surname;
+}
+
 sub update_permissions
 {   my ($self, @permission_ids) = @_;
     $self->user_permissions->delete; # lazy - should search first
@@ -390,6 +395,12 @@ sub has_topic_permission
     my @user_topics = $self->user_topics
         or return 1; # If not limited, user will have no topics
     (grep { $_->topic == $topic_id && $_->permission->name eq $permission } @user_topics) ? 1 : 0;
+}
+
+sub issue_permissions
+{   my $self = shift;
+    my @perms = grep { $_->permission->name =~ /issue_/ } $self->user_permissions;
+    join ', ', map { $_->permission->description } @perms;
 }
 
 1;

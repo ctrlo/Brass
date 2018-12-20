@@ -146,6 +146,22 @@ get '/users' => require_role 'user_admin' => sub {
     };
 };
 
+get '/user_report' => require_role 'user_admin' => sub {
+
+    my $schema     = schema;
+    my $schema_doc = schema('doc');
+
+    template 'user_report' => {
+        users       => [$schema->resultset('User')->active->all],
+        permissions => [$schema->resultset('Permission')->all],
+        servertypes => [$schema->resultset('Servertype')->all],
+        projects    => [$schema->resultset('Project')->all],
+        topics      => [$schema_doc->resultset('Topic')->all],
+        user_topics => $schema->resultset('UserTopic'),
+        page        => 'user',
+    };
+};
+
 any ['get', 'post'] => '/user/:id' => require_role 'config' => sub {
 
     my $id         = param 'id';
