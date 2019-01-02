@@ -135,6 +135,12 @@ has published => (
     clearer => 1,
 );
 
+# Current live document (signed or published)
+has current => (
+    is      => 'lazy',
+    clearer => 1,
+);
+
 has published_all => (
     is      => 'lazy',
     clearer => 1,
@@ -206,7 +212,7 @@ sub set_owner
 sub _build_review_due
 {   my $self = shift;
     $self->review
-      or $self->published && $self->published->created->clone->add(years => 1);
+      or $self->current && $self->current->created->clone->add(years => 1);
 }
 
 sub _build_review_due_warning
@@ -252,6 +258,17 @@ sub _build_published
         order_by => { -desc => 'major' },
     })->all;
     $published;
+}
+
+sub _build_current
+{   my $self = shift;
+
+    $self->published or return undef;
+
+    return $self->published if !$self->signed;
+
+    return $self->signed && $self->signed->major == $self->published->major
+        ? $self->signed : $self->published->id;
 }
 
 sub _build_published_all

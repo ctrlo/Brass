@@ -838,8 +838,7 @@ get '/doc/latest/:id' => require_role doc => sub {
         schema => $schema,
     );
 
-    my $id = $doc->signed && $doc->signed->major == $doc->published->major
-        ? $doc->signed->id : $doc->published->id;
+    my $id = $doc->current->id;
 
     # No need to check permissions here - will be done after redirect
     redirect "/version/".$id;
