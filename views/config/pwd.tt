@@ -8,10 +8,6 @@
                     <input type="text" class="form-control" id="type" name="type" value="[% pwd.type | html_entity %]">
                 </div>
                 <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" value="[% pwd.username | html_entity %]">
-                </div>
-                <div class="form-group">
                     <label for="user_id">User</label>
                     <select class="form-control" id="user_id" name="user_id">
                         <option value=""></option>
@@ -37,15 +33,6 @@
                     <label for="publickey">SSH public key</label>
                     <textarea name="publickey" id="publickey" class="form-control" rows="10">[% pwd.publickey | html %]</textarea>
                 </div>
-                [% FOR server IN servers %]
-                    <div class="checkbox">
-                        <label>
-                            [% st = server.id %]
-                            <input name="server" type="checkbox" value="[% server.id %]" [% IF pwd.servers.$st %]checked[% END %]>
-                            [% server.name | html %]
-                        </label>
-                    </div>
-                [% END %]
                 [% IF user.has_permission('config_write') %]
                     <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
                     [% IF pwd.id %]
@@ -67,7 +54,6 @@
             <th>Type</th>
             <th>User</th>
             <th>UAD</th>
-            <th>Server</th>
             <th>Last changed</th>
         </tr>
         [% FOREACH pwd IN pwds %]
@@ -76,7 +62,6 @@
                 <td>[% pwd.type | html_entity %]</td>
                 <td>[% users.user(pwd.user_id) | html %]</td>
                 <td>[% pwd.uad | html %]</td>
-                <td>[% pwd.servers.values.join(', ') | html %]</td>
                 <td>[% pwd.last_changed.ymd %]</td>
             </tr>
         [% END %]
