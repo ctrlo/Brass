@@ -973,37 +973,39 @@ sub _send_doc
         write_file("$texdir/$vinfo.tex", {binmode => ':utf8'}, $content);
         my $cmd = ["$texdir/xelatex", "-jobname=$vinfo", "-shell-escape", "$texdir/$vinfo.tex"];
         # run twice to ensure contents, page numbers etc are correct
+        my $failed;
         foreach my $i (1..3) {
             my $isc = IPC::ShellCmd->new($cmd);
             $isc->working_dir("$texdir");
             # Strange things happen with the formatting when using STDIN
             # $isc->stdin($content);
             $isc->run;
+            $failed = $isc->status;
         }
         my $file_full = "$texdir/$filename";
-        if (-e $file_full)
+        my $logfile   = "$texdir/$vinfo.log";
+        if ($failed || ! -e $file_full)
         {
-            my $pdf_content = read_file($file_full);
-            $version->update({
-                blobext      => 'pdf',
-            });
-            $version->version_content->update({
-                content_blob => $pdf_content,
-            });
-            # Delete all temp files
+            my $log = read_file($logfile);
             unlink glob("$texdir/$vinfo.*");
-            return send_file(
-                \$version->version_content->content_blob,
-                content_type => 'application/pdf',
-                filename     => $filename,
-            );
+            return template 'texerror' => {
+                texlog => $log,
+            };
         }
-        else
-        {
-            die "Failed to create tex output file";
-        }
-
-
+        my $pdf_content = read_file($file_full);
+        $version->update({
+            blobext      => 'pdf',
+        });
+        $version->version_content->update({
+            content_blob => $pdf_content,
+        });
+        # Delete all temp files
+        unlink glob("$texdir/$vinfo.*");
+        return send_file(
+            \$version->version_content->content_blob,
+            content_type => 'application/pdf',
+            filename     => $filename,
+        );
     }
     else {
         my $txt = $version->version_content->content;
