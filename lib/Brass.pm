@@ -553,7 +553,7 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
                 uri_base          => request->uri_base,
                 logged_in_user_id => logged_in_user->id,
             );
-            my $action = $id ? 'udpated' : 'created';
+            my $action = $id ? 'updated' : 'created';
             $id = $issue->id;
             forwardHome({ success => "The issue has been $action successfully" }, "issue/$id" );
         }
