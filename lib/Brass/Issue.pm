@@ -390,7 +390,7 @@ sub send_notifications
     {
         next if $person == $options{logged_in_user_id};
 
-        next if $person->deleted;
+        next if !$person || $person->deleted;
 
         my $msg = Mail::Message->build(
             To             => $person->email,
