@@ -268,7 +268,7 @@ sub _build_current
     return $self->published if !$self->signed;
 
     return $self->signed && $self->signed->major == $self->published->major
-        ? $self->signed : $self->published->id;
+        ? $self->signed : $self->published;
 }
 
 sub _build_published_all
