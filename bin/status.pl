@@ -53,10 +53,10 @@ foreach my $cert (@{$certs->all})
         push @messages, sprinti "Certificate {name} has now expired",
             name => $cert->cn;
     }
-    elsif ($cert->expiry < DateTime->now->add(days => 30))
+    elsif ($cert->expiry < DateTime->now->add(days => 7))
     {
-        push @messages, sprinti "Certificate {name} expires in less than 30 days",
-            name => $cert->cn;
+        push @messages, sprinti "Certificate {name} expires in less than 7 days on {date}",
+            name => $cert->cn, date => $cert->expiry->ymd;
     }
 }
 $output .= "$_\n" foreach @messages;
