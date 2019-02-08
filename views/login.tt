@@ -18,6 +18,7 @@
       <h1>Reset your password</h1>
       <p>Please click the button below to reset your password</p>
       <form method="post">
+      <input type="hidden" name="csrf_token" value="[% csrf_token %]">
       <input type="submit" name="confirm_reset" value="Reset password">
       </form>
 
