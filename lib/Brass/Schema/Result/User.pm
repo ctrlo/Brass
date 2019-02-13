@@ -389,8 +389,14 @@ sub has_servertype
     (grep { $_->servertype->id == $servertype_id } $self->user_servertypes) ? 1 : 0;
 }
 
+sub has_doc_any
+{   my $self = shift;
+    !!grep { $self->has_permission($_) } qw/doc doc_publish doc_save doc_record/;
+}
+
 sub has_topic_permission
 {   my ($self, $topic_id, $permission) = @_;
+    return 0 if !$self->has_doc_any;
     my @user_topics = $self->user_topics
         or return 1; # If not limited, user will have no topics
     (grep { $_->topic == $topic_id && $_->permission->name eq $permission } @user_topics) ? 1 : 0;
