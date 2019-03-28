@@ -201,6 +201,14 @@ any ['get', 'post'] => '/user/:id' => require_role 'config' => sub {
         logged_in_user->discard_changes if logged_in_user->id == $user->id; # Update for template
     }
 
+    if (body_parameters->get('delete') && $id)
+    {
+        $user->update({
+            deleted => DateTime->now,
+        });
+        redirect '/users';
+    }
+
     template 'user' => {
         u           => $user,
         permissions => [$schema->resultset('Permission')->all],
