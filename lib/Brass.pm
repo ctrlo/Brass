@@ -981,6 +981,7 @@ sub _send_doc
         # run twice to ensure contents, page numbers etc are correct
         my $failed;
         foreach my $i (1..3) {
+            next if $failed;
             my $isc = IPC::ShellCmd->new($cmd);
             $isc->working_dir("$texdir");
             # Strange things happen with the formatting when using STDIN
