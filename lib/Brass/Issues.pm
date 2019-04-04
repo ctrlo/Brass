@@ -60,6 +60,8 @@ has filtering => (
             author   => $in->{user_id},
             approver => $in->{user_id},
         } if $in->{user_id};
+        $return->{'owner'} = $in->{owner}
+            if $in->{owner};
         $return->{'user_projects.user'} = $in->{project_user_id}
             if $in->{project_user_id};
         $return;

@@ -270,6 +270,15 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="filtering_owner">Owner</label>
+                    <select class="form-control" id="filtering_owner" name="filtering_owner">
+                        <option value="" [% UNLESS filtering.owner %]selected[% END %]>&lt;Ignore&gt;</option>
+                        [% FOREACH user IN users %]
+                            <option value="[% user.id %]" [% IF filtering.owner == user.id %]selected[% END %]>[% user | html_entity %]</option>
+                        [% END %]
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Tags</label>
                     [% FOREACH tag IN tags %]
                         <div class="checkbox">

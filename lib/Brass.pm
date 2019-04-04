@@ -476,6 +476,7 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
             project  => param('filtering_project'),
             security => param('filtering_security'),
             type     => param('filtering_type'),
+            owner    => param('filtering_owner'),
         };
         $filtering->{tag}    = [@tags] if @tags;
         $filtering->{status} = [@statuses] if @statuses;
