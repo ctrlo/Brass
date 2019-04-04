@@ -465,9 +465,12 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
     my $users   = Brass::Users->new(schema => schema); # Default schema
     my $issues  = Brass::Issues->new(schema => $schema, users => $users);
 
+    my $statuses = Brass::Issue::Statuses->new(schema => $schema);
+    my $default  = [ map { $_->id } grep { $_->name =~ /(new|open)/i } @{$statuses->all} ];
+
     # Always copy the filtering session, to stop it being a cache for
     # user and project filtering
-    my $filtering = { %{session('filtering') || {}} };
+    my $filtering = { %{session('filtering') || { status => $default }} };
     if (param 'submit_filtering')
     {
         my @tags     = body_parameters->get_all('filtering_tag');
@@ -510,7 +513,7 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
         tags       => [rset('Tag')->all],
         filtering  => $filtering,
         priorities => Brass::Issue::Priorities->new(schema => $schema)->all,
-        statuses   => Brass::Issue::Statuses->new(schema => $schema)->all,
+        statuses   => $statuses->all,
         types      => Brass::Issue::Types->new(schema => $schema)->all,
         projects   => Brass::Issue::Projects->new(schema => $schema, user_id => logged_in_user->id)->all,
         users      => $users->all,
