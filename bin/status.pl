@@ -65,7 +65,7 @@ $output .= "Nothing to report\n" if !@messages;
 
 my $users = Brass::Users->new(schema => $schema);
 
-foreach my $user (@{$users->all(role => 'config')})
+foreach my $user (@{$users->all(role => 'reports')})
 {
     my $msg = Mail::Message->build(
         To             => $user->email,
