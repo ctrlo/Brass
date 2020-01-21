@@ -11,10 +11,12 @@ WriteMakefile(
     NAME                => 'Brass',
     AUTHOR              => q{Ctrl O <info@ctrlo.com>},
     VERSION_FROM        => 'lib/Brass.pm',
-    ABSTRACT            => 'YOUR APPLICATION ABSTRACT',
+    ABSTRACT            => 'Ctrl-O Management System',
     ($eumm_version >= 6.3001
       ? ('LICENSE'=> 'agpl_3')
       : ()),
+    # Install configdb.pl so that external scripts can use it.
+    EXE_FILES           => [ 'bin/configdb.pl' ],
     PL_FILES            => {},
     PREREQ_PM => {
         'Test::More' => 0,
