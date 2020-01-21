@@ -1,4 +1,3 @@
-dancer2-template
-================
+# Brass
 
-Generic Dancer2 template, including Bootstrap, compatible with IE8
+The Ctrl-O management system.
