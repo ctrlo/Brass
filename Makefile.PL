@@ -11,15 +11,20 @@ WriteMakefile(
     NAME                => 'Brass',
     AUTHOR              => q{Ctrl O <info@ctrlo.com>},
     VERSION_FROM        => 'lib/Brass.pm',
-    ABSTRACT            => 'YOUR APPLICATION ABSTRACT',
+    ABSTRACT            => 'Ctrl-O Management System',
     ($eumm_version >= 6.3001
       ? ('LICENSE'=> 'agpl_3')
       : ()),
+    # Install configdb.pl so that external scripts can use it.
+    EXE_FILES           => [ 'bin/configdb.pl' ],
     PL_FILES            => {},
     PREREQ_PM => {
-        'Test::More' => 0,
-        'YAML'       => 0,
-        'Dancer2'     => 0.11,
+        'Config::IniFiles'      => 0,
+        'Crypt::CBC'            => 0,
+        'Dancer2'               => 0.11,
+        'String::Random'        => 0,
+        'Test::More'            => 0,
+        'YAML'                  => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Brass-*' },
