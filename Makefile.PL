@@ -21,7 +21,9 @@ WriteMakefile(
     PREREQ_PM => {
         'Config::IniFiles'      => 0,
         'Crypt::CBC'            => 0,
+        'Crypt::Blowfish'       => 0,
         'Dancer2'               => 0.11,
+        'DBD::mysql'            => 0,
         'String::Random'        => 0,
         'Test::More'            => 0,
         'YAML'                  => 0,
