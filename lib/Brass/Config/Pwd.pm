@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass::Config::Pwd;
 
+use IPC::ShellCmd;
+
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 use MooX::Types::MooseLike::DateTime qw/DateAndTime/;
@@ -63,6 +65,17 @@ has publickey => (
     lazy    => 1,
     builder => sub { $_[0]->_rset && $_[0]->_rset->publickey; },
 );
+
+sub fingerprint
+{   my $self = shift;
+    my $pk = $self->publickey or return;
+    my $isc = IPC::ShellCmd->new(['ssh-keygen','-lf','-']);
+    $isc->stdin($pk);
+    $isc->run;
+    my $fp = $isc->stdout;
+    $fp =~ /^[0-9]+ ([\S]*)( .*)?$/;
+    return $1;
+}
 
 has username => (
     is      => 'rw',

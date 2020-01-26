@@ -55,6 +55,7 @@
             <th>User</th>
             <th>UAD</th>
             <th>Last changed</th>
+            <th>Fingerprint</th>
         </tr>
         [% FOREACH pwd IN pwds %]
             <tr>
@@ -63,6 +64,7 @@
                 <td>[% users.user(pwd.user_id) | html %]</td>
                 <td>[% pwd.uad | html %]</td>
                 <td>[% pwd.last_changed.ymd %]</td>
+                <td>[% pwd.fingerprint | html %]</td>
             </tr>
         [% END %]
     </table>
