@@ -32,13 +32,13 @@
         <p>LOGIN FAILED</p>
       [%- END -%]
 
-      <form method="post">
+      <form method="post" autocomplete="off">
       <input type="hidden" name="csrf_token" value="[% csrf_token %]">
       <label for="username">Username:</label>
       <input type="text" name="username" id="username">
       <br />
       <label for="password">Password:</label>
-      <input type="password" name="password" id="password">
+      <input type="password" name="password" id="password" autocomplete="off">
       <br />
       <input type="submit" value="Login">
 
