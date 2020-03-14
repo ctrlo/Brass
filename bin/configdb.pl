@@ -58,7 +58,7 @@ if ($type eq 'pwd')
 
     $server or die "Please specify server with --server";
 
-    $action eq 'sqldb' || $action eq 'admonitor'
+    $action eq 'sqldb' || $action eq 'admonitor' || $action eq 'system'
         or die "Invalid action: $action";
 
     $action eq 'sqldb' && !$param

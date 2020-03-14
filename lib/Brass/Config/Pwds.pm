@@ -43,7 +43,7 @@ has all => (
 sub _build_all
 {   my $self = shift;
     my $pwd_rs = $self->schema->resultset('Pw')->search({
-        type => { '!=' => [ -and => qw/sqldb admonitor/] },
+        type => { '!=' => [ -and => qw/sqldb admonitor system/] },
     },{
         order_by => ['me.id'],
     });
