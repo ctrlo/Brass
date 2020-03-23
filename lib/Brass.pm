@@ -562,6 +562,7 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
             }
             $issue->write(logged_in_user->id);
             $issue->send_notifications(
+                is_new            => !$id,
                 uri_base          => request->uri_base,
                 logged_in_user_id => logged_in_user->id,
             );

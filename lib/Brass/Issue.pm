@@ -24,6 +24,7 @@ use Brass::Issue::Project;
 use Brass::Issue::Status;
 use Brass::Issue::Type;
 use Brass::User;
+use Brass::Users;
 use Carp;
 use DateTime;
 use Mail::Message;
@@ -386,7 +387,18 @@ sub comment_add
 sub send_notifications
 {   my ($self, %options) = @_;
     my $id = $self->id;
-    foreach my $person ($self->author, $self->owner, $self->approver)
+
+    # Avoid duplicates
+    my %to_send = map { +{ $_->id => $_ } } ($self->author, $self->owner, $self->approver);
+
+    if ($options{is_new})
+    {
+        my $users = Brass::Users->new(schema => $self->schema);
+        $to_send{$_->id} = $_
+            foreach @{$users->all(role => 'new_issue_alert')};
+    }
+
+    foreach my $person (values %to_send)
     {
         next if $person == $options{logged_in_user_id};
 
@@ -395,7 +407,7 @@ sub send_notifications
         my $msg = Mail::Message->build(
             To             => $person->email,
             'Content-Type' => 'text/plain',
-            Subject        => 'Ticket updated',
+            Subject        => $options{is_new} ? 'New ticket created' : 'Ticket updated',
             data           => <<__PLAIN,
 A ticket that you are involved in has been updated:
 
