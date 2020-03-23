@@ -391,7 +391,7 @@ sub send_notifications
     my $id = $self->id;
 
     # Avoid duplicates
-    my %to_send = map { +{ $_->id => $_ } } ($self->author, $self->owner, $self->approver);
+    my %to_send = map { $_->id => $_ } grep { $_ } ($self->author, $self->owner, $self->approver);
 
     if ($options{is_new})
     {
