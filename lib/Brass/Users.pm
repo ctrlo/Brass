@@ -62,6 +62,7 @@ sub _build__index
 
 sub user
 {   my ($self, $id) = @_;
+    $id or return undef;
     my $index = $self->_index;
     $index->{$id};
 }

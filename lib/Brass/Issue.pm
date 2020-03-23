@@ -256,7 +256,7 @@ has set_priority => (
     trigger => sub {
         my ($self, $value) = @_;
         $self->_set_priority_changed(1)
-            if ($self->priority xor $value) || $self->priority != $value;
+            if ($self->priority xor $value) || (($self->priority && $value) && $self->priority != $value);
         my $s = $value && Brass::Issue::Priority->new(
             id          => $value,
             schema      => $self->schema,

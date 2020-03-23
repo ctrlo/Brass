@@ -77,11 +77,11 @@ sub _build_all
     my $search = $self->filtering;
     $search->{'issuestatus_later.datetime'} = undef;
     $search->{'issuepriority_later.datetime'} = undef;
-    my $sort = $self->sort eq 'opened'
+    my $sort = $self->sort && $self->sort eq 'opened'
              ? 'me.id' # Sort after build
-             : $self->sort eq 'id'
+             : $self->sort && $self->sort eq 'id'
              ? 'me.id'
-             : $self->sort eq 'priority'
+             : $self->sort && $self->sort eq 'priority'
              ? 'priority.id'
              : 'me.title';
     my $issues_rs = $self->schema->resultset('Issue')->search(
@@ -111,7 +111,7 @@ sub _build_all
     $issues_rs->result_class('Brass::Issue');
     my @all = $issues_rs->all;
     $_->users($self->users) foreach @all;
-    @all = sort { DateTime->compare($a->opened, $b->opened) } @all if $self->sort eq 'opened';
+    @all = sort { DateTime->compare($a->opened, $b->opened) } @all if $self->sort && $self->sort eq 'opened';
     \@all;
 }
 
