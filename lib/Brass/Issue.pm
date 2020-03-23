@@ -94,6 +94,7 @@ has set_owner => (
     is      => 'rw',
     isa     => Maybe[Int],
     lazy    => 1,
+    coerce  => sub { $_[0] || undef }, # Allow empty strings from form
     builder => sub { $_[0]->_rset && $_[0]->_rset->get_column('owner'); },
 );
 
@@ -101,6 +102,7 @@ has set_author => (
     is      => 'rw',
     isa     => Maybe[Int],
     lazy    => 1,
+    coerce  => sub { $_[0] || undef }, # Allow empty strings from form
     builder => sub { $_[0]->_rset && $_[0]->_rset->get_column('author'); },
 );
 
@@ -108,8 +110,8 @@ has set_approver => (
     is      => 'rw',
     isa     => Maybe[Int],
     lazy    => 1,
-    builder => sub { $_[0]->_rset && $_[0]->_rset->get_column('approver'); },
     coerce  => sub { $_[0] || undef }, # Allow empty strings from form
+    builder => sub { $_[0]->_rset && $_[0]->_rset->get_column('approver'); },
 );
 
 has set_tags => (
