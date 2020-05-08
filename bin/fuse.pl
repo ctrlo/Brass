@@ -1,5 +1,12 @@
 #!/usr/bin/env perl
 
+# apt-get install libfuse-perl fuse
+#
+# Run with fusermount -u /home/<user>/receipts
+#
+# After termination run fusermount -u /home/<user>/receipts
+#
+
 use strict;
 use warnings;
 
