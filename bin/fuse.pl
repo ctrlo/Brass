@@ -203,6 +203,7 @@ sub e_release
     my @parts = grep {
         (!$_->body->dispositionFilename || $_->body->dispositionFilename !~ /\.jpg$/)
         && $_->contentType !~ m!application/pgp-signature!
+        && $_->contentType !~ m!application/zip!
         && $_->contentType !~ /^image/
     } $msg->parts('RECURSE');
 
@@ -252,6 +253,11 @@ sub e_release
     if ($notes)
     {
         # Do nothing, already parsed
+    }
+    elsif ($subject =~ /^([0-9]{6,}).*invoice.*[0-9]{4}$/i)
+    {
+        # 123456 UKCloud March Invoice 2020
+        $notes = $1
     }
     elsif ($subject =~ /receipt\h+#?([a-z0-9]+)(\h|\.|\z)+/i && ($notes_temp = $1) && $notes_temp =~ /[0-9]+/ && $notes_temp =~ /[a-z]+/i)
     {
