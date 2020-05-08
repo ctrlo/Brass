@@ -982,6 +982,10 @@ sub _send_doc
         my $texdir   = config->{brass}->{tex};
         die "Tex build dir $texdir does not exist" unless -d $texdir;
         write_file("$texdir/$vinfo.tex", {binmode => ':utf8'}, $content);
+
+        # xelatex and xdvipdfmx need to be in the texdir:
+        # ln -s ../../../../usr/bin/xdvipdfmx
+        # ln -s ../../../../usr/bin/xelatex
         my $cmd = ["$texdir/xelatex", "-jobname=$vinfo", "-shell-escape", "$texdir/$vinfo.tex"];
         # run twice to ensure contents, page numbers etc are correct
         my $failed;
