@@ -1,0 +1,6 @@
+<h1>Rendering error</h1>
+
+<p>Failed to produce the Latex document. The following is the full log -
+details of the reason for failure should be contained at the end.</p>
+
+<pre>[% texlog | html %]</pre>
