@@ -933,11 +933,14 @@ sub _send_doc
 {   my ($doc, $version) = @_;
 
     my $schema    = schema('doc');
+    my $classification = $version->doc->classification->name;
+    $classification    =~ s/\s/\_/;
     my $vinfo     = $version->doc->topic->name
               . "-" . $version->doc->id
               . "-" . $version->major
               . "." . $version->minor
-              . "." . $version->revision;
+              . "." . $version->revision
+              . "-" . $classification;
     if ($version->version_content->content_blob)
     {
         my $mimetype = $version->mimetype;
