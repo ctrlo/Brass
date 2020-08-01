@@ -66,7 +66,8 @@ if ($type eq 'pwd')
 
     my ($username) = $sch->resultset('Pw')->search({
         'server.name' => $server,
-        'me.username'     => $param,
+        'me.username' => $param,
+        'me.type'     => $action,
     },{
         join => 'server',
     });
