@@ -176,14 +176,12 @@ any ['get', 'post'] => '/user/:id' => require_role 'config' => sub {
     {
         my $guard = $schema->txn_scope_guard;
 
-        $user->insert if !$id;
+        $user->firstname(body_parameters->get('firstname'));
+        $user->surname(body_parameters->get('surname'));
+        $user->username(body_parameters->get('username'));
+        $user->email(body_parameters->get('username'));
 
-        $user->update({
-            firstname => body_parameters->get('firstname'),
-            surname   => body_parameters->get('surname'),
-            username  => body_parameters->get('username'),
-            email     => body_parameters->get('username'),
-        });
+        $user->insert_or_update;
 
         $user->update_permissions(body_parameters->get_all('permissions'));
         $user->update_projects(body_parameters->get_all('projects'));
