@@ -288,10 +288,10 @@ sub e_release
         else {
             $plain = $text->decoded;
         }
-        if ($plain =~ /transaction id:\s*([a-z0-9]+)/i)
+        if ($plain =~ /transaction\s+id\s+transaction\s+date\s+([a-z0-9]+)/i)
         {
             $notes = $1;
-            if ($plain =~ /description:\h+(.*)/i)
+            if ($plain =~ /description\h+unit\h+price\h+qty\h+amount\s+(.*)/i)
             {
                 $notes .= " - $1";
             }
