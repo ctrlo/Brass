@@ -8,6 +8,9 @@ use lib "$FindBin::Bin/../lib";
 
 use Brass::Config::Certs;
 use Brass::Config::Servers;
+use Brass::Issue::Priorities;
+use Brass::Issue::Statuses;
+use Brass::Issues;
 use Brass::Users;
 use Mail::Message;
 use String::Print;
@@ -41,8 +44,33 @@ $output .= "Nothing to report\n" if !@messages;
 
 $output .= "\n";
 
-my $servers = Brass::Config::Servers->new(schema => $schema);
+my $users            = Brass::Users->new(schema => $schema);
+my $issues           = Brass::Issues->new(schema => $schema, users => $users);
+my $statuses         = Brass::Issue::Statuses->new(schema => $schema);
+my $priorities       = Brass::Issue::Priorities->new(schema => $schema);
+my @filter_status    = map { $_->id } grep { $_->name =~ /(new|open)/i } @{$statuses->all};
+my @filter_priority  = map { $_->id } grep { $_->name =~ /(critical)/i } @{$priorities->all};
+push @filter_priority, map { $_->id } grep { $_->name =~ /(important)/i } @{$priorities->all}
+    if DateTime->now->day_of_week == 1;
+my $filtering = {
+    status   => \@filter_status,
+    priority => \@filter_priority,
+};
+$issues->filtering($filtering);
+$output .= "Ticket observations:\n";
+$output .= "===========================\n";
+@messages = ();
+foreach my $issue (@{$issues->all})
+{
+    push @messages, sprinti "{priority} issue {id} ({title}) is still outstanding",
+        priority => $issue->priority->name, id => $issue->id, title => $issue->title;
+}
+$output .= "$_\n" foreach @messages;
+$output .= "Nothing to report\n" if !@messages;
 
+$output .= "\n";
+
+my $servers = Brass::Config::Servers->new(schema => $schema);
 $output .= "Server backup observations:\n";
 $output .= "===========================\n";
 @messages = ();
@@ -62,8 +90,6 @@ foreach my $server (@{$servers->all})
 }
 $output .= "$_\n" foreach @messages;
 $output .= "Nothing to report\n" if !@messages;
-
-my $users = Brass::Users->new(schema => $schema);
 
 foreach my $user (@{$users->all(role => 'reports')})
 {

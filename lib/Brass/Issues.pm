@@ -51,6 +51,8 @@ has filtering => (
             if $in->{project};
         $return->{'issue_statuses.status'} = $in->{status}
             if $in->{status};
+        $return->{'issue_priorities.priority'} = $in->{priority}
+            if $in->{priority};
         $return->{'me.type'} = $in->{type}
             if $in->{type};
         $return->{'issue_tags.tag'} = $in->{tag}
