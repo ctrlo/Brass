@@ -100,6 +100,20 @@ hook before => sub {
 
     my $db = Brass::DocDB->new(schema => schema('doc'));
     $db->setup;
+
+    if ($user->user->has_permission('user_admin'))
+    {
+        my $app = schema->resultset('App')->next;
+        my $last_run = $app && $app->status_last_run;
+        if ($last_run)
+        {
+            report WARNING => __x"Nightly cron status.pl has not run since {date}", date => $last_run
+                if $last_run < DateTime->now->subtract(days => 2);
+        }
+        else {
+            report WARNING => __"Nightly cron status.pl has not yet run";
+        }
+    }
 };
 
 hook before_template => sub {

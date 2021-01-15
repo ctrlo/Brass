@@ -101,3 +101,6 @@ foreach my $user (@{$users->all(role => 'reports')})
     );
     $msg->send(via => 'postfix');
 }
+
+my $app = schema->resultset('App')->next || schema->resultset('App')->create({});
+$app->update({ status_last_run => DateTime->now });
