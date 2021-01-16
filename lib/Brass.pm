@@ -101,7 +101,7 @@ hook before => sub {
     my $db = Brass::DocDB->new(schema => schema('doc'));
     $db->setup;
 
-    if ($user->user->has_permission('user_admin'))
+    if ($user->user && $user->user->has_permission('user_admin'))
     {
         my $app = schema->resultset('App')->next;
         my $last_run = $app && $app->status_last_run;
