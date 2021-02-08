@@ -98,6 +98,8 @@ hook before => sub {
     my $user = Brass::CurrentUser->instance;
     $user->user(logged_in_user);
 
+    header "X-Frame-Options" => "DENY"; # Prevent clickjacking
+
     my $db = Brass::DocDB->new(schema => schema('doc'));
     $db->setup;
 
