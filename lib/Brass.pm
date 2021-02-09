@@ -49,6 +49,7 @@ use Lingua::EN::Numbers::Ordinate;
 use Log::Report::DBIC::Profiler;
 use Session::Token;
 use Sys::Hostname;
+use URI::Escape qw/uri_escape_utf8 uri_unescape/;
 
 use Dancer2;
 use Dancer2::Plugin::DBIC;
@@ -158,7 +159,13 @@ post '/login' => sub {
             failcount => 0,
             lastfail  => undef,
         });
-        redirect '/';
+        my $return_url = query_parameters->get('return_url') || '/';
+        $return_url = uri_unescape($return_url);
+        my $uri = URI->new($return_url);
+        # Construct a URL using uri_for, which ensures that the correct base domain
+        # is used (preventing open URL redirection attacks). The query needs to be
+        # parsed and passed as an option, otherwise it is not encoded properly
+        redirect request->uri_for($uri->path, $uri->query_form_hash);
     } else {
 
         my ($user) = schema->resultset('User')->search({
