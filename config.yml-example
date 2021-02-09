@@ -61,6 +61,7 @@ plugins:
     mail_from: '"Ctrl O Brass" <info@example.com>' # From email address
     reset_password_handler: 1
     record_lastlogin: 1
+    no_login_handler: 1
     realms:
       users:
         provider: DBIC

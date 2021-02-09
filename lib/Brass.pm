@@ -130,6 +130,58 @@ get '/' => sub {
     };
 };
 
+post '/login' => sub {
+
+    my $username = body_parameters->get('username');
+
+    # Check whether login limit reached
+    my $lastfail  = DateTime->now->subtract(minutes => 15);
+    my $lastfailf = schema->storage->datetime_parser->format_datetime($lastfail);
+    my $fail      = schema->resultset('User')->search({
+        username  => $username,
+        failcount => { '>=' => 5 },
+        lastfail  => { '>' => $lastfailf },
+    })->count;
+
+    my ($success, $realm);
+    if (!$fail)
+    {
+        ($success, $realm) = authenticate_user(
+            $username, body_parameters->get('password')
+        );
+    }
+    if ($success) {
+        app->change_session_id;
+        session logged_in_user => params->{username};
+        session logged_in_user_realm => $realm;
+        schema->resultset('User')->find(logged_in_user->id)->update({
+            failcount => 0,
+            lastfail  => undef,
+        });
+        redirect '/';
+    } else {
+
+        my ($user) = schema->resultset('User')->search({
+            username => $username,
+        })->all;
+        if ($user)
+        {
+            $user->update({
+                failcount => $user->failcount + 1,
+                lastfail  => DateTime->now,
+            });
+        }
+
+        report {is_fatal=>0}, ERROR => "The username or password entered is incorrect";
+        redirect '/login';
+    }
+};
+
+get '/logout' => sub {
+    app->destroy_session;
+    forwardHome();
+};
+
 any ['get', 'post'] => '/upload' => sub {
 
     if (param 'submit')
