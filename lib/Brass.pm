@@ -64,6 +64,8 @@ schema->storage->debug(1);
 
 Brass::CurrentUser->instance; # This singleton class always contains the current user making the request
 
+my $password_generator = CtrlO::Crypt::XkcdPassword->new;
+
 sub _update_csrf_token
 {   session csrf_token => Session::Token->new(length => 32)->get;
 }
@@ -149,7 +151,6 @@ post '/login/?:code?' => sub {
     }
 
     if (body_parameters->get('confirm_reset')) {
-        my $password_generator = CtrlO::Crypt::XkcdPassword->new;
         my $randompw = $password_generator->xkcd(words => 3, digits => 2);
         user_password code => route_parameters->get('code'), new_password => $randompw;
         return forward '/login', { new_password => $randompw }, { method => 'GET' };
