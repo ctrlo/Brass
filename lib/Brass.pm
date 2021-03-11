@@ -258,7 +258,7 @@ get '/user_report' => require_role 'user_admin' => sub {
     };
 };
 
-any ['get', 'post'] => '/user/:id' => require_role 'config' => sub {
+any ['get', 'post'] => '/user/:id' => require_role 'user_admin' => sub {
 
     my $id         = param 'id';
     my $schema     = schema;
