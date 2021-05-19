@@ -152,7 +152,7 @@ __PACKAGE__->add_columns(
   "blobext",
   { data_type => "varchar", is_nullable => 1, size => 45 },
   "mimetype",
-  { data_type => "varchar", is_nullable => 1, size => 45 },
+  { data_type => "text", is_nullable => 1 },
   "notes",
   { data_type => "text", is_nullable => 1 },
 );
