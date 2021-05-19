@@ -32,6 +32,15 @@
                     <textarea name="notes" id="sites" class="form-control" rows="5">[% server.notes | html %]</textarea>
                 </div>
                 <div class="form-group">
+                    <label>Production</label>
+                    <div class="checkbox">
+                        <label>
+                            <input name="is_production" type="checkbox" value="1" [% IF server.is_production %]checked[% END %]>
+                            This is a production server
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label>Types</label>
                     [% FOR type IN types %]
                         <div class="checkbox">

@@ -359,6 +359,7 @@ any ['get', 'post'] => '/config/server/?:id?' => require_role 'config' => sub {
             $server->set_sites(param 'sites');
             $server->notes(param 'notes');
             $server->local_ip(param 'local_ip');
+            $server->is_production(param('is_production') ? 1 : 0);
             $server->write;
             redirect '/config/server';
         }

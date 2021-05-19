@@ -150,6 +150,13 @@ has local_ip => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->local_ip; },
 );
 
+has is_production => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->is_production; },
+);
+
 has sites => (
     is      => 'rw',
     isa     => ArrayRef,
@@ -263,11 +270,12 @@ sub write
 {   my ($self, $user_id) = @_;
     my $guard = $self->schema->txn_scope_guard;
     my $values = {
-        name        => $self->name,
-        domain_id   => $self->domain->id,
-        sudo        => $self->sudo,
-        notes       => $self->notes,
-        local_ip    => $self->local_ip,
+        name          => $self->name,
+        domain_id     => $self->domain->id,
+        sudo          => $self->sudo,
+        notes         => $self->notes,
+        local_ip      => $self->local_ip,
+        is_production => $self->is_production,
     };
     if ($self->id)
     {
