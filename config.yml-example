@@ -25,6 +25,8 @@ session: "YAML"
 brass:
   file_upload: "/var/lib/brass"
   tex: "/var/lib/brass/tex"
+  email:
+    from: 'me@example.com'
 
 engines:
   session:

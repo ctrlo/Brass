@@ -641,9 +641,12 @@ sub send
 
     my $user = Brass::CurrentUser->instance->user;
     my $name = $user->firstname.' '.$user->surname;
+    my $from = $params{from}
+        or error "Sender email address not configured";
 
     Mail::Message->build(
         To             => $email,
+        From           => $from,
         'Content-Type' => 'text/plain',
         Subject        => 'A document has been sent: '.$self->title,
         data           => <<__PLAIN,
@@ -653,7 +656,10 @@ The link is valid for 24 hours and can only be used once:
 
 $params{uri_base}/doc/download/$code
 __PLAIN
-    )->send(via => 'sendmail');
+    )->send(
+        via              => 'sendmail',
+        sendmail_options => [-f => $from],
+    );
 }
 
 1;

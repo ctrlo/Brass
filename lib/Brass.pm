@@ -790,7 +790,7 @@ any ['get', 'post'] => '/doc/send/:id' => require_role doc => sub {
 
     if (param 'send')
     {
-        $doc->send(to => param('email'), uri_base => request->uri_base);
+        $doc->send(to => param('email'), from => config->{brass}->{email}->{from}, uri_base => request->uri_base);
         forwardHome({ success => "Thank you, a link to the file has been sent via email" }, "doc/view/$id");
     }
 
