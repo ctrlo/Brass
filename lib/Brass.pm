@@ -678,7 +678,8 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
         if (param 'attach')
         {
             # Allow any user to attach a file
-            my $file = request->upload('newattach');
+            my $file = request->upload('newattach')
+                or error "Please select a file to upload";
             my $attach = {
                 name        => $file->basename,
                 issue       => $id,
