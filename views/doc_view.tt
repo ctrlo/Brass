@@ -72,7 +72,7 @@
         <a href="/doc/content/[% doc.id %]" class="btn btn-default">Edit content</a>
         <a href="/doc/edit/[% doc.id %]" class="btn btn-default">Edit properties</a>
     [% END %]
-    [% IF doc.user_can('publish') %]
+    [% IF doc.user_can('read') %]
         <button type="submit" name="retire" value="retire" class="btn btn-default">Retire</button>
         <button type="submit" name="review" value="12" class="btn btn-default">Review in 12 months</button>
         <a href="/doc/send/[% doc.id %]" class="btn btn-default">Send via email link</a>

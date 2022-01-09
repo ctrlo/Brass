@@ -787,8 +787,8 @@ any ['get', 'post'] => '/doc/send/:id' => require_role doc => sub {
         schema_brass => schema,
     );
 
-    error "Sending a document requires the publishing permission"
-        unless $doc->user_can('publish');
+    error "You do not have permission to view this document"
+        unless $doc->user_can('read');
 
     if (param 'send')
     {
