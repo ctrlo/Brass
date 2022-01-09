@@ -1034,8 +1034,8 @@ sub _send_doc
               . "-" . $version->doc->id
               . "-" . $version->major
               . "." . $version->minor
-              . "." . $version->revision
-              . "-" . $classification;
+              . "." . $version->revision;
+    my $filecore = "$vinfo-$classification";
     if ($version->version_content->content_blob)
     {
         my $mimetype = $version->mimetype;
@@ -1043,12 +1043,12 @@ sub _send_doc
         return send_file(
             \$version->version_content->content_blob,
             content_type => $mimetype,
-            filename     => $vinfo.".".$version->blobext,
+            filename     => $filecore.".".$version->blobext,
         );
     }
     elsif ($version->mimetype && $version->mimetype eq 'application/x-tex') {
 
-        my $filename = "$vinfo.pdf";
+        my $filename = "$filecore.pdf";
         my $title    = $version->doc->title;
         my $reviewer = $version->reviewer ? Brass::User->new(schema => schema, id => $version->reviewer) : "Not reviewed";
         my $approver = $version->approver ? Brass::User->new(schema => schema, id => $version->approver) : "Not approved";
@@ -1079,12 +1079,14 @@ sub _send_doc
         $content     =~ s/(?<!\\)%/\\%/g;
         my $texdir   = config->{brass}->{tex};
         die "Tex build dir $texdir does not exist" unless -d $texdir;
-        write_file("$texdir/$vinfo.tex", {binmode => ':utf8'}, $content);
+        write_file("$texdir/$filecore.tex", {binmode => ':utf8'}, $content);
 
         # xelatex and xdvipdfmx need to be in the texdir:
         # ln -s ../../../../usr/bin/xdvipdfmx
         # ln -s ../../../../usr/bin/xelatex
-        my $cmd = ["$texdir/xelatex", "-jobname=$vinfo", "-shell-escape", "$texdir/$vinfo.tex"];
+        my $xelatex = "$texdir/xelatex";
+        -e $xelatex or panic "xelatex link is not correctly configured";
+        my $cmd = ["$texdir/xelatex", "-jobname=$filecore", "-shell-escape", "$texdir/$filecore.tex"];
         # run twice to ensure contents, page numbers etc are correct
         my $failed;
         foreach my $i (1..3) {
@@ -1097,11 +1099,11 @@ sub _send_doc
             $failed = $isc->status;
         }
         my $file_full = "$texdir/$filename";
-        my $logfile   = "$texdir/$vinfo.log";
+        my $logfile   = "$texdir/$filecore.log";
         if ($failed || ! -e $file_full)
         {
             my $log = read_file($logfile);
-            unlink glob("$texdir/$vinfo.*");
+            unlink glob("$texdir/$filecore.*");
             return template 'texerror' => {
                 texlog => $log,
             };
@@ -1114,7 +1116,7 @@ sub _send_doc
             content_blob => $pdf_content,
         });
         # Delete all temp files
-        unlink glob("$texdir/$vinfo.*");
+        unlink glob("$texdir/$filecore.*");
         return send_file(
             \$version->version_content->content_blob,
             content_type => 'application/pdf',
