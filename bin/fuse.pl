@@ -299,6 +299,11 @@ sub e_release
                 $notes .= " - $subject";
             }
         }
+        elsif ($plain =~ /^transaction id:\h+(.*)/im)
+        {
+            # Github: Transaction ID: CH_1IQGPWEQSQ43IHHXDVFVRSUB
+            $notes = $1;
+        }
         elsif ($plain =~ /^service:\h*(.*)$/im)
         {
             $notes = $1;
