@@ -220,7 +220,8 @@ any ['get', 'post'] => '/upload' => sub {
     }
 
     template 'upload' => {
-        page        => 'upload'
+        company => config->{brass}->{company},
+        page    => 'upload',
     };
 };
 
