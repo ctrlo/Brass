@@ -18,4 +18,11 @@ sub active
     });
 }
 
+sub keys
+{   my $self = shift;
+    $self->search_rs({
+        api_key => { '!=' => undef },
+    });
+}
+
 1;

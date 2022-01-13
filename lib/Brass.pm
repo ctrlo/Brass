@@ -57,6 +57,8 @@ use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::Auth::Extensible;
 use Dancer2::Plugin::LogReport;
 
+use Brass::API;
+
 our $VERSION = '0.1';
 
 schema->storage->debugobj(new Log::Report::DBIC::Profiler);
