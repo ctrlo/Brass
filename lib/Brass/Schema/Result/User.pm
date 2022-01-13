@@ -135,6 +135,8 @@ __PACKAGE__->add_columns(
   },
   "failcount",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
+  "api_key",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
