@@ -27,6 +27,7 @@ use Crypt::PK::RSA;
 use Dancer2 appname => 'Brass';
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::LogReport;
+use Session::Token;
 
 # Special error handler for JSON requests (as used in API)
 fatal_handler sub {
@@ -77,9 +78,7 @@ hook before => sub {
 };
 
 sub randompw()
-{   my $foo = new String::Random;
-    $foo->{'A'} = [ 'A'..'Z', 'a'..'z', '0'..'9' ];
-    scalar $foo->randpattern("AAAAAAAAAAAAAAAA");
+{   Session::Token->new(length => 16)->get;
 }
 
 get 'api/pwd/' => sub {
