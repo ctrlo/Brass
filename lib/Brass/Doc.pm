@@ -308,13 +308,14 @@ sub _build_published_all_live
 
 sub _build_draft
 {   my $self = shift;
-    my ($draft) = $self->schema->resultset('Version')->search({
+    my $draft = $self->schema->resultset('Version')->search({
         doc_id => $self->id,
         minor  => { '!=' => 0 },
     },{
         rows     => 1,
         order_by => { -desc => [qw/major minor revision/] },
-    })->all;
+    })->next or return undef;
+    return undef if $self->published && $draft->major < $self->published->major;
     $draft;
 }
 
