@@ -80,6 +80,7 @@ my @sections  = $cfg->Sections;
 my %options;
 $namespace ||= $sections[0];
 my $passphrase = $cfg->val($namespace, 'passphrase');
+my $host       = $cfg->val($namespace, 'dbhost');
 my $email      = $cfg->val($namespace, 'email')
     or die "Email config parameter missing";
 
@@ -97,7 +98,7 @@ my $jws_token = encode_jwt(
 my $ua = LWP::UserAgent->new;
 $ua->default_header(Authorization => "Bearer $jws_token");
 
-my $url = URI->new('https://brass.ctrlo.com');
+my $url = URI->new("https://$host");
 my @path = ('', 'api');
 my @query; my $data;
 
