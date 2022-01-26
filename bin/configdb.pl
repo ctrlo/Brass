@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-use Brass::ConfigDB;
 use Config::IniFiles;
 use Crypt::CBC;
 use Crypt::JWT qw(encode_jwt);
@@ -50,9 +49,6 @@ GetOptions (
     'use=s'       => \$use,
     'update=s'    => \%update,
 ) or exit;
-
-my $db = Brass::ConfigDB->new(namespace => $namespace);
-my $sch = $db->sch;
 
 my $sshfile = File::HomeDir->my_home."/.ssh/id_rsa";
 
