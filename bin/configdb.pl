@@ -50,7 +50,7 @@ GetOptions (
     'update=s'    => \%update,
 ) or exit;
 
-my $sshfile = File::HomeDir->my_home."/.ssh/id_rsa";
+my $sshfile = File::HomeDir->my_home."/.ssh/id_ecdsa";
 
 my $sshpass = $ENV{SSHPASS};
 if (!$sshpass)
@@ -64,7 +64,7 @@ if (!$sshpass)
     ReadMode ('normal');
 }
 
-my $sshkey = Crypt::PK::RSA->new($sshfile, $sshpass);
+my $sshkey = Crypt::PK::ECC->new($sshfile, $sshpass);
 
 $type or die "Please provide type of request with --type";
 $action or die "Please specify action with --action";
@@ -84,7 +84,7 @@ my $jws_token = encode_jwt(
     payload => {
         passphrase => $passphrase,
     },
-    alg => 'RS256',
+    alg => 'ES256',
     key => $sshkey,
     extra_headers => {
         kid => $email,
