@@ -64,6 +64,8 @@ if (!$sshpass)
     ReadMode ('normal');
 }
 
+# Use this to generate required SSH key format
+# ssh-keygen -t ecdsa -b 521 -m pem
 my $sshkey = Crypt::PK::ECC->new($sshfile, $sshpass);
 
 $type or die "Please provide type of request with --type";
