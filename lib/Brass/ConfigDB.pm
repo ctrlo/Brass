@@ -17,45 +17,138 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass::ConfigDB;
 
-use Brass::Schema;
 use Config::IniFiles;
+use Crypt::CBC;
+use Crypt::JWT qw(encode_jwt);
+use DateTime;
 use File::HomeDir;
+use Getopt::Long;
+use JSON qw(decode_json encode_json);
+use Log::Report;
+use LWP::UserAgent;
+use Moo;
+use String::Random;
+use Term::ReadKey;
+use URI;
+use URI::QueryParam;
 
-sub new($%)
-{   my ($class, %options) = @_;
-    my $self      = bless {}, $class;
+sub randompw();
+
+sub run
+{   my ($self, %params) = @_;
+
+    my $server    = $params{server};
+    my $namespace = $params{namespace} || $ENV{CDB_NAMESPACE};
+    my $type      = $params{type};
+    my $action    = $params{action};
+    my $param     = $params{param};
+    my $use       = $params{use};
+    my $update    = $params{update};
+    my $sshpass   = $params{sshpass} || $ENV{SSHPASS};
+
+    $type or error __"Please provide type of request with --type";
+    $action or error __"Please specify action with --action";
+
+    # configdb config
     my $cfile     = File::HomeDir->my_home . "/.configdb";
     my $cfg       = Config::IniFiles->new( -file => $cfile );
     my @sections  = $cfg->Sections;
-    my $namespace = $options{namespace} || $sections[0];
+    my %options;
+    $namespace ||= $sections[0];
+    my $passphrase = $cfg->val($namespace, 'passphrase');
+    my $host       = $cfg->val($namespace, 'dbhost');
+    my $email      = $cfg->val($namespace, 'email')
+        or die "Email config parameter missing";
 
-    $self->{dbuser} = $cfg->val($namespace, 'username') or die "username not defined";
-    $self->{dbpass} = $cfg->val($namespace, 'password') or die "password not defined";
-    $self->{dbname} = $cfg->val($namespace, 'dbname')   or die "dbname not defined";
-    my $dbhost      = $cfg->val($namespace, 'dbhost')   or die "dbhost not defined";
-    my $certdir     = $cfg->val($namespace, 'certdir')  or die "certdir not defined";
-    $ENV{CDB_PASSPHRASE} ||= $cfg->val($namespace, 'passphrase');
-    $self->{dbhost} = "$dbhost;mysql_ssl=1;mysql_ssl_client_key=$certdir/client-key.pem;mysql_ssl_client_cert=$certdir/client-cert.pem;mysql_ssl_ca_file=$certdir/ca-cert.pem;";
-    $self;
+    my $sshfile = File::HomeDir->my_home."/.ssh/id_ecdsa";
+    # Use this to generate required SSH key format
+    # ssh-keygen -t ecdsa -b 521 -m pem
+    my $sshkey = Crypt::PK::ECC->new($sshfile, $sshpass);
+
+    my $jws_token = encode_jwt(
+        payload => {
+            passphrase => $passphrase,
+        },
+        alg => 'ES256',
+        key => $sshkey,
+        extra_headers => {
+            kid => $email,
+        }
+    );
+
+    my $ua = LWP::UserAgent->new;
+    $ua->default_header(Authorization => "Bearer $jws_token");
+
+    my $url = URI->new("https://$host");
+    my @path = ('', 'api');
+    my @query; my $data;
+
+    if ($type eq 'pwd')
+    {
+        push @path, 'pwd';
+        push @query, (server => $server, action => $action, param => $param);
+    }
+    elsif ($type eq 'cert')
+    {
+        # configdb.pl --type cert --server gads.ctrlo.com --param postfix
+
+        push @path, 'cert';
+        push @query, (server => $server, action => $action, param => $param);
+    }
+    elsif ($type eq 'server')
+    {
+        push @path, 'server';
+        push @query, (server => $server, action => $action, param => $param);
+        if ($action =~ /^(summary|domain|is_production|sshkeys|sudo)$/)
+        {
+        }
+        elsif ($action eq 'update')
+        {
+            $server or die "Please specify server with --server";
+            $update or die "Please specify --update option when using update";
+            $update->{result} or die "Please specify result with --update option";
+            $update->{restart_required} or die "Please specify restart_required with --update option";
+            $update->{os_version} or die "Please specify os_version with --update option";
+            defined $update->{backup_verify} or die "Please specify backup_verify with --update option";
+            $data = encode_json {
+                update_datetime  => DateTime->now->epoch,
+                update_result    => $update->{result},
+                restart_required => $update->{restart_required},
+                os_version       => $update->{os_version},
+                backup_verify    => $update->{backup_verify},
+            };
+        }
+        else {
+            die "Unknown action $action";
+        }
+    }
+    else
+    {
+        die "Invalid request $type: should be pwd, server or cert";
+    }
+
+    $url->path_segments(@path, '');
+    while (@query)
+    {
+        $url->query_param(shift @query, shift @query);
+    }
+    my %content;
+    %content = (
+        'Content-type' => 'application/json',
+        Content        => $data,
+    ) if $data;
+    my $response = $ua->get($url, %content);
+
+    my $decoded = decode_json $response->decoded_content;
+    error $decoded->{message} if $decoded->{is_error};
+    return $decoded->{result};
 }
 
-sub connect()
-{   my $self   = shift;
-    my $dbname = $self->{dbname};
-
-    $self->{sch} = Brass::Schema->connect(
-      "dbi:mysql:database=$dbname;mysql_enable_utf8=1;host=".$self->{dbhost}, $self->{dbuser}, $self->{dbpass}
-     , {RaiseError => 1, AutoCommit => 1, mysql_enable_utf8 => 1, quote_names => 1}
-    ) or die "unable to connect to database {name}: {err}"
-           , name => $dbname, err => $DBI::errstr;
-
-#    $self->{sch}->storage->debug(1);
-
-    return $self->{sch};
+sub randompw()
+{   my $foo = new String::Random;
+    $foo->{'A'} = [ 'A'..'Z', 'a'..'z', '0'..'9' ];
+    scalar $foo->randpattern("AAAAAAAAAAAAAAAA");
 }
-
-sub sch() {my $s = shift; $s->{sch} || $s->connect }
-
 
 1;
 
