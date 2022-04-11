@@ -38,6 +38,9 @@ GetOptions (
     'update=s'    => \%update,
 ) or exit;
 
+# Stop here when loaded by a test script
+return 1 if caller();
+
 my $sshpass = $ENV{SSHPASS};
 if (!$sshpass)
 {
