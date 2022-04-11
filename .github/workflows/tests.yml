@@ -16,9 +16,6 @@ jobs:
           perl-version: '5.34'
           install-modules-with: 'cpanm'
       - name: 'Install dependencies'
-        run: |
-          # String::Diff fails its own tests as of 0.07 so force install it
-          cpanm -n String::Diff
-          cpanm --installdeps .
+        run: 'cpanm --installdeps .'
       - name: 'Run tests'
         run: 'prove -lrsv t'
