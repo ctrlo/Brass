@@ -22,13 +22,11 @@ use Crypt::CBC;
 use Crypt::JWT qw(encode_jwt);
 use DateTime;
 use File::HomeDir;
-use Getopt::Long;
 use JSON qw(decode_json encode_json);
 use Log::Report;
 use LWP::UserAgent;
 use Moo;
 use String::Random;
-use Term::ReadKey;
 use URI;
 use URI::QueryParam;
 
