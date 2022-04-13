@@ -31,7 +31,6 @@ WriteMakefile(
         'String::Random'        => 0,
         'Term::ReadKey'         => 0,
         'Test::More'            => 0,
-        'Text::Diff::FormattedHTML' => 0,
         'URI'                   => 0,
         'URI::QueryParam'       => 0,
         'YAML'                  => 0,
