@@ -26,6 +26,7 @@ WriteMakefile(
         'File::HomeDir'         => 0,
         'JSON'                  => 0,
         'Log::Report'           => 0,
+        'LWP::Protocol::https'  => 0,
         'LWP::UserAgent'        => 0,
         'Moo'                   => 0,
         'String::Random'        => 0,
