@@ -91,6 +91,12 @@ has user_id => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->user_id; },
 );
 
+has user => (
+    is      => 'ro',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->user; },
+);
+
 has set_uad => (
     is      => 'rw',
     isa     => Maybe[Int],
