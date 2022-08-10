@@ -24,17 +24,8 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 
 use Brass::ConfigDB;
-use Crypt::CBC;
-use Crypt::JWT qw(encode_jwt);
-use DateTime;
-use File::HomeDir;
 use Getopt::Long;
-use JSON qw(decode_json encode_json);
-use LWP::UserAgent;
-use String::Random;
 use Term::ReadKey;
-use URI;
-use URI::QueryParam;
 
 my ($server, $type, $action, $param, $use, %update, $namespace);
 GetOptions (
@@ -46,6 +37,9 @@ GetOptions (
     'use=s'       => \$use,
     'update=s'    => \%update,
 ) or exit;
+
+# Stop here when loaded by a test script
+return 1 if caller();
 
 my $sshpass = $ENV{SSHPASS};
 if (!$sshpass)
