@@ -394,6 +394,11 @@ sub has_project
     (grep { $_->project->id == $project_id } $self->user_projects) ? 1 : 0;
 }
 
+sub servertypes_as_string
+{   my $self = shift;
+    join ', ', map $_->servertype->name, $self->user_servertypes->all;
+}
+
 sub has_servertype
 {   my ($self, $servertype_id) = @_;
     (grep { $_->servertype->id == $servertype_id } $self->user_servertypes) ? 1 : 0;

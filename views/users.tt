@@ -8,6 +8,7 @@
         <th>Username</th>
         <th>Surname</th>
         <th>Forename</th>
+        <th>Server types</th>
     </tr>
     [% FOREACH u IN users %]
         <tr>
@@ -15,6 +16,7 @@
             <td>[% u.username | html %]</td>
             <td>[% u.surname | html %]</td>
             <td>[% u.firstname | html %]</td>
+            <td>[% u.servertypes_as_string | html %]</td>
         </tr>
     [% END %]
 </table>
