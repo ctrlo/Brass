@@ -337,7 +337,7 @@ get 'api/server/' => sub {
         });
         $serv->update({
             update_datetime  => DateTime->from_epoch(epoch => $update{update_datetime}),
-            update_result    => $update{result},
+            update_result    => $update{update_result},
             restart_required => $update{restart_required},
             os_version       => $update{os_version},
             backup_verify    => $update{backup_verify},
