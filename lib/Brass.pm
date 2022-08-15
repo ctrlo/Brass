@@ -358,6 +358,7 @@ any ['get', 'post'] => '/config/server/?:id?' => require_role 'config' => sub {
             $server->name(param 'name');
             $server->set_domain(param 'domain');
             $server->sudo(param 'sudo');
+            $server->metadata(param 'metadata');
             $server->set_types(param 'type');
             $server->set_sites(param 'sites');
             $server->notes(param 'notes');

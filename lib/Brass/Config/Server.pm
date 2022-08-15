@@ -19,7 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package Brass::Config::Server;
 
 use Brass::Config::Domain;
+use Cpanel::JSON::XS;
 use DateTime;
+use Log::Report;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 use MooX::Types::MooseLike::DateTime qw/DateAndTime/;
@@ -54,6 +56,23 @@ has sudo => (
     isa     => Maybe[Str],
     lazy    => 1,
     builder => sub { $_[0]->_rset && $_[0]->_rset->sudo; },
+);
+
+has metadata => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub {
+       my $self = shift;
+       $self->_rset or return;
+       $self->_rset && $self->_rset->metadata;
+    },
+    trigger => sub {
+        my ($self, $value) = @_;
+        $value or return;
+        try { decode_json $value }
+            or error __x"Invalid metadata, is it valid JSON?";
+    },
 );
 
 has update_datetime => (
@@ -254,6 +273,7 @@ sub inflate_result {
         name           => $data->{name},
         set_domain     => $data->{domain_id},
         sudo           => $data->{sudo},
+        metadata       => $data->{metadata},
         schema         => $schema,
     );
 }
@@ -273,6 +293,7 @@ sub write
         name          => $self->name,
         domain_id     => $self->domain->id,
         sudo          => $self->sudo,
+        metadata      => $self->metadata,
         notes         => $self->notes,
         local_ip      => $self->local_ip,
         is_production => $self->is_production,

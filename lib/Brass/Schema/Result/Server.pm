@@ -118,6 +118,8 @@ __PACKAGE__->add_columns(
   { data_type => "smallint", is_nullable => 0, default_value => 0 },
   "local_ip",
   { data_type => "text", is_nullable => 1 },
+  "metadata",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY

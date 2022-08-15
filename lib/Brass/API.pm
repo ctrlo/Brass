@@ -269,6 +269,16 @@ get 'api/server/' => sub {
         });
         $output .= $serv->is_production;
     }
+    elsif ($action eq 'metadata')
+    {
+        $server or error __"Please specify server";
+        my ($serv) = $schema->resultset('Server')->search({
+            'me.name' => $server,
+        },{
+            prefetch => 'domain',
+        });
+        $output .= $serv->metadata;
+    }
     elsif ($action eq 'sshkeys')
     {
         $server or error __"Please specify server";

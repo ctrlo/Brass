@@ -97,7 +97,7 @@ sub run
     {
         push @path, 'server';
         push @query, (server => $server, action => $action, param => $param);
-        if ($action =~ /^(summary|domain|is_production|sshkeys|sudo)$/)
+        if ($action =~ /^(summary|domain|is_production|sshkeys|sudo|metadata)$/)
         {
         }
         elsif ($action eq 'update')
@@ -139,7 +139,13 @@ sub run
 
     my $decoded = decode_json $response->decoded_content;
     error $decoded->{message} if $decoded->{is_error};
-    return $decoded->{result};
+    if ($action eq 'metadata') # double-encoded
+    {
+        return decode_json $decoded->{result};
+    }
+    else {
+        return $decoded->{result};
+    }
 }
 
 sub randompw()
