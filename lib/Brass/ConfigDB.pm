@@ -141,6 +141,7 @@ sub run
     error $decoded->{message} if $decoded->{is_error};
     if ($action eq 'metadata') # double-encoded
     {
+        return undef if !$decoded->{result}; # No metadata
         return decode_json $decoded->{result};
     }
     else {
