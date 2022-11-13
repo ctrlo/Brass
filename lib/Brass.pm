@@ -895,10 +895,26 @@ any ['get', 'post'] => '/doc/content/:id' => require_role doc => sub {
     if (my $submit = param 'submit')
     {
         my $doctype = param 'doctype';
+        my $user    = logged_in_user;
+
+        if ($submit eq 'publish')
+        {
+            error "No permission to review document"
+                if !$doc->user_can('publish');
+            $doc->publish($user);
+            redirect '/doc';
+        }
+        elsif ($submit eq 'revert')
+        {
+            error "No permission to revert document"
+                if !$doc->user_can('publish');
+            $doc->revert($user);
+            redirect '/doc';
+        }
 
         # Always set new option on publish. If the content
         # is exactly the same, a new one won't actually be created
-        my $publish = $submit eq 'publish' ? 1 : 0;
+        my $publish = $submit eq 'review' ? 1 : 0;
         error "No permission to publish document"
             if $publish && !$doc->user_can('publish');
         error "No permission to publish signed copy"
@@ -909,11 +925,10 @@ any ['get', 'post'] => '/doc/content/:id' => require_role doc => sub {
             if $doctype ne 'record' && !$doc->user_can('save');
         $submit = 'draft' if $publish && $doctype ne 'binary';
 
-        my $user = logged_in_user;
         my $notes = param 'notes';
 
         my $new_version_id = $submit eq 'save' && $doctype eq 'binary'
-          ? $doc->file_save(upload => request->upload('file'), notes => $notes)
+          ? $doc->file_save(upload => request->upload('file'), user => $user, notes => $notes)
           : $doctype eq 'signed'
           ? $doc->signed_save(upload => request->upload('file'), user => $user, notes => $notes)
           : $doctype eq 'record'
@@ -921,18 +936,18 @@ any ['get', 'post'] => '/doc/content/:id' => require_role doc => sub {
           : $publish && $doctype eq 'binary'
           ? param('binary_draft_id')
           : $submit eq 'save' && $doctype eq 'plain'
-          ? $doc->plain_save(text => param('text_content'), notes => $notes)
+          ? $doc->plain_save(text => param('text_content'), user => $user, notes => $notes)
           : $submit eq 'save' && $doctype eq 'tex'
-          ? $doc->tex_save(text => param('text_content'), notes => $notes)
+          ? $doc->tex_save(text => param('text_content'), user => $user, notes => $notes)
           : $submit eq 'draft' && $doctype eq 'binary'
-          ? $doc->file_add(text => param('text_content'), notes => $notes)
+          ? $doc->file_add(text => param('text_content'), user => $user, notes => $notes)
           : $submit eq 'draft' && $doctype eq 'plain'
-          ? $doc->plain_add(text => param('text_content'), notes => $notes)
+          ? $doc->plain_add(text => param('text_content'), user => $user, notes => $notes)
           : $submit eq 'draft' && $doctype eq 'tex'
-          ? $doc->tex_add(text => param('text_content'), notes => $notes)
+          ? $doc->tex_add(text => param('text_content'), user => $user, notes => $notes)
           : die "Invalid request";
 
-        $doc->publish($new_version_id, $user)
+        $doc->submit_review($user)
             if $publish;
         redirect '/doc';
     }

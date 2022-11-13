@@ -83,6 +83,11 @@ __PACKAGE__->table("version");
   datetime_undef_if_invalid: 1
   is_nullable: 1
 
+=head2 drafter
+
+  data_type: 'integer'
+  is_nullable: 1
+
 =head2 reviewer
 
   data_type: 'integer'
@@ -139,6 +144,8 @@ __PACKAGE__->add_columns(
     datetime_undef_if_invalid => 1,
     is_nullable => 1,
   },
+  "drafter",
+  { data_type => "integer", is_nullable => 1 },
   "reviewer",
   { data_type => "integer", is_nullable => 1 },
   "approver",
@@ -205,6 +212,15 @@ __PACKAGE__->might_have(
 # Created by DBIx::Class::Schema::Loader v0.07043 @ 2016-01-01 10:57:28
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Y18bQKfrouk/Uc+r/Pumcw
 
+sub is_draft
+{   my $self = shift;
+    $self->minor || $self->revision ? 1 : 0;
+}
+
+sub is_published
+{   my $self = shift;
+    !$self->minor && !$self->revision ? 1 : 0;
+}
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

@@ -3,7 +3,13 @@
     <div class="alert alert-warning">This document does not have a security classification defined</div>
 [% END %]
 [% IF doc.draft_for_review %]
-<div class="alert alert-warning">This document has a <a href="/version/[% doc.draft.id %]">draft awaiting review</a>
+<div class="alert alert-warning">This document has a <a href="/version/[% doc.draft.id %]">
+    [% IF doc.draft.reviewer %]
+        review awaiting publish
+    [% ELSE %]
+        draft awaiting review
+    [% END %]
+    </a>
     [% IF doc.draft.notes %]
         ([% doc.draft.notes | html %])
     [% END %]

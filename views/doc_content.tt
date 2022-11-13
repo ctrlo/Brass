@@ -15,78 +15,90 @@
 [% END %]
 <form method="post" enctype="multipart/form-data">
     <input type="hidden" name="csrf_token" value="[% csrf_token %]">
-    <div class="form-group">
-        <label for="file">Document type</label>
-        <div class="radio">
-            <label>
-                <input type="radio" name="doctype" id="radio_plain" value="plain"
-                    class="radio_doctype" [% IF doctype == "plain" %]checked[% END %]>
-                Plain text
-            </label>
+    [% IF doc.draft_for_review AND doc.draft.reviewer %]
+        [% is_review = 1 %]
+    [% END %]
+    [% IF NOT is_review %]
+        <div class="form-group">
+            <label for="file">Document type</label>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="doctype" id="radio_plain" value="plain"
+                        class="radio_doctype" [% IF doctype == "plain" %]checked[% END %]>
+                    Plain text
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="doctype" id="radio_tex" value="tex"
+                        class="radio_doctype" [% IF doctype == "tex" %]checked[% END %]>
+                    Latex
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="doctype" id="radio_binary" value="binary"
+                        class="radio_doctype" [% IF doctype == "binary" %]checked[% END %]>
+                    Binary file (will be uploaded as draft)
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="doctype" id="radio_signed" value="signed"
+                        class="radio_doctype">
+                    Signed file (will have same version as latest published)
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="doctype" id="radio_record" value="record"
+                        class="radio_doctype">
+                    Record (will be published as next major version number)
+                </label>
+            </div>
         </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="doctype" id="radio_tex" value="tex"
-                    class="radio_doctype" [% IF doctype == "tex" %]checked[% END %]>
-                Latex
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="doctype" id="radio_binary" value="binary"
-                    class="radio_doctype" [% IF doctype == "binary" %]checked[% END %]>
-                Binary file (will be uploaded as draft)
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="doctype" id="radio_signed" value="signed"
-                    class="radio_doctype">
-                Signed file (will have same version as latest published)
-            </label>
-        </div>
-        <div class="radio">
-            <label>
-                <input type="radio" name="doctype" id="radio_record" value="record"
-                    class="radio_doctype">
-                Record (will be published as next major version number)
-            </label>
-        </div>
-    </div>
+    [% END %]
     <div class="form-group">
         <label for="notes">Notes for this version</label>
-        <input type="text" name="notes" class="form-control" id="notes" value="[% doc.latest.notes %]">
+        <input type="text" name="notes" class="form-control" id="notes" value="[% doc.latest.notes %]" [% IF is_review %]disabled readonly[% END %]>
     </div>
-    <div class="form-group" id="div_binary" [% IF doctype != "binary" %]style="display:none"[% END %]>
-        <div class="form-group">
-            <label for="file">Upload new file</label>
-            <input type="file" id="file" name="file">
+    [% IF is_review %]
+        <button type="submit" name="submit" value="revert" class="btn btn-default">Revert to draft</button>
+        <button type="submit" name="submit" value="publish" class="btn btn-default">Publish</button>
+    [% ELSE %]
+        <div class="form-group" id="div_binary" [% IF doctype != "binary" %]style="display:none"[% END %]>
+            [% IF NOT is_review %]
+                <div class="form-group">
+                    <label for="file">Upload new file</label>
+                    <input type="file" id="file" name="file">
+                </div>
+                <div class="form-group">
+                    <button type="submit" name="submit" value="save" class="btn btn-default">Submit</button>
+                </div>
+            [% END %]
+            [% IF doc.user_can('publish') AND doc.draft_for_review %]
+                <div class="form-group">
+                    <label for="file">Current draft</label>
+                    <p>Draft file waiting to be published: <a href="/version/[% doc.draft.id %]">ID [% doc.draft.id %]</a> </p>
+                    <input type="hidden" name="binary_draft_id" value="[% doc.draft.id %]">
+                </div>
+                <div class="form-group">
+                    <button type="submit" name="submit" value="review" class="btn btn-default">Review</button>
+                </div>
+            [% END %]
         </div>
-        <div class="form-group">
-            <button type="submit" name="submit" value="save" class="btn btn-default">Submit</button>
+        <div class="form-group" id="div_text" [% IF doctype == "binary" %]style="display:none"[% END %]>
+            <label for="text_content">Text content</label>
+            <textarea class="form-control" name="text_content" rows="20">[% doc.latest.version_content.content | html %]</textarea>
+            [% IF doc.draft_for_review %]
+                <button type="submit" name="submit" value="save" class="btn btn-default">Save</button>
+            [% END %]
+            <button type="submit" name="submit" value="draft" class="btn btn-default">Save as new draft</button>
+            [% IF doc.user_can('publish') %]
+                <button type="submit" name="submit" value="review" class="btn btn-default">Review</button>
+            [% END %]
         </div>
-        [% IF doc.user_can('publish') AND doc.draft_for_review %]
-            <div class="form-group">
-                <label for="file">Current draft</label>
-                <p>Draft file waiting to be published: <a href="/version/[% doc.draft.id %]">ID [% doc.draft.id %]</a> </p>
-                <input type="hidden" name="binary_draft_id" value="[% doc.draft.id %]">
-            </div>
-            <div class="form-group">
-                <button type="submit" name="submit" value="publish" class="btn btn-default">Publish</button>
-            </div>
-        [% END %]
-    </div>
-    <div class="form-group" id="div_text" [% IF doctype == "binary" %]style="display:none"[% END %]>
-        <label for="text_content">Text content</label>
-        <textarea class="form-control" name="text_content" rows="20">[% doc.latest.version_content.content | html %]</textarea>
-        [% IF doc.draft_for_review %]
-            <button type="submit" name="submit" value="save" class="btn btn-default">Save</button>
-        [% END %]
-        <button type="submit" name="submit" value="draft" class="btn btn-default">Save as new draft</button>
-        [% IF doc.user_can('publish') %]
-            <button type="submit" name="submit" value="publish" class="btn btn-default">Publish</button>
-        [% END %]
-    </div>
+    [% END %]
 </form>
 <p></p>
 

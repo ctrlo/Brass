@@ -446,6 +446,7 @@ sub _version_add
             record   => $record,
             revision => 0,
             notes    => $notes,
+            drafter  => $options{user}->id,
             created  => $options{datetime} || DateTime->now,
             blobext  => $ext,
             mimetype => $mimetype,
@@ -491,16 +492,43 @@ sub _version_add
     $version_new->id;
 }
 
-sub publish
-{   my ($self, $id, $user) = @_;
+sub revert
+{   my ($self, $user) = @_;
     my $guard   = $self->schema->txn_scope_guard;
     my $latest  = $self->_latest;
-    my $version = $self->schema->resultset('Version')->find($id);
-    $version->update({
+    error __x"Can only revert review documents"
+        unless !$latest->is_published && $latest->reviewer;
+    $latest->update({
+        reviewer => undef,
+    });
+    $guard->commit;
+}
+
+sub submit_review
+{   my ($self, $user) = @_;
+    my $guard   = $self->schema->txn_scope_guard;
+    my $latest  = $self->_latest;
+    error __x"Can only review draft documents"
+        unless $latest->is_draft;
+    $latest->update({
+        reviewer => $user->id,
+    });
+    $self->_rset->update({review => undef});
+    $guard->commit;
+}
+
+sub publish
+{   my ($self, $user) = @_;
+    my $guard   = $self->schema->txn_scope_guard;
+    my $latest  = $self->_latest;
+    error __x"Cannot publish unreviewed document"
+        unless $latest->reviewer;
+    error __x"Document already published"
+        if $latest->is_published;
+    $latest->update({
         major    => $latest->major + 1,
         minor    => 0,
         revision => 0,
-        reviewer => $user->id,
         approver => $user->id,
     });
     $self->_rset->update({review => undef});
