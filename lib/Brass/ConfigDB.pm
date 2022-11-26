@@ -61,6 +61,8 @@ sub run
     my $sshfile = File::HomeDir->my_home."/.ssh/id_ecdsa";
     # Use this to generate required SSH key format
     # ssh-keygen -t ecdsa -b 521 -m pem
+    # Use this to convert existing SSH key to PEM:
+    # ssh-keygen -p -f path/to/your/key -m pem
     my $sshkey = Crypt::PK::ECC->new($sshfile, $sshpass);
 
     my $jws_token = encode_jwt(
