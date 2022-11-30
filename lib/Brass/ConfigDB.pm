@@ -44,9 +44,6 @@ sub run
     my $update    = $params{update};
     my $sshpass   = $params{sshpass} || $ENV{SSHPASS};
 
-    $type or error __"Please provide type of request with --type";
-    $action or error __"Please specify action with --action";
-
     # configdb config
     my $cfile     = File::HomeDir->my_home . "/.configdb";
     my $cfg       = Config::IniFiles->new( -file => $cfile );
@@ -57,6 +54,16 @@ sub run
     my $host       = $cfg->val($namespace, 'dbhost');
     my $email      = $cfg->val($namespace, 'email')
         or die "Email config parameter missing";
+
+    if ($type eq 'smtp')
+    {
+        my $smtp = $cfg->val($namespace, 'smtp');
+        $smtp or error __"smtp parameter is missing from .configdb";
+        return $smtp;
+    }
+
+    $type or error __"Please provide type of request with --type";
+    $action or error __"Please specify action with --action";
 
     my $sshfile = File::HomeDir->my_home."/.ssh/id_ecdsa";
     # Use this to generate required SSH key format
