@@ -102,6 +102,8 @@ get 'api/pwd/' => sub {
     my $param = query_parameters->get('param');
     $action eq 'sqldb' && !$param
         and error __"Please specify required username for SQL password";
+    $action eq 'system' && !$param
+        and error __"Please specify required username for system password";
 
     my ($username) = $schema->resultset('Pw')->search({
         'server.name' => $server,
