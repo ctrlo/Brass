@@ -25,12 +25,9 @@ use File::HomeDir;
 use JSON qw(decode_json encode_json);
 use Log::Report;
 use LWP::UserAgent;
-use Moo;
 use String::Random;
 use URI;
 use URI::QueryParam;
-
-sub randompw();
 
 sub run
 {   my ($self, %params) = @_;
