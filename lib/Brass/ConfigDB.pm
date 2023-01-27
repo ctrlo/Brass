@@ -27,10 +27,9 @@ use Log::Report;
 use LWP::UserAgent;
 use Moo;
 use CtrlO::Crypt::XkcdPassword;
+use String::Random;
 use URI;
 use URI::QueryParam;
-
-sub randompw();
 
 sub run
 {   my ($self, %params) = @_;
