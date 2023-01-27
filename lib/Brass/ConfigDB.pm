@@ -26,7 +26,7 @@ use JSON qw(decode_json encode_json);
 use Log::Report;
 use LWP::UserAgent;
 use Moo;
-use String::Random;
+use CtrlO::Crypt::XkcdPassword;
 use URI;
 use URI::QueryParam;
 
@@ -159,9 +159,8 @@ sub run
 }
 
 sub randompw()
-{   my $foo = new String::Random;
-    $foo->{'A'} = [ 'A'..'Z', 'a'..'z', '0'..'9' ];
-    scalar $foo->randpattern("AAAAAAAAAAAAAAAA");
+{   my $pwgen = CtrlO::Crypt::XkcdPassword->new;
+    $pwgen->xkcd( words => 3, digits => 2 );
 }
 
 1;
