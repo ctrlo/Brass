@@ -27,7 +27,7 @@ use Crypt::PK::ECC;
 use Dancer2 appname => 'Brass';
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::LogReport;
-use Session::Token;
+use CtrlO::Crypt::XkcdPassword;
 
 # Special error handler for JSON requests (as used in API)
 fatal_handler sub {
@@ -78,7 +78,8 @@ hook before => sub {
 };
 
 sub randompw()
-{   Session::Token->new(length => 16)->get;
+{   my $pwgen = CtrlO::Crypt::XkcdPassword->new;
+    $pwgen->xkcd( words => 3, digits => 2 );
 }
 
 get 'api/pwd/' => sub {
