@@ -50,6 +50,7 @@ use Lingua::EN::Numbers::Ordinate;
 use Log::Report::DBIC::Profiler;
 use Session::Token;
 use Sys::Hostname;
+use Text::Markdown qw/markdown/;
 use URI::Escape qw/uri_escape_utf8 uri_unescape/;
 
 use Dancer2;
@@ -940,12 +941,16 @@ any ['get', 'post'] => '/doc/content/:id' => require_role doc => sub {
           ? $doc->plain_save(text => param('text_content'), user => $user, notes => $notes)
           : $submit eq 'save' && $doctype eq 'tex'
           ? $doc->tex_save(text => param('text_content'), user => $user, notes => $notes)
+          : $submit eq 'save' && $doctype eq 'markdown'
+          ? $doc->markdown_save(text => param('text_content'), user => $user, notes => $notes)
           : $submit eq 'draft' && $doctype eq 'binary'
           ? $doc->file_add(text => param('text_content'), user => $user, notes => $notes)
           : $submit eq 'draft' && $doctype eq 'plain'
           ? $doc->plain_add(text => param('text_content'), user => $user, notes => $notes)
           : $submit eq 'draft' && $doctype eq 'tex'
           ? $doc->tex_add(text => param('text_content'), user => $user, notes => $notes)
+          : $submit eq 'draft' && $doctype eq 'markdown'
+          ? $doc->markdown_add(text => param('text_content'), user => $user, notes => $notes)
           : die "Invalid request";
 
         $doc->submit_review($user)
@@ -1143,6 +1148,14 @@ sub _send_doc
             content_type => 'application/pdf',
             filename     => $filename,
         );
+    }
+    elsif ($version->mimetype && $version->mimetype eq 'text/markdown')
+    {
+        return template 'doc_markdown' => {
+            doc       => $version->doc,
+            markdown => markdown($version->version_content->content),
+            page     => 'doc_markdown'
+        };
     }
     else {
         my $txt = $version->version_content->content;

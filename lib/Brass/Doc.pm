@@ -374,7 +374,11 @@ sub _version_add
         $options{text} =~ s/\r/\n/g;
         # Do not create new version if content hasn't changed
         $options{new} = 0 if $latest && $options{text} eq $latest->version_content->content;
-        $mimetype = $options{tex} ? 'application/x-tex' : 'text/plain';
+        $mimetype = $options{tex}
+            ? 'application/x-tex'
+            : $options{markdown}
+            ? 'text/markdown'
+            : 'text/plain';
         $content  = $options{text};
     }
     elsif ($options{upload}) {
@@ -586,6 +590,12 @@ sub tex_save
     $self->_version_add(%options);
 }
 
+sub markdown_save
+{   my ($self, %options) = @_;
+    $options{markdown} = 1;
+    $self->_version_add(%options);
+}
+
 sub file_add
 {   my ($self, %options) = @_;
     $options{new}  = 1;
@@ -602,6 +612,13 @@ sub tex_add
 {   my ($self, %options) = @_;
     $options{tex}     = 1;
     $options{new}     = 1;
+    $self->_version_add(%options);
+}
+
+sub markdown_add
+{   my ($self, %options) = @_;
+    $options{markdown} = 1;
+    $options{new}      = 1;
     $self->_version_add(%options);
 }
 

@@ -8,6 +8,8 @@
 
 [% IF doc.latest.mimetype == "application/x-tex" %]
     [% doctype = "tex" %]
+[% ELSIF doc.latest.mimetype == "text/markdown" %]
+    [% doctype = "markdown" %]
 [% ELSIF doc.latest.version_content.content %]
     [% doctype = "plain" %]
 [% ELSE %]
@@ -33,6 +35,13 @@
                     <input type="radio" name="doctype" id="radio_tex" value="tex"
                         class="radio_doctype" [% IF doctype == "tex" %]checked[% END %]>
                     Latex
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="doctype" id="radio_markdown" value="markdown"
+                        class="radio_doctype" [% IF doctype == "markdown" %]checked[% END %]>
+                    Markdown
                 </label>
             </div>
             <div class="radio">
