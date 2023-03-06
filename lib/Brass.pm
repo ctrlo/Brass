@@ -217,7 +217,8 @@ any ['get', 'post'] => '/upload' => sub {
     if (param 'submit')
     {
         my $file = request->upload('file');
-        $file->copy_to(config->{brass}->{file_upload}."/".$file->filename);
+        $file->copy_to(config->{brass}->{file_upload}."/".$file->filename)
+            or error __"File upload has failed";
         forwardHome({ success => "Thank you, the file has been sent"});
     }
 
