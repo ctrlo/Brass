@@ -513,6 +513,10 @@ sub submit_review
     $latest->update({
         reviewer => $user->id,
     });
+    # Ensure PDF is regenerated with reviewer info if Latex doc
+    $latest->version_content->update({
+        content_blob => undef,
+    }) if $latest->mimetype eq 'application/x-tex';
     $self->_rset->update({review => undef});
     $guard->commit;
 }
@@ -531,6 +535,10 @@ sub publish
         revision => 0,
         approver => $user->id,
     });
+    # Ensure PDF is regenerated with reviewer info if Latex doc
+    $latest->version_content->update({
+        content_blob => undef,
+    }) if $latest->mimetype eq 'application/x-tex';
     $self->_rset->update({review => undef});
     $guard->commit;
 }
