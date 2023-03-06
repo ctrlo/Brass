@@ -10,6 +10,7 @@
                 <div class="form-group">
                     <label for="domain">Domain</label>
                     <select class="form-control" id="domain" name="domain">
+                        <option></option>
                         [% FOREACH domain IN domains %]
                             <option value="[% domain.id %]" [% IF server.domain == domain %]selected[% END %]>[% domain.name | html_entity %]</option>
                         [% END %]
