@@ -82,10 +82,10 @@ foreach my $server (@{$servers->all})
         push @messages, sprinti "Server {name} most recent backup unsuccessful",
             name => $server->name;
     }
-    elsif ($server->backup_verify_time < DateTime->now->subtract(days => 5))
+    if ($server->update_datetime < DateTime->now->subtract(days => 9))
     {
-        push @messages, sprinti "Last backup verification of server {name} was {date}",
-            name => $server->name, date => $server->backup_verify_time;
+        push @messages, sprinti "Last update of server {name} was {date}",
+            name => $server->name, date => $server->update_datetime->ymd;
     }
 }
 $output .= "$_\n" foreach @messages;
