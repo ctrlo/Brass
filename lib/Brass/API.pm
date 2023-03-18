@@ -280,7 +280,7 @@ get 'api/server/' => sub {
         },{
             prefetch => 'domain',
         });
-        $output .= $serv->metadata;
+        $output .= ($serv->metadata || '{}');
     }
     elsif ($action eq 'sshkeys')
     {
