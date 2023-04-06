@@ -66,10 +66,11 @@ sub send
 
     my $start = $self->start
         or error __"Please enter a start date";
-    my $offset = sprintf("%+05d", $tz->offset_for_datetime( DateTime->now ) / 3600 * 100);
+    my $offset = sprintf("%+05d", $tz->offset_for_datetime($start) / 3600 * 100);
     $start->set_time_zone($offset);
     my $end = $self->end
         or error __"Please enter an end date";
+    $offset = sprintf("%+05d", $tz->offset_for_datetime($end) / 3600 * 100);
     $end->set_time_zone($offset);
     my $description = $self->description
         or error __"Please enter a description";
