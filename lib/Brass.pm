@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass;
 
-use Brass::Calendar;
 use Brass::Classifications;
 use Brass::Config::Certs;
 use Brass::Config::CertUses;
@@ -593,7 +592,7 @@ any ['get', 'post'] => '/calendar/:id/' => require_any_role [qw(config)] => sub 
         $calendar->html(body_parameters->get('html'));
         $calendar->user_id(logged_in_user->id);
         # Go back to same page with invite details, in case wanting to send again
-        forwardHome({ success => "The invite was sent successfully" }, "calendar/" );
+        forwardHome({ success => "The invite was sent successfully" }, "calendar/" )
             if process sub { $calendar->update_or_insert; $calendar->send };
     }
 
