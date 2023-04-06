@@ -593,7 +593,7 @@ any ['get', 'post'] => '/calendar/:id/' => require_any_role [qw(config)] => sub 
         $calendar->html(body_parameters->get('html'));
         $calendar->user_id(logged_in_user->id);
         # Go back to same page with invite details, in case wanting to send again
-        success __"The invite was sent successfully"
+        forwardHome({ success => "The invite was sent successfully" }, "calendar/" );
             if process sub { $calendar->update_or_insert; $calendar->send };
     }
 
