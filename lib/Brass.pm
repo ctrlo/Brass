@@ -563,7 +563,7 @@ any ['get'] => '/calendar/' => require_any_role [qw(config)] => sub {
 
     my $schema  = schema;
 
-    my $calendar = schema->resultset('Calendar');
+    my $calendar = schema->resultset('Calendar')->search_rs({ user_id => logged_in_user->id});
 
     template 'calendars' => {
         calendar => $calendar,
