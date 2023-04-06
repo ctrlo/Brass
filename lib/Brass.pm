@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass;
 
+use Brass::Calendar;
 use Brass::Classifications;
 use Brass::Config::Certs;
 use Brass::Config::CertUses;
@@ -557,6 +558,49 @@ any ['get', 'post'] => '/config/cert/?:id?' => require_role 'config' => sub {
     }
 
     template 'config/cert' => $params;
+};
+
+any ['get'] => '/calendar/' => require_any_role [qw(config)] => sub {
+
+    my $schema  = schema;
+
+    my $calendar = schema->resultset('Calendar');
+
+    template 'calendars' => {
+        calendar => $calendar,
+        page     => 'calendar',
+    };
+};
+
+any ['get', 'post'] => '/calendar/:id/' => require_any_role [qw(config)] => sub {
+
+    my $schema  = schema;
+    my $users   = Brass::Users->new(schema => schema); # Default schema
+
+    my $id = route_parameters->get('id');
+
+    my $calendar = $id
+        ? schema->resultset('Calendar')->find($id)
+        : schema->resultset('Calendar')->new({});
+
+    if (body_parameters->get('send'))
+    {
+        $calendar->start(body_parameters->get('start'));
+        $calendar->end(body_parameters->get('end'));
+        $calendar->description(body_parameters->get('description'));
+        $calendar->location(body_parameters->get('location'));
+        $calendar->attendees(body_parameters->get('attendees'));
+        $calendar->html(body_parameters->get('html'));
+        $calendar->user_id(logged_in_user->id);
+        # Go back to same page with invite details, in case wanting to send again
+        success __"The invite was sent successfully"
+            if process sub { $calendar->update_or_insert; $calendar->send };
+    }
+
+    template 'calendar' => {
+        calendar => $calendar,
+        page     => 'calendar',
+    };
 };
 
 any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_read_all)] => sub {

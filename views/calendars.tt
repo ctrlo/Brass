@@ -1,0 +1,15 @@
+<p>
+    <a href="/calendar/0/" class="btn btn-default">New event</a>
+</p>
+<table class="table table-striped">
+    <tr>
+        <th>ID</th>
+        <th>Description</th>
+    </tr>
+    [% FOREACH cal IN calendar.all %]
+        <tr>
+            <td><a href="/calendar/[% cal.id %]/">[% cal.id %]</a></td>
+            <td>[% cal.description | html %]</td>
+        </tr>
+    [% END %]
+</table>

@@ -1,0 +1,42 @@
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <input type="hidden" name="csrf_token" value="[% csrf_token %]">
+            <div class="form-group">
+                <label for="start">Start date and time (format YYYY-MM-DD HH:MM)</label>
+                <input type="text" class="form-control" id="start" name="start" value="[% calendar.start.datetime(' ') | html %]">
+            </div>
+            <div class="form-group">
+                <label for="end">End date and time (format YYYY-MM-DD HH:MM)</label>
+                <input type="text" class="form-control" id="end" name="end" value="[% calendar.end.datetime(' ') | html %]">
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" class="form-control" id="description" name="description" value="[% calendar.description | html %]">
+            </div>
+            <div class="form-group">
+                <label for="location">Location URL (e.g. Teams link)</label>
+                <input type="text" class="form-control" id="location" name="location" value="[% calendar.location | html %]">
+            </div>
+            <div class="form-group">
+                <label for="attendees">Attendees (one per line)</label>
+                <textarea class="form-control" id="attendees" name="attendees" rows="5" style="font-family: monospace;">[% calendar.attendees | html %]</textarea>
+            </div>
+            <div class="form-group">
+                <label for="html">HTML body (optional)</label>
+                <textarea id="html" name="html" style="height:300px">[% calendar.html | html %]</textarea>
+            </div>
+            <button type="submit" name="send" value="send" class="btn btn-default">Send</button>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var jscode='[% FILTER remove('\n+') %]
+        [% FILTER replace('\'', '\\\'') %]
+            $(document).ready(function () {
+                $('#html').summernote({height: 200});
+            });
+        [% END %]
+    [% END %]';
+</script>
