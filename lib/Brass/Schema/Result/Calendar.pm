@@ -150,7 +150,7 @@ sub send
     )->encode(
         # Default quoted-printable breaks email addresses across lines which
         # Outlook doesn't like
-        #transfer_encoding => 'base64',
+        transfer_encoding => 'base64',
     );
 
     my $content_type = 'multipart/alternative';
