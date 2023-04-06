@@ -11,7 +11,6 @@ use Data::ICal               ();
 use Data::ICal::Entry::Event ();
 use Data::ICal::Entry::Alarm::Display;
 use DateTime                 ();
-use DateTime::Format::CLDR;
 use DateTime::Format::ICal   ();
 use DateTime::Duration       ();
 use HTML::FormatText;
@@ -171,14 +170,5 @@ sub send
         sendmail_options => [-f => $me->email],
     );
 }
-
-sub parsedt
-{   my ($self, $in) = @_;
-    $in or return;
-    my $cldr = DateTime::Format::CLDR->new(
-        pattern => 'yyyy-MM-dd HH:mm',
-    );
-    $cldr->parse_datetime($in);
-};
 
 1;
