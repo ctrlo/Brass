@@ -27,7 +27,6 @@ use Log::Report;
 use LWP::UserAgent;
 use Moo;
 use CtrlO::Crypt::XkcdPassword;
-use String::Random;
 use URI;
 use URI::QueryParam;
 
