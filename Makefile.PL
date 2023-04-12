@@ -30,7 +30,6 @@ WriteMakefile(
         'Log::Report'                => 0,
         'LWP::Protocol::https'       => 0,
         'LWP::UserAgent'             => 0,
-        'String::Random'             => 0,
         'Term::ReadKey'              => 0,
         'Test::More'                 => 0,
         'Text::Markdown'             => 0,
