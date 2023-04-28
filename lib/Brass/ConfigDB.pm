@@ -39,6 +39,7 @@ sub run
     my $type      = $params{type};
     my $action    = $params{action};
     my $param     = $params{param};
+    my $pass      = $params{pass};
     my $use       = $params{use};
     my $update    = $params{update};
     my $sshpass   = $params{sshpass} || $ENV{SSHPASS};
@@ -93,6 +94,7 @@ sub run
     {
         push @path, 'pwd';
         push @query, (server => $server, action => $action, param => $param);
+        push(@query, $pass) if ($pass);
     }
     elsif ($type eq 'cert')
     {

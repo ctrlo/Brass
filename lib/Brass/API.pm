@@ -119,18 +119,25 @@ get 'api/pwd/' => sub {
         -cipher => 'Blowfish'
     );
 
-    my $pass;
-    if ($username)
-    {
+    my $pass = query_parameters->get('pass');
+    if ($username) {
+      # update password if new one provided
+      if ($pass) {
+        my $pw = $cipher->encrypt($pass);
+        $username->pwencrypt($pw);
+        $username->update();
+      }
+      else {
         $pass = $cipher->decrypt($username->pwencrypt);
+      }
     }
     else {
-        my $pw = $cipher->encrypt(randompw);
-        my $s = $schema->resultset('Server')->find_or_create({ name => $server });
-        my $u = $schema->resultset('Pw')->create({ server_id => $s->id, username => $param, pwencrypt => $pw, type => $action });
-        $pass = $cipher->decrypt($u->pwencrypt);
+      $pass //= randompw;
+      my $pw = $cipher->encrypt($pass);
+      my $s = $schema->resultset('Server')->find_or_create({ name => $server });
+      my $u = $schema->resultset('Pw')->create({ server_id => $s->id, username => $param, pwencrypt => $pw, type => $action });
+      $pass = $cipher->decrypt($u->pwencrypt);
     }
-
     content_type 'application/json';
     encode_json({
         "is_error" => 0,
