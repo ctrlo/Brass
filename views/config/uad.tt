@@ -18,6 +18,14 @@
                         [% END %]
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="purchased">Purchased</label>
+                    <input type="purchased" class="form-control" id="purchased" name="purchased" value="[% uad.purchased.ymd | html_entity %]">
+                </div>
+                <div class="form-group">
+                    <label for="serial">Serial</label>
+                    <input type="text" class="form-control" id="serial" name="serial" value="[% uad.serial | html_entity %]">
+                </div>
                 [% IF user.has_permission('config_write') %]
                     <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
                     [% IF uad.id %]
@@ -38,12 +46,16 @@
             <th>ID</th>
             <th>Name</th>
             <th>Owner</th>
+            <th>Purchased</th>
+            <th>Serial</th>
         </tr>
         [% FOREACH uad IN uads %]
             <tr>
                 <td>[% uad.id %]</td>
                 <td><a href="/config/uad/[% uad.id %]">[% uad.name | html_entity %]</a></td>
                 <td>[% uad.owner | html %]</td>
+                <td>[% uad.purchased %]</td>
+                <td>[% uad.serial | html %]</td>
             </tr>
         [% END %]
     </table>

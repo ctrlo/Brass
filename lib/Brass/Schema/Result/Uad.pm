@@ -58,6 +58,10 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 256 },
   "owner",
   { data_type => "integer", is_nullable => 1 },
+  "serial",
+  { data_type => "text", is_nullable => 1 },
+  "purchased",
+  { data_type => "date", datetime_undef_if_invalid => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY

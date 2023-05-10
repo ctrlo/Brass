@@ -406,6 +406,8 @@ any ['get', 'post'] => '/config/uad/?:id?' => require_role 'config' => sub {
                 unless user_has_role 'config_write';
             $uad->name(param 'name');
             $uad->set_owner(param 'owner');
+            $uad->purchased(param 'purchased');
+            $uad->serial(param 'serial');
             $uad->write;
             redirect '/config/uad';
         }

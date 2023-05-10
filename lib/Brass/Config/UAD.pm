@@ -51,6 +51,19 @@ has name => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->name; },
 );
 
+has purchased => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->purchased; },
+);
+
+has serial => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->serial; },
+);
+
 has set_owner => (
     is      => 'rw',
     isa     => Maybe[Int],
@@ -64,6 +77,8 @@ sub inflate_result {
     $_[0]->new(
         id        => $data->{id},
         name      => $data->{name},
+        purchased => $data->{purchased},
+        serial    => $data->{serial},
         set_owner => $data->{owner},
         schema    => $schema,
     );
@@ -86,8 +101,10 @@ sub write
 {   my $self = shift;
     my $guard = $self->schema->txn_scope_guard;
     my $values = {
-        name  => $self->name,
-        owner => $self->set_owner,
+        name      => $self->name,
+        purchased => $self->purchased,
+        serial    => $self->serial,
+        owner     => $self->set_owner,
     };
     if ($self->id)
     {
