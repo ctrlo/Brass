@@ -201,6 +201,7 @@
             <th><a href="?sort=id">ID</a></th>
             <th><a href="?sort=title">Title</a></th>
             <th>Description</th>
+            <th>Owner</th>
             <th><a href="?sort=opened">Opened</a></th>
             <th>Project</th>
             <th>Type</th>
@@ -212,6 +213,7 @@
                 <td>[% issue.id %]</td>
                 <td><a href="/issue/[% issue.id %]">[% issue.title | html_entity %]</a></td>
                 <td>[% issue.description | html_entity %]</td>
+                <td style="white-space: nowrap">[% issue.owner | html_entity %]</td>
                 <td>[% issue.opened | html_entity %]</td>
                 <td>[% issue.project | html_entity %]</td>
                 <td>[% issue.type | html_entity %]</td>
