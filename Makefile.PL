@@ -36,6 +36,7 @@ WriteMakefile(
         'Text::Markdown'             => 0,
         'URI'                        => 0,
         'URI::QueryParam'            => 0,
+	'Data::Password::Check'      => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Brass-*' },

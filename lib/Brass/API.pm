@@ -28,6 +28,7 @@ use Dancer2 appname => 'Brass';
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::LogReport;
 use CtrlO::Crypt::XkcdPassword;
+use Data::Password::Check;
 
 # Special error handler for JSON requests (as used in API)
 fatal_handler sub {
@@ -120,6 +121,17 @@ get 'api/pwd/' => sub {
     );
 
     my $pass = query_parameters->get('pass');
+    if (defined $pass) {
+      # check password is strong
+      my $pwcheck = Data::Password::Check->check({
+                                                  password => $pass,
+                                                  tests => [qw(length silly repeated)]
+                                                 });
+      if ($pwcheck->has_errors) {
+        error __"Please use a secure password, provided password is not secure : " .
+          join(',', @{ $pwcheck->error_list });
+      }
+    }
     if ($username) {
       # update password if new one provided
       if ($pass) {
