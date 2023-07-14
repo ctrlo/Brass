@@ -336,9 +336,10 @@ get 'api/server/' => sub {
     elsif ($action eq 'sudo')
     {
         $server or error __"Please specify server";
-        my ($serv) = $schema->resultset('Server')->search({
+        my $serv = $schema->resultset('Server')->search({
             'me.name' => $server,
-        });
+        })->next
+            or error __x"Server {server} not found", server => $server;
         $output .= $serv->sudo if $serv->sudo;
     }
     elsif ($action eq 'update')
