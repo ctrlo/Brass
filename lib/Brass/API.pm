@@ -28,6 +28,7 @@ use Dancer2 appname => 'Brass';
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::LogReport;
 use CtrlO::Crypt::XkcdPassword;
+use Data::Password::Check;
 
 # Special error handler for JSON requests (as used in API)
 fatal_handler sub {
@@ -119,18 +120,36 @@ get 'api/pwd/' => sub {
         -cipher => 'Blowfish'
     );
 
-    my $pass;
-    if ($username)
-    {
+    my $pass = query_parameters->get('pass');
+    if (defined $pass) {
+      # check password is strong
+      my $pwcheck = Data::Password::Check->check({
+                                                  password => $pass,
+                                                  tests => [qw(length silly repeated)]
+                                                 });
+      if ($pwcheck->has_errors) {
+        error __"Please use a secure password, provided password is not secure : " .
+          join(',', @{ $pwcheck->error_list });
+      }
+    }
+    if ($username) {
+      # update password if new one provided
+      if ($pass) {
+        my $pw = $cipher->encrypt($pass);
+        $username->pwencrypt($pw);
+        $username->update();
+      }
+      else {
         $pass = $cipher->decrypt($username->pwencrypt);
+      }
     }
     else {
-        my $pw = $cipher->encrypt(randompw);
-        my $s = $schema->resultset('Server')->find_or_create({ name => $server });
-        my $u = $schema->resultset('Pw')->create({ server_id => $s->id, username => $param, pwencrypt => $pw, type => $action });
-        $pass = $cipher->decrypt($u->pwencrypt);
+      $pass //= randompw;
+      my $pw = $cipher->encrypt($pass);
+      my $s = $schema->resultset('Server')->find_or_create({ name => $server });
+      my $u = $schema->resultset('Pw')->create({ server_id => $s->id, username => $param, pwencrypt => $pw, type => $action });
+      $pass = $cipher->decrypt($u->pwencrypt);
     }
-
     content_type 'application/json';
     encode_json({
         "is_error" => 0,
