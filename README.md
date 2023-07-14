@@ -24,3 +24,15 @@ fusermount -u /home/abeverley/receipts
 ```
 30 02 * * * /srv/Brass/bin/status.pl
 ```
+
+## Running configdb.pl
+
+A configuration file ```~/.configdb``` is needed to run configdb.pl. Values align with entries in the Brass database. The SMTP entry is optional and provides the return value when running configdb.pl with the smtp action.
+
+```
+[myorg]
+email=john@example.com
+dbhost=brass.example.com
+passphrase=The passphrase for encrypted passwords
+smtp=smtp.example.com
+```
