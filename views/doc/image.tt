@@ -7,6 +7,17 @@
         [% END %]
     </h2>
 
+    <div class="alert alert-warning">
+        <p>
+            Insert the image into a Latex document with the following code[% IF NOT image.in_storage %]
+            (where nnn is the image ID once saved)[% END %].
+            This will automatically insert an \includegraphics{} statement:
+        </p>
+        <p><code>%%image.[% IF image.in_storage %][% image.id %][% ELSE %]nnn[% END %]%%</code></p>
+        <p>It's also possible to specify standard includegraphics parameters as follows:</p>
+        <p><code>%%image.[% IF image.in_storage %][% image.id %][% ELSE %]nnn[% END %][height=5cm]%%</code></p>
+    </div>
+
     <form method="post" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="[% csrf_token %]">
         <div class="form-group">
