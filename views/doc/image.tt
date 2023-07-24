@@ -7,7 +7,7 @@
         [% END %]
     </h2>
 
-    <div class="alert alert-warning">
+    <div class="alert alert-info">
         <p>
             Insert the image into a Latex document with the following code[% IF NOT image.in_storage %]
             (where nnn is the image ID once saved)[% END %].
