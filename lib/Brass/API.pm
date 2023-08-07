@@ -186,25 +186,24 @@ get 'api/cert/' => sub {
         foreach my $cert (@certs)
         {
             my $full_filename = $cert->cert->filename;
-            my @paths = split /\s*,\s*/, $full_filename;
-            foreach my $path (@paths) {
-            my $filename = $path;
-            # Add final newline if it doesn't exist
-            my $content = $cert->cert->content;
-            $content .= "\n" unless $content =~ /\n$/;
-            if ($output{$filename})
-            {
-                $output{$filename}->{content} .= $content;
-            }
-            else {
-                $output{$filename} = {
-                    type       => $cert->cert->type,
-                    filename   => $filename,
-                    content    => $content,
-                    file_user  => $cert->cert->file_user,
-                    file_group => $cert->cert->file_group,
-                };
-            }
+            my @filenames = split /\s*,\s*/, $full_filename;
+            foreach my $filename (@filenames) {
+                # Add final newline if it doesn't exist
+                my $content = $cert->cert->content;
+                $content .= "\n" unless $content =~ /\n$/;
+                if ($output{$filename})
+                {
+                    $output{$filename}->{content} .= $content;
+                }
+                else {
+                    $output{$filename} = {
+                        type       => $cert->cert->type,
+                        filename   => $filename,
+                        content    => $content,
+                        file_user  => $cert->cert->file_user,
+                        file_group => $cert->cert->file_group,
+                    };
+                }
             }
         }
         $output = [values %output];
