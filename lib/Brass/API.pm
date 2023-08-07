@@ -185,7 +185,10 @@ get 'api/cert/' => sub {
         my %output;
         foreach my $cert (@certs)
         {
-            my $filename = $cert->cert->filename;
+            my $full_filename = $cert->cert->filename;
+            my @paths = split /\s*,\s*/, $full_filename;
+            foreach my $path (@paths) {
+            my $filename = $path;
             # Add final newline if it doesn't exist
             my $content = $cert->cert->content;
             $content .= "\n" unless $content =~ /\n$/;
@@ -201,6 +204,7 @@ get 'api/cert/' => sub {
                     file_user  => $cert->cert->file_user,
                     file_group => $cert->cert->file_group,
                 };
+            }
             }
         }
         $output = [values %output];
