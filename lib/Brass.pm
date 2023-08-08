@@ -679,7 +679,7 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
                 unless $issue->user_can_write(logged_in_user);
             $issue->title(param 'title');
             $issue->description(param 'description');
-            $issue->completion_time(param 'completion_time');
+            $issue->security_considerations(param 'security_considerations');
             $issue->set_project(param 'project');
             $issue->set_priority(param 'priority');
             $issue->set_type(param 'type');

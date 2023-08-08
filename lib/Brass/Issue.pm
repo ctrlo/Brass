@@ -69,11 +69,11 @@ has description => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->description; },
 );
 
-has completion_time => (
+has security_considerations => (
     is      => 'rw',
     isa     => Maybe[Str],
     lazy    => 1,
-    builder => sub { $_[0]->_rset && $_[0]->_rset->completion_time; },
+    builder => sub { $_[0]->_rset && $_[0]->_rset->security_considerations; },
 );
 
 has reference => (
@@ -445,20 +445,20 @@ sub inflate_result {
     );
 
     $_[0]->new(
-        id              => $data->{id},
-        title           => $data->{title},
-        description     => $data->{description},
-        completion_time => $data->{completion_time},
-        reference       => $data->{reference},
-        security        => $data->{security},
-        set_type        => $data->{type},
-        set_owner       => $data->{owner},
-        set_author      => $data->{author},
-        set_approver    => $data->{approver},
-        priority        => $priority,
-        status          => $status,
-        project         => $project,
-        schema          => $schema,
+        id                      => $data->{id},
+        title                   => $data->{title},
+        description             => $data->{description},
+        security_considerations => $data->{security_considerations},
+        reference               => $data->{reference},
+        security                => $data->{security},
+        set_type                => $data->{type},
+        set_owner               => $data->{owner},
+        set_author              => $data->{author},
+        set_approver            => $data->{approver},
+        priority                => $priority,
+        status                  => $status,
+        project                 => $project,
+        schema                  => $schema,
     );
 }
 
@@ -473,16 +473,16 @@ sub _build__rset
 sub write
 {   my ($self, $user_id) = @_;
     my $values = {
-        title           => $self->title,
-        description     => $self->description,
-        completion_time => $self->completion_time,
-        reference       => $self->reference,
-        security        => $self->security,
-        type            => ($self->type && $self->type->id),
-        project         => $self->project->id,
-        owner           => $self->set_owner,
-        author          => $self->set_author,
-        approver        => $self->set_approver,
+        title                   => $self->title,
+        description             => $self->description,
+        security_considerations => $self->security_considerations,
+        reference               => $self->reference,
+        security                => $self->security,
+        type                    => ($self->type && $self->type->id),
+        project                 => $self->project->id,
+        owner                   => $self->set_owner,
+        author                  => $self->set_author,
+        approver                => $self->set_approver,
     };
     if ($self->id)
     {
