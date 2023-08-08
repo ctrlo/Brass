@@ -58,8 +58,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="completion_time">Estimated completion time</label>
-                    <input type="text" class="form-control" id="completion_time" name="completion_time" value="[% issue.completion_time | html_entity %]">
+                    <label for="security_considerations">Security considerations</label>
+                    <input type="text" class="form-control" id="security_considerations" name="security_considerations" value="[% issue.security_considerations | html_entity %]">
                 </div>
                 <div class="form-group">
                     <label>Tags</label>
