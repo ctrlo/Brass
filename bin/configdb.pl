@@ -27,11 +27,12 @@ use Brass::ConfigDB;
 use Getopt::Long;
 use Term::ReadKey;
 
-my ($server, $type, $action, $param, $use, %update, $namespace);
+my ($server, $type, $action, $param, $use, %update, $namespace, $pass);
 GetOptions (
     'server=s'    => \$server,
     'namespace=s' => \$namespace,
     'type=s'      => \$type,
+    'pass=s'      => \$pass,
     'action=s'    => \$action,
     'param=s'     => \$param,
     'use=s'       => \$use,
@@ -59,6 +60,7 @@ my $ret = $cdb->run(
     server    => $server,
     namespace => $namespace,
     type      => $type,
+    pass      => $pass,
     action    => $action,
     param     => $param,
     use       => $use,
