@@ -93,7 +93,7 @@ sub run
     {
         push @path, 'pwd';
         push @query, (server => $server, action => $action, param => $param);
-        push(@query, $pass) if ($pass);
+        push(@query, pass => $pass) if ($pass);
     }
     elsif ($type eq 'cert')
     {
