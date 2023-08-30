@@ -98,7 +98,7 @@ get 'api/pwd/' => sub {
     my $action = query_parameters->get('action')
         or error __"Need required action";
 
-    $action eq 'sqldb' || $action eq 'admonitor' || $action eq 'system'
+    $action eq 'sqldb' || $action eq 'admonitor' || $action eq 'system' || $action eq 'wazuh'
         or error __x"Invalid action: {action}", action => $action;
 
     my $param = query_parameters->get('param');
@@ -106,6 +106,8 @@ get 'api/pwd/' => sub {
         and error __"Please specify required username for SQL password";
     $action eq 'system' && !$param
         and error __"Please specify required username for system password";
+    $action eq 'wazuh' && !$param
+        and error __"Please specify required username for wazuh password";
 
     my ($username) = $schema->resultset('Pw')->search({
         'server.name' => $server,
