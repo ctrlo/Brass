@@ -303,6 +303,8 @@ sub write
         $self->_rset->update($values);
     }
     else {
+        error __x"Server name {name} already exists", name => $self->name
+            if $self->schema->resultset('Server')->search({ name => $self->name })->count;
         $self->_set__rset($self->schema->resultset('Server')->create($values));
         $self->_set_id($self->_rset->id);
     }
