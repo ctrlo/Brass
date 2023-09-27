@@ -59,7 +59,7 @@
                 </div>
                 <div class="form-group">
                     <label for="security_considerations">Security considerations</label>
-                    <input type="text" class="form-control" id="security_considerations" name="security_considerations" value="[% issue.security_considerations | html_entity %]">
+                    <textarea class="form-control" id="security_considerations" name="security_considerations">[% issue.security_considerations | html_entity %]</textarea>
                 </div>
                 <div class="form-group">
                     <label>Tags</label>
