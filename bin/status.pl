@@ -82,7 +82,12 @@ foreach my $server (@{$servers->all})
         push @messages, sprinti "Server {name} most recent backup unsuccessful",
             name => $server->name;
     }
-    if ($server->update_datetime < DateTime->now->subtract(days => 9))
+    if (!$server->update_datetime)
+    {
+        push @messages, sprinti "No update of server {name}",
+            name => $server->name;
+    }
+    elsif ($server->update_datetime < DateTime->now->subtract(days => 9))
     {
         push @messages, sprinti "Last update of server {name} was {date}",
             name => $server->name, date => $server->update_datetime->ymd;

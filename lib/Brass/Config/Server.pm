@@ -121,6 +121,10 @@ sub _build__backup_params
     {
         $params->{text} = 'N/A';
     }
+    elsif (!$self->backup_verify)
+    {
+        $params->{text} = "No backup information available";
+    }
     elsif ($self->backup_verify =~ m!^File (.*) retrieved at (.*) with differences(.*)and /root/testfile (differ|are identical)\s?$!)
     {
         $params->{text} = $4 eq 'are identical' ? 'Identical' : 'Different';
