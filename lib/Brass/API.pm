@@ -20,6 +20,7 @@ package Brass::API;
 
 use strict; use warnings;
 
+use Brass::Actions ();
 use Crypt::Blowfish;
 use Crypt::CBC;
 use Crypt::JWT qw(decode_jwt);
@@ -98,16 +99,13 @@ get 'api/pwd/' => sub {
     my $action = query_parameters->get('action')
         or error __"Need required action";
 
-    $action eq 'sqldb' || $action eq 'admonitor' || $action eq 'system' || $action eq 'wazuh'
+    Brass::Actions::is_allowed_action($action)
         or error __x"Invalid action: {action}", action => $action;
 
     my $param = query_parameters->get('param');
-    $action eq 'sqldb' && !$param
-        and error __"Please specify required username for SQL password";
-    $action eq 'system' && !$param
-        and error __"Please specify required username for system password";
-    $action eq 'wazuh' && !$param
-        and error __"Please specify required username for wazuh password";
+    !$param
+        and error __x"Please specify required username for {action} password",
+            action => $action;
 
     my ($username) = $schema->resultset('Pw')->search({
         'server.name' => $server,
