@@ -5,6 +5,8 @@ use warnings;
 
 my @allowed_action = qw(
     admonitor
+    backups-gpg
+    backups-s3
     system
     wazuh
 );
