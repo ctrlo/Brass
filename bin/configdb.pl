@@ -43,7 +43,7 @@ GetOptions (
 return 1 if caller();
 
 my $sshpass = $ENV{SSHPASS};
-if (!$sshpass)
+if (!defined $sshpass)
 {
     # Get passphrase of user's SSH key, do not echo
     ReadMode ('noecho');
