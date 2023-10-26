@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass::Config::Pwds;
 
+use Brass::Actions ();
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 
@@ -43,7 +44,7 @@ has all => (
 sub _build_all
 {   my $self = shift;
     my $pwd_rs = $self->schema->resultset('Pw')->search({
-        type => { '!=' => [ -and => qw/sqldb admonitor system wazuh/] },
+        type => { '!=' => [ -and => Brass::Actions::allowed_actions()] },
     },{
         order_by => ['me.id'],
     });
