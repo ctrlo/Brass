@@ -7,6 +7,7 @@ my @allowed_action = qw(
     admonitor
     backups-gpg
     backups-s3
+    sqldb
     system
     wazuh
 );
