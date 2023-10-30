@@ -103,8 +103,8 @@ get 'api/pwd/' => sub {
         or error __x"Invalid action: {action}", action => $action;
 
     my $param = query_parameters->get('param');
-    !$param
-        and error __x"Please specify required username for {action} password",
+    !Brass::Actions::action_requires_pwd($action) || $param
+        or error __x"Please specify required username for {action} password",
             action => $action;
 
     my ($username) = $schema->resultset('Pw')->search({
