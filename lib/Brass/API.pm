@@ -172,45 +172,51 @@ get 'api/cert/' => sub {
     if ($action eq 'summary')
     {
         $server or error __"Please specify server";
-        $param or error __"Please specify certificate";
+        $param or error __"Please specify certificate use";
 
-        my @certs = $schema->resultset('ServerCert')->search({
+        my @certs;
+        my @uses = $schema->resultset('ServerCert')->search({
             'server.name' => $server,
             'use.name'    => $param,
         },{
-            join     => ['server', 'use'],
-            prefetch => 'cert',
+            join => ['use', 'server'],
         })->all;
 
-        my %output;
-        foreach my $cert (@certs)
+        error __x"Use {use} not found for server {name}",
+            use => $param, name => $server
+                if !@uses;
+
+        foreach my $use (@uses)
         {
-            my $full_filename = $cert->cert->filename;
-            my @filenames = split /\s*,\s*/, $full_filename;
-            foreach my $filename (@filenames) {
-                # Add final newline if it doesn't exist
-                my $content = $cert->cert->content;
-                $content .= "\n" unless $content =~ /\n$/;
-                if ($output{$filename})
-                {
-                    $output{$filename}->{content} .= $content;
-                }
-                else {
-                    $output{$filename} = {
-                        type       => $cert->cert->type,
-                        filename   => $filename,
-                        content    => $content,
-                        file_user  => $cert->cert->file_user,
-                        file_group => $cert->cert->file_group,
-                    };
-                }
-            }
+            my $cert = $schema->resultset('Cert')->search({
+                'me.id'                     => $use->cert_id,
+                'cert_location_uses.use_id' => $use->get_column('use'),
+            },{
+                prefetch => {
+                    cert_locations => 'cert_location_uses',
+                },
+            });
+
+            error __x"More than one location configured for use \"{use}\" of certificate {id}",
+                use => $use->use->name, id => $use->cert_id
+                    if $cert->count > 1;
+
+            error __x"Location information not configured for use \"{use}\" of certificate {id}",
+                use => $use->use->name, id => $use->cert_id
+                    if !$cert->count;
+
+            push @certs, $cert->next->as_hash_single;
         }
-        $output = [values %output];
+
+        $output = \@certs;
     }
     elsif ($action eq 'servers')
     {
         $param or error __"Please specify certificate ID";
+
+        my $cert = $schema->resultset('Cert')->find($param)
+            or error __x"Certificate ID {id} not found", id => $param;
+
         my @servers = $schema->resultset('Server')->search({
             'cert.id' => $param,
         },{
@@ -219,18 +225,7 @@ get 'api/cert/' => sub {
             },
         })->all;
 
-        my ($server_cert) = $servers[0]->server_certs;
-        my $cert = $server_cert->cert;
-        # Add final newline if it doesn't exist
-        my $content = $cert->content;
-        $content .= "\n" unless $content =~ /\n$/;
-        my @server_names = map { $_->name } @servers;
-        $output = {
-            filename => $cert->filename,
-            content  => $content,
-            type     => $cert->type,
-            servers  => \@server_names,
-        };
+        $output = $cert->as_hash_multiple;
     }
     else {
         error __x"Unknown action {action}", action => $action;

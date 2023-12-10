@@ -1,89 +1,16 @@
 use utf8;
 package Brass::Schema::Result::Cert;
 
-=head1 NAME
-
-Brass::Schema::Result::Cert
-
-=cut
-
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
-=head1 COMPONENTS LOADED
-
-=over 4
-
-=item * L<DBIx::Class::InflateColumn::DateTime>
-
-=back
-
-=cut
+use Log::Report;
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<cert>
-
-=cut
-
 __PACKAGE__->table("cert");
-
-=head1 ACCESSORS
-
-=head2 id
-
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-
-=head2 content
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 cn
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 45
-
-=head2 type
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 45
-
-=head2 expiry
-
-  data_type: 'date'
-  datetime_undef_if_invalid: 1
-  is_nullable: 1
-
-=head2 usedby
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 45
-
-=head2 filename
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 256
-
-=head2 file_user
-
-  data_type: 'text'
-  is_nullable: 1
-
-=head2 file_group
-
-  data_type: 'text'
-  is_nullable: 1
-
-=cut
 
 __PACKAGE__->add_columns(
   "id",
@@ -98,35 +25,23 @@ __PACKAGE__->add_columns(
   { data_type => "date", datetime_undef_if_invalid => 1, is_nullable => 1 },
   "usedby",
   { data_type => "varchar", is_nullable => 1, size => 45 },
+  "description",
+  { data_type => "text", is_nullable => 1 },
   "filename",
   { data_type => "varchar", is_nullable => 1, size => 256 },
   "file_user",
   { data_type => "text", is_nullable => 1 },
   "file_group",
   { data_type => "text", is_nullable => 1 },
+  "content_cert",
+  { data_type => "text", is_nullable => 1 },
+  "content_key",
+  { data_type => "text", is_nullable => 1 },
+  "content_ca",
+  { data_type => "text", is_nullable => 1 },
 );
 
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</id>
-
-=back
-
-=cut
-
 __PACKAGE__->set_primary_key("id");
-
-=head1 RELATIONS
-
-=head2 server_certs
-
-Type: has_many
-
-Related object: L<Brass::Schema::Result::ServerCert>
-
-=cut
 
 __PACKAGE__->has_many(
   "server_certs",
@@ -134,5 +49,109 @@ __PACKAGE__->has_many(
   { "foreign.cert_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+
+__PACKAGE__->has_many(
+  "cert_locations",
+  "Brass::Schema::Result::CertLocation",
+  { "foreign.cert_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+sub delete_cert
+{   my $self = shift;
+    my $guard = $self->result_source->schema->txn_scope_guard;
+    $self->server_certs->delete;
+    $self->cert_locations->delete;
+    $self->delete;
+    $guard->commit;
+}
+
+# A single use and associated location
+sub as_hash_single
+{   my $self = shift;
+
+    # This should only be called as part of a query that returns only one
+    # location and use
+    error __"More locations than expected for this certificate"
+        if $self->cert_locations > 1;
+    error __"No locations defined for this certificate"
+        if !$self->cert_locations;
+    my $location = $self->cert_locations->next;
+
+    error __"More uses than expected for this certificate"
+        if $location->cert_location_uses > 1;
+    error __"No use defined for this certificate"
+        if !$location->cert_location_uses;
+    my $use = $location->cert_location_uses->next->use;
+
+    my $hash = $self->_as_hash;
+    $hash->{use}           = $use->name,
+    $hash->{filename_cert} = $location->filename_cert;
+    $hash->{filename_key}  = $location->filename_key;
+    $hash->{filename_ca}   = $location->filename_ca;
+    $hash->{file_user}     = $location->file_user;
+    $hash->{file_group}    = $location->file_group;
+
+    $hash;
+}
+
+# All the locations and uses of this certificate
+sub as_hash_multiple
+{   my $self = shift;
+
+    my $hash = $self->_as_hash;
+
+    my %servers;
+    foreach my $sc ($self->server_certs)
+    {
+        $servers{$sc->server_id} ||= {
+            name => $sc->server->name,
+        };
+
+        # All uses for this certificate for this server
+        $servers{$sc->server_id}->{uses}->{$sc->use->name} = 1;
+
+        # All locations it needs to be saved
+        my $cl = $self->result_source->schema->resultset('CertLocation')->search({
+            'me.cert_id'                => $self->id,
+            'cert_location_uses.use_id' => $sc->get_column('use'),
+        },{
+            join => 'cert_location_uses',
+        });
+        $cl->count == 1
+            or error __"Unexpected location count";
+        my $location = $cl->next;
+        $servers{$sc->server_id}->{locations}->{$location->id} = {
+            filename_cert => $location->filename_cert,
+            filename_key  => $location->filename_key,
+            filename_ca   => $location->filename_ca,
+            file_user     => $location->file_user,
+            file_group    => $location->file_group,
+        };
+    }
+
+    $hash->{servers} = [];
+
+    foreach my $server (values %servers)
+    {
+        push @{$hash->{servers}}, {
+            name => $server->{name},
+            uses => [keys %{$server->{uses}}],
+            locations => [values %{$server->{locations}}],
+        };
+    }
+
+    $hash;
+}
+
+sub _as_hash
+{   my $self = shift;
+    +{
+        # Make sure cert content ends with newline
+        content_cert  => $self->content_cert =~ s/(.+)\v*$/$1\n/r,
+        content_key   => $self->content_key  =~ s/(.+)\v*$/$1\n/r,
+        content_ca    => $self->content_ca   =~ s/(.+)\v*$/$1\n/r,
+    };
+}
 
 1;

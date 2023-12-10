@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package Brass;
 
 use Brass::Classifications;
-use Brass::Config::Certs;
-use Brass::Config::CertUses;
 use Brass::Config::Domains;
 use Brass::Config::Pwd;
 use Brass::Config::Pwds;
@@ -327,8 +325,8 @@ any ['get', 'post'] => '/config/server/?:id?' => require_role 'config' => sub {
         servers   => Brass::Config::Servers->new(schema => $schema)->all,
         domains   => Brass::Config::Domains->new(schema => $schema)->all,
         types     => Brass::Config::Server::Types->new(schema => $schema)->all,
-        certs     => Brass::Config::Certs->new(schema => $schema)->all,
-        cert_uses => Brass::Config::CertUses->new(schema => $schema)->all,
+        certs     => $schema->resultset('Cert'),
+        cert_uses => $schema->resultset('CertUse'),
         page      => 'config/server',
     };
 
@@ -526,33 +524,36 @@ any ['get', 'post'] => '/config/cert/?:id?' => require_role 'config' => sub {
     my $schema  = schema;
 
     my $params = {
-        certs     => Brass::Config::Certs->new(schema => $schema)->all,
+        certs     => [$schema->resultset('Cert')->all],
         page      => 'config/cert',
     };
 
     if (defined $id)
     {
-        my $cert = Brass::Config::Cert->new(id => $id, schema => $schema);
+        my $cert = $id ? $schema->resultset('Cert')->find($id)
+            : $schema->resultset('Cert')->new({});
         if (param 'save')
         {
             die "No permission to save certificate"
                 unless user_has_role 'config_write';
             $cert->cn(param 'cn');
             $cert->type(param 'type');
-            $cert->set_expiry(param 'expiry');
-            $cert->usedby(param 'usedby');
+            $cert->expiry(param('expiry') || undef);
+            $cert->description(param 'description');
             $cert->filename(param 'filename');
             $cert->file_user(param 'file_user');
             $cert->file_group(param 'file_group');
-            $cert->content(param 'content');
-            $cert->write;
+            $cert->content_cert(param 'content_cert');
+            $cert->content_key(param 'content_key');
+            $cert->content_ca(param 'content_ca');
+            $cert->update_or_insert;
             redirect '/config/cert';
         }
         if (param 'delete')
         {
             die "No permission to save certificate"
                 unless user_has_role 'config_write';
-            $cert->delete;
+            $cert->delete_cert;
             redirect '/config/cert';
         }
         $params->{cert} = $cert;
