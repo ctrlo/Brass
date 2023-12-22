@@ -43,6 +43,39 @@ has name => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->name; },
 );
 
+has identifier => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->identifier; },
+);
+
+has is_vulnerability => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->is_vulnerability; },
+);
+
+has is_breach => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->is_breach; },
+);
+
+has is_audit => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->is_audit; },
+);
+
+has is_general => (
+    is => 'lazy',
+);
+
+sub _build_is_general
+{   my $self = shift;
+    ! ($self->is_vulnerability || $self->is_breach || $self->is_audit);
+}
+
 sub _build__rset
 {   my $self = shift;
     $self->schema->resultset('Issuetype')->find($self->id);
@@ -61,9 +94,13 @@ sub as_integer
 sub inflate_result {
     my $data = $_[2];
     $_[0]->new(
-        id          => $data->{id},
-        name        => $data->{name},
-        schema      => $_[1]->schema,
+        id               => $data->{id},
+        name             => $data->{name},
+        schema           => $_[1]->schema,
+        identifier       => $data->{identifier},
+        is_vulnerability => $data->{is_vulnerability},
+        is_breach        => $data->{is_breach},
+        is_audit         => $data->{is_audit},
     );
 }
 

@@ -38,5 +38,48 @@ sub _build_all
     \@all;
 }
 
-1;
+has grouped => (
+    is => 'lazy',
+);
 
+sub _build_grouped
+{   my $self = shift;
+    my %groups = (
+        vulnerability => [],
+        breach        => [],
+        audit         => [],
+        general       => [],
+    );
+    foreach my $type (@{$self->all})
+    {
+        push @{$groups{vulnerability}}, $type
+            if $type->is_vulnerability;
+        push @{$groups{breach}}, $type
+            if $type->is_breach;
+        push @{$groups{audit}}, $type
+            if $type->is_audit;
+        push @{$groups{general}}, $type
+            if $type->is_general;
+    }
+
+    [
+        {
+            name   => 'General issues',
+            values => $groups{general},
+        },
+        {
+            name   => 'Security Vulnerabilities',
+            values => $groups{vulnerability},
+        },
+        {
+            name   => 'Security Breaches (loss of CIA)',
+            values => $groups{breach},
+        },
+        {
+            name   => 'Security Audits',
+            values => $groups{audit},
+        },
+    ];
+}
+
+1;

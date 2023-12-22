@@ -114,22 +114,6 @@
 <script type="text/javascript">
     var jscode='[% FILTER remove('\n+') %]
         [% FILTER replace('\'', '\\\'') %]
-            $(document).ready(function () {
-                $( ".radio_doctype" ).change(function() {
-                    if (this.value == "binary" || this.value == "signed" || this.value == "record")
-                    {
-                        $( "#div_binary" ).show(400);
-                        $( "#div_text" ).hide(400);
-                    }
-                    else {
-                        $( "#div_binary" ).hide(400);
-                        $( "#div_text" ).show(400);
-                    }
-                });
-                $('#editor').on('change', function(){
-                    localStorage.setItem('draft-content', $(this).val());
-                });
-            });
         [% END %]
     [% END %]';
 </script>

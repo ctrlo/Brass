@@ -67,6 +67,8 @@ Brass::CurrentUser->instance; # This singleton class always contains the current
 
 my $password_generator = CtrlO::Crypt::XkcdPassword->new;
 
+schema->resultset('Issuetype')->populate;
+
 sub _update_csrf_token
 {   session csrf_token => Session::Token->new(length => 32)->get;
 }
@@ -661,7 +663,7 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
         filtering  => $filtering,
         priorities => Brass::Issue::Priorities->new(schema => $schema)->all,
         statuses   => $statuses->all,
-        types      => Brass::Issue::Types->new(schema => $schema)->all,
+        types      => Brass::Issue::Types->new(schema => $schema)->grouped,
         projects   => Brass::Issue::Projects->new(schema => $schema, user_id => logged_in_user->id)->all,
         users      => $users->all,
         page       => 'issue',
@@ -681,6 +683,7 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
             $issue->title(param 'title');
             $issue->description(param 'description');
             $issue->security_considerations(param 'security_considerations');
+            $issue->rca(param 'rca');
             $issue->set_project(param 'project');
             $issue->set_priority(param 'priority');
             $issue->set_type(param 'type');

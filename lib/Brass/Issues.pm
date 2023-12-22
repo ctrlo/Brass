@@ -45,8 +45,35 @@ has filtering => (
     coerce  => sub {
         my $in = shift;
         my $return = {};
-        $return->{'me.security'} = $in->{security} eq 'yes' ? 1 : 0
-            if $in->{security};
+
+        if (my $sec = $in->{security})
+        {
+            # Legacy security
+            $return->{'me.security'} = 1
+                if $sec eq 'yes';
+            $return->{'me.security'} = 0
+                if $sec eq 'no';
+
+            # Updated security
+            $return->{'type.is_breach'} = 1
+                if $sec eq 'security_incident';
+            $return->{'type.is_breach'} = 1
+                if $sec eq 'corrective_action';
+            $return->{'type.is_vulnerability'} = 1
+                if $sec eq 'vulnerability';
+            $return->{'type.identifier'} = 'patch'
+                if $sec eq 'patch';
+            $return->{'type.identifier'} = 'code_review'
+                if $sec eq 'code_review';
+            $return->{'type.identifier'} = 'pentest'
+                if $sec eq 'pentest';
+            $return->{'type.identifier'} = ['capacity_change', 'capacity_fail']
+                if $sec eq 'capacity';
+            $return->{'type.is_audit'} = 1
+                if $sec eq 'audit';
+        }
+
+        # Other
         $return->{'me.project'} = $in->{project}
             if $in->{project};
         $return->{'issue_statuses.status'} = $in->{status}
@@ -90,6 +117,7 @@ sub _build_all
         $search
     ,{
         join => [
+            'type',
             'issue_tags',
             {
                 project => 'user_projects',

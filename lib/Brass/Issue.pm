@@ -76,6 +76,13 @@ has security_considerations => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->security_considerations; },
 );
 
+has rca => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->rca; },
+);
+
 has reference => (
     is      => 'rw',
     isa     => Maybe[Str],
@@ -449,6 +456,7 @@ sub inflate_result {
         title                   => $data->{title},
         description             => $data->{description},
         security_considerations => $data->{security_considerations},
+        rca                     => $data->{rca},
         reference               => $data->{reference},
         security                => $data->{security},
         set_type                => $data->{type},
@@ -476,6 +484,7 @@ sub write
         title                   => $self->title,
         description             => $self->description,
         security_considerations => $self->security_considerations,
+        rca                     => $self->rca,
         reference               => $self->reference,
         security                => $self->security,
         type                    => ($self->type && $self->type->id),

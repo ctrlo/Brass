@@ -199,26 +199,3 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
-<script type="text/javascript">
-    var jscode='[% FILTER remove('\n+') %]
-        [% FILTER replace('\'', '\\\'') %]
-            $('.personpop').popover({placement:'auto', html:true});
-            $('#modal_cert').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-                var server_cert_id = button.data('server_cert_id');
-                $('#server_cert_id').val(server_cert_id);
-                if (server_cert_id) {
-                    $('#delete_server_cert').show();
-                } else {
-                    $('#delete_server_cert').hide();
-                }
-                var cert_id = button.data('cert_id');
-                $('#cert_id').val(cert_id);
-                var use_id = button.data('use_id');
-                $('#use_id').val(use_id);
-            });
-        [% END %]
-    [% END %]';
-</script>
-

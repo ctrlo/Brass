@@ -104,16 +104,3 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
-<script type="text/javascript">
-    var jscode='[% FILTER remove('\n+') %]
-        [% FILTER replace('\'', '\\\'') %]
-            $('#modal_retire').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-                var retire = button.data('retire');
-                $('#retire').val(retire);
-            });
-        [% END %]
-    [% END %]';
-</script>
-

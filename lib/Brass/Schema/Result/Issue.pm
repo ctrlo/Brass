@@ -121,6 +121,8 @@ __PACKAGE__->add_columns(
   { data_type => "smallint", default_value => 0, is_nullable => 0 },
   "security_considerations",
   { data_type => "text", is_nullable => 1 },
+  "rca",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY

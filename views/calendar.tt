@@ -30,13 +30,3 @@
         </form>
     </div>
 </div>
-
-<script type="text/javascript">
-    var jscode='[% FILTER remove('\n+') %]
-        [% FILTER replace('\'', '\\\'') %]
-            $(document).ready(function () {
-                $('#html').summernote({height: 200});
-            });
-        [% END %]
-    [% END %]';
-</script>
