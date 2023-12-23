@@ -67,13 +67,19 @@ has is_audit => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->is_audit; },
 );
 
+has is_other_security => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->is_other_securityt; },
+);
+
 has is_general => (
     is => 'lazy',
 );
 
 sub _build_is_general
 {   my $self = shift;
-    ! ($self->is_vulnerability || $self->is_breach || $self->is_audit);
+    ! ($self->is_vulnerability || $self->is_breach || $self->is_audit || $self->is_other_security);
 }
 
 sub _build__rset
@@ -94,13 +100,14 @@ sub as_integer
 sub inflate_result {
     my $data = $_[2];
     $_[0]->new(
-        id               => $data->{id},
-        name             => $data->{name},
-        schema           => $_[1]->schema,
-        identifier       => $data->{identifier},
-        is_vulnerability => $data->{is_vulnerability},
-        is_breach        => $data->{is_breach},
-        is_audit         => $data->{is_audit},
+        id                => $data->{id},
+        name              => $data->{name},
+        schema            => $_[1]->schema,
+        identifier        => $data->{identifier},
+        is_vulnerability  => $data->{is_vulnerability},
+        is_breach         => $data->{is_breach},
+        is_audit          => $data->{is_audit},
+        is_other_security => $data->{is_other_security},
     );
 }
 

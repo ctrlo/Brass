@@ -21,6 +21,8 @@ __PACKAGE__->add_columns(
   { data_type => "smallint", is_nullable => 0, default_value => 0 },
   "is_audit",
   { data_type => "smallint", is_nullable => 0, default_value => 0 },
+  "is_other_security",
+  { data_type => "smallint", is_nullable => 0, default_value => 0 },
 );
 
 __PACKAGE__->set_primary_key("id");

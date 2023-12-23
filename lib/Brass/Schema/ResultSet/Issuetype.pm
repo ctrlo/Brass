@@ -84,6 +84,21 @@ my @types_audit = (
     },
 );
 
+my @types_other_security = (
+    {
+        identifier => 'other_supplier',
+        name       => 'Supplier issue related to security',
+    },
+    {
+        identifier => 'bcp',
+        name       => 'Business Continuity Plan',
+    },
+    {
+        identifier => 'other_customer',
+        name       => 'Customer security-related request',
+    },
+);
+
 # Populate predefined issue types
 sub populate
 {   my $self = shift;
@@ -112,6 +127,15 @@ sub populate
         $existing->update({
             name     => $type->{name},
             is_audit => 1,
+        });
+    }
+
+    foreach my $type (@types_other_security)
+    {
+        my $existing = $self->_get($type->{identifier});
+        $existing->update({
+            name              => $type->{name},
+            is_other_security => 1,
         });
     }
 }

@@ -71,6 +71,12 @@ has filtering => (
                 if $sec eq 'capacity';
             $return->{'type.is_audit'} = 1
                 if $sec eq 'audit';
+            $return->{'-or'} = [
+                {'type.is_audit' => 1},
+                {'type.is_breach' => 1},
+                {'type.is_vulnerability' => 1},
+                {'type.is_other_security' => 1},
+            ] if $sec eq 'all';
         }
 
         # Other

@@ -274,6 +274,7 @@
                         <option value="" [% IF filtering.security == "" %]selected[% END %]>&lt;Ignore&gt;</option>
                         <option value="yes" [% IF filtering.security == "yes" %]selected[% END %]>Only security issues (legacy checkbox)</option>
                         <option value="no" [% IF filtering.security == "no" %]selected[% END %]>Only non-security issues (legacy checkbox)</option>
+                        <option value="all" [% IF filtering.security == "all" %]selected[% END %]>All security-related issues</option>
                         <option value="security_incident" [% IF filtering.security == "security_incident" %]selected[% END %]>Security incidents</option>
                         <option value="corrective_action" [% IF filtering.security == "corrective_action" %]selected[% END %]>Corrective Actions</option>
                         <option value="vulnerability" [% IF filtering.security == "vulnerability" %]selected[% END %]>Preventative Actions</option>

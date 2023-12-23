@@ -49,6 +49,7 @@ sub _build_grouped
         breach        => [],
         audit         => [],
         general       => [],
+        other         => [],
     );
     foreach my $type (@{$self->all})
     {
@@ -60,6 +61,8 @@ sub _build_grouped
             if $type->is_audit;
         push @{$groups{general}}, $type
             if $type->is_general;
+        push @{$groups{other}}, $type
+            if $type->is_other_security;
     }
 
     [
@@ -78,6 +81,10 @@ sub _build_grouped
         {
             name   => 'Security Audits',
             values => $groups{audit},
+        },
+        {
+            name   => 'Other security-related issues',
+            values => $groups{other},
         },
     ];
 }
