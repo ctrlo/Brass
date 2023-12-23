@@ -3,6 +3,11 @@
         <div class="col-md-6">
             <form method="post">
                 <input type="hidden" name="csrf_token" value="[% csrf_token %]">
+                [% IF issue.related_issue %]
+                    <div class="alert alert-info">
+                        <p>This issue is related to issue <a href="/issue/[% issue.related_issue.id %]">[% issue.related_issue.id %]</a>
+                    </div>
+                [% END %]
                 <div class="form-group">
                     <label for="title">Title</label>
                     <input type="text" class="form-control" id="title" name="title" value="[% issue.title | html_entity %]">
@@ -50,7 +55,26 @@
                 </div>
                 <div class="form-group rca">
                     <label for="rca">Root-cause analysis</label>
-                    <textarea class="form-control" id="rca" name="rca">[% issue.rca | html %]</textarea>
+                    <textarea class="form-control" id="rca" name="rca" rows="5">[% issue.rca | html %]</textarea>
+                </div>
+                <div class="form-group rca">
+                    <label for="corrective_action">Corrective action to be taken</label>
+                    <textarea class="form-control" id="corrective_action" name="corrective_action" rows="5">[% issue.corrective_action | html %]</textarea>
+                </div>
+                <div class="form-group rca">
+                    <label>Related preventative actions</label>
+                    [% IF issue.id %]
+                        <button type="button" class="btn btn-default" style="display:block" data-toggle="modal" data-target="#modal_preventative">Add related issue</button>
+                        <div class="related-issues">
+                            <ul>
+                                [% FOREACH related IN issue.related_issues %]
+                                <li><a href="/issue/[% related.id %]">[% related.id %]: [% related.title | html %]</a></li>
+                                [% END %]
+                            </ul>
+                        </div>
+                    [% ELSE %]
+                        <p>Please save this issue first before adding related preventative actions</p>
+                    [% END %]
                 </div>
                 <div class="form-group security_considerations">
                     <label for="security_considerations">Security considerations</label>
@@ -342,6 +366,39 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="submit" name="attach" value="attach" class="btn btn-primary">Attach</button>
             </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="modal_preventative" tabindex="-1" role="dialog" aria-labelledby="label_preventative" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form role="form" method="post" id="form_preventative" action="/issue/0?ajax=1">
+                <input type="hidden" name="csrf_token" value="[% csrf_token %]">
+                <input type="hidden" name="save" value="1">
+                <input type="hidden" name="related_issue" value="[% issue.id %]">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="label_preventative">Add related issue</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Use this form to create an issue that is related to this issue that may prevent this incident happening in the future</p>
+                    <div class="form-group">
+                        <label for="preventative_title">Title</label>
+                        <input type="text" class="form-control" id="preventative_title" name="title">
+                    </div>
+                    <div class="form-group">
+                        <label for="preventative_description">Description</label>
+                        <input type="text" class="form-control" id="preventative_description" name="description">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <!-- This button not submitted by ajax request -->
+                    <button type="submit" name="submit" class="btn btn-primary">Add</button>
+                </div>
             </form>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

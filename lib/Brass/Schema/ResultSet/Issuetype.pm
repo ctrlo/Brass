@@ -32,9 +32,21 @@ my @types_vulnerability = (
         identifier => 'capacity_change',
         name       => 'Capacity change',
     },
+    {
+        identifier => 'other_software',
+        name       => 'Other system or software failure, not impacting CIA',
+    },
+    {
+        identifier => 'preventative_action',
+        name       => 'Preventative action related to security breach',
+    },
 );
 
 my @types_breach = (
+    {
+        identifier => 'ext_failure',
+        name       => 'Failure within supply chain',
+    },
     {
         identifier => 'capacity_fail',
         name       => 'Failure of capacity',

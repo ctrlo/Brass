@@ -123,6 +123,10 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "rca",
   { data_type => "text", is_nullable => 1 },
+  "corrective_action",
+  { data_type => "text", is_nullable => 1 },
+  "related_issue_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -151,6 +155,18 @@ __PACKAGE__->belongs_to(
   "approver",
   "Brass::Schema::Result::User",
   { id => "approver" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
+);
+
+__PACKAGE__->belongs_to(
+  "related_issue",
+  "Brass::Schema::Result::Issue",
+  { id => "related_issue_id" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
@@ -191,6 +207,13 @@ __PACKAGE__->has_many(
   "comments",
   "Brass::Schema::Result::Comment",
   { "foreign.issue" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+__PACKAGE__->has_many(
+  "related_issues",
+  "Brass::Schema::Result::Issue",
+  { "foreign.related_issue_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 

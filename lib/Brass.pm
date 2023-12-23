@@ -684,9 +684,19 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
             $issue->description(param 'description');
             $issue->security_considerations(param 'security_considerations');
             $issue->rca(param 'rca');
+            $issue->corrective_action(param 'corrective_action');
             $issue->set_project(param 'project');
             $issue->set_priority(param 'priority');
             $issue->set_type(param 'type');
+
+            if (param 'ajax')
+            {
+                $issue->set_related_issue(param 'related_issue');
+                my $type = schema->resultset('Issuetype')->search({ identifier => 'preventative_action' })->next
+                    or panic "Type missing";
+                $issue->set_type($type->id);
+            }
+
             if (user_has_role('issue_write_all') || user_has_role('issue_write_project'))
             {
                 # Can only write to these fields if write_all
@@ -718,6 +728,7 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
             );
             my $action = $id ? 'updated' : 'created';
             $id = $issue->id;
+            return $issue->id if param 'ajax';
             forwardHome({ success => "The issue has been $action successfully" }, "issue/$id" );
         }
         if (param 'comment_add')

@@ -83,6 +83,13 @@ has rca => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->rca; },
 );
 
+has corrective_action => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->corrective_action; },
+);
+
 has reference => (
     is      => 'rw',
     isa     => Maybe[Str],
@@ -120,6 +127,18 @@ has set_approver => (
     coerce  => sub { $_[0] || undef }, # Allow empty strings from form
     builder => sub { $_[0]->_rset && $_[0]->_rset->get_column('approver'); },
 );
+
+has set_related_issue => (
+    is      => 'rw',
+    isa     => Maybe[Int],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->get_column('related_issue_id'); },
+);
+
+sub related_issues
+{   my $self = shift;
+    $self->_rset->related_issues;
+}
 
 has set_tags => (
     is      => 'rw',
@@ -345,6 +364,11 @@ sub approver
     $self->users->user($self->set_approver);
 }
 
+sub related_issue
+{   my $self = shift;
+    $self->_rset && $self->_rset->related_issue;
+}
+
 sub set_type
 {   my ($self, $id) = @_;
     $id ||= undef; # Allow empty string from form
@@ -368,6 +392,8 @@ sub _build_comments
 {   my $self = shift;
     my $comments_rs = $self->schema->resultset('Comment')->search({
         issue => $self->id,
+    },{
+        order_by => 'me.datetime',
     });
     $comments_rs->result_class('Brass::Issue::Comment');
     my @all = $comments_rs->all;
@@ -457,12 +483,14 @@ sub inflate_result {
         description             => $data->{description},
         security_considerations => $data->{security_considerations},
         rca                     => $data->{rca},
+        corrective_action       => $data->{corrective_action},
         reference               => $data->{reference},
         security                => $data->{security},
         set_type                => $data->{type},
         set_owner               => $data->{owner},
         set_author              => $data->{author},
         set_approver            => $data->{approver},
+        set_related_issue       => $data->{related_issue_id},
         priority                => $priority,
         status                  => $status,
         project                 => $project,
@@ -485,6 +513,7 @@ sub write
         description             => $self->description,
         security_considerations => $self->security_considerations,
         rca                     => $self->rca,
+        corrective_action       => $self->corrective_action,
         reference               => $self->reference,
         security                => $self->security,
         type                    => ($self->type && $self->type->id),
@@ -492,6 +521,7 @@ sub write
         owner                   => $self->set_owner,
         author                  => $self->set_author,
         approver                => $self->set_approver,
+        related_issue_id        => $self->set_related_issue,
     };
     if ($self->id)
     {

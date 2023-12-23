@@ -60,3 +60,25 @@ $('.issuetype').on('change', function(){
         $('.security_considerations').hide();
     }
 }).trigger('change');
+
+$('#form_preventative').on('submit', function(e){
+
+    e.preventDefault();
+
+    var $form  = $(this);
+    var action = $form.attr('action');
+
+    $.ajax({
+        type: "POST",
+        url: action,
+        data: $form.serialize(),
+        success: function(issue_id)
+        {
+            $('.related-issues').find('ul').append('<li><a href="/issue/' + issue_id + '">' + issue_id + ': ' + $form.find('#preventative_title').val() + '</a></li>');
+            $form.find('input').val('');
+            $form.closest('.modal').modal('toggle');
+            //$form.find('.modal-body').html('<p>Related issue has been created as <a href="/issue/' + issue_id + '">ID ' + issue_id + '</p>');
+            //$form.find(':submit').attr("disabled", true);
+        }
+    });
+});
