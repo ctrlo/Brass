@@ -37,6 +37,18 @@ my @types_vulnerability = (
         name       => 'Other system or software failure, not impacting CIA',
     },
     {
+        identifier => 'vulnerability_config',
+        name       => 'Vulnerability caused by configuration error',
+    },
+    {
+        identifier => 'process_compliance',
+        name       => 'Process, procedure or related user compliance',
+    },
+    {
+        identifier => 'risk',
+        name       => 'Identified as part of risk assessment process',
+    },
+    {
         identifier => 'preventative_action',
         name       => 'Preventative action related to security breach',
     },
