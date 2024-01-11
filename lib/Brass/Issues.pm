@@ -141,7 +141,7 @@ sub _build_all
     $issues_rs->result_class('Brass::Issue');
     my @all = $issues_rs->all;
     $_->users($self->users) foreach @all;
-    @all = sort { DateTime->compare($a->opened, $b->opened) } @all if $self->sort && $self->sort eq 'opened';
+    @all = sort { DateTime->compare($b->opened, $a->opened) } @all if $self->sort && $self->sort eq 'opened';
     \@all;
 }
 
