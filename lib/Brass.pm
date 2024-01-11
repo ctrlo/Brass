@@ -700,7 +700,6 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
             if (user_has_role('issue_write_all') || user_has_role('issue_write_project'))
             {
                 # Can only write to these fields if write_all
-                $issue->security(param 'security');
                 $issue->set_status(param 'status');
                 $issue->set_author(param('author') || logged_in_user->id);
                 $issue->set_owner(param 'owner');

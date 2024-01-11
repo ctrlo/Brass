@@ -48,12 +48,6 @@ has filtering => (
 
         if (my $sec = $in->{security})
         {
-            # Legacy security
-            $return->{'me.security'} = 1
-                if $sec eq 'yes';
-            $return->{'me.security'} = 0
-                if $sec eq 'no';
-
             # Updated security
             $return->{'type.is_breach'} = 1
                 if $sec eq 'security_incident';

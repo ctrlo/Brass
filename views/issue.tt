@@ -148,14 +148,6 @@
                         [% END %]
                     </select>
                 </div>
-                [% UNLESS readonly %]
-                    <div class="checkbox">
-                        <label>
-                            <input name="security" type="checkbox" value="1" [% IF issue.security %]checked[% END %]>
-                            This issue is security related
-                        </label>
-                    </div>
-                [% END %]
                 [% IF issue.user_can_write(user) %]
                     <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
                 [% END %]
@@ -272,8 +264,6 @@
                     <label for="filtering_security">Security</label>
                     <select class="form-control" id="filtering_security" name="filtering_security">
                         <option value="" [% IF filtering.security == "" %]selected[% END %]>&lt;Ignore&gt;</option>
-                        <option value="yes" [% IF filtering.security == "yes" %]selected[% END %]>Only security issues (legacy checkbox)</option>
-                        <option value="no" [% IF filtering.security == "no" %]selected[% END %]>Only non-security issues (legacy checkbox)</option>
                         <option value="all" [% IF filtering.security == "all" %]selected[% END %]>All security-related issues</option>
                         <option value="security_incident" [% IF filtering.security == "security_incident" %]selected[% END %]>Security incidents</option>
                         <option value="corrective_action" [% IF filtering.security == "corrective_action" %]selected[% END %]>Corrective Actions</option>

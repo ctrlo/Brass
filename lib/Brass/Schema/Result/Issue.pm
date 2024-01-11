@@ -90,12 +90,6 @@ __PACKAGE__->table("issue");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 security
-
-  data_type: 'smallint'
-  default_value: 0
-  is_nullable: 0
-
 =cut
 
 __PACKAGE__->add_columns(
@@ -117,8 +111,6 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 128 },
   "project",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
-  "security",
-  { data_type => "smallint", default_value => 0, is_nullable => 0 },
   "security_considerations",
   { data_type => "text", is_nullable => 1 },
   "rca",

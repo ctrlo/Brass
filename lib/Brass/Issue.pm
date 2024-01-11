@@ -97,13 +97,6 @@ has reference => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->reference; },
 );
 
-has security => (
-    is      => 'rw',
-    isa     => Bool,
-    coerce  => sub { $_[0] ? 1 : 0 },
-    builder => sub { $_[0]->_rset && $_[0]->_rset->security; },
-);
-
 has set_owner => (
     is      => 'rw',
     isa     => Maybe[Int],
@@ -485,7 +478,6 @@ sub inflate_result {
         rca                     => $data->{rca},
         corrective_action       => $data->{corrective_action},
         reference               => $data->{reference},
-        security                => $data->{security},
         set_type                => $data->{type},
         set_owner               => $data->{owner},
         set_author              => $data->{author},
@@ -515,7 +507,6 @@ sub write
         rca                     => $self->rca,
         corrective_action       => $self->corrective_action,
         reference               => $self->reference,
-        security                => $self->security,
         type                    => ($self->type && $self->type->id),
         project                 => $self->project->id,
         owner                   => $self->set_owner,
