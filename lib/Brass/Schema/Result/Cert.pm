@@ -118,16 +118,19 @@ sub as_hash_multiple
         },{
             join => 'cert_location_uses',
         });
-        $cl->count == 1
-            or error __"Unexpected location count";
-        my $location = $cl->next;
-        $servers{$sc->server_id}->{locations}->{$location->id} = {
-            filename_cert => $location->filename_cert,
-            filename_key  => $location->filename_key,
-            filename_ca   => $location->filename_ca,
-            file_user     => $location->file_user,
-            file_group    => $location->file_group,
-        };
+        $cl->count
+            or error __x"No locations defined for use {use} of certificate ID {id}",
+                use => $sc->use->name, id => $self->id;
+        foreach my $location ($cl->all)
+        {
+            $servers{$sc->server_id}->{locations}->{$location->id} = {
+                filename_cert => $location->filename_cert,
+                filename_key  => $location->filename_key,
+                filename_ca   => $location->filename_ca,
+                file_user     => $location->file_user,
+                file_group    => $location->file_group,
+            };
+        }
     }
 
     $hash->{servers} = [];
