@@ -61,8 +61,8 @@
                     <label for="corrective_action">Corrective action to be taken</label>
                     <textarea class="form-control" id="corrective_action" name="corrective_action" rows="5">[% issue.corrective_action | html %]</textarea>
                 </div>
-                <div class="form-group rca">
-                    <label>Related preventative actions</label>
+                <div class="form-group">
+                    <label>Other related issues</label>
                     [% IF issue.id %]
                         <button type="button" class="btn btn-default" style="display:block" data-toggle="modal" data-target="#modal_preventative">Add related issue</button>
                         <div class="related-issues">
