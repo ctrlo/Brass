@@ -73,6 +73,12 @@ has is_other_security => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->is_other_securityt; },
 );
 
+has is_objective => (
+    is      => 'ro',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->identifier eq 'objective'; },
+);
+
 has is_general => (
     is => 'lazy',
 );

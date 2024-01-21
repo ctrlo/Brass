@@ -65,6 +65,8 @@ has filtering => (
                 if $sec eq 'capacity';
             $return->{'type.is_audit'} = 1
                 if $sec eq 'audit';
+            $return->{'type.identifier'} = 'objective'
+                if $sec eq 'objective';
             $return->{'-or'} = [
                 {'type.is_audit' => 1},
                 {'type.is_breach' => 1},

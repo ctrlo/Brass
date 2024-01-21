@@ -1,5 +1,9 @@
 'use strict';
 
+$('.datepicker').datepicker({
+    format: 'yyyy-mm-dd',
+});
+
 /* Calendar */
 $(document).ready(function () {
     $('#html').summernote({height: 200});
@@ -58,6 +62,11 @@ $('.issuetype').on('change', function(){
         $('.security_considerations').show();
     } else {
         $('.security_considerations').hide();
+    }
+    if ($selected.data('is-objective')) {
+        $('.objective').show();
+    } else {
+        $('.objective').hide();
     }
 }).trigger('change');
 

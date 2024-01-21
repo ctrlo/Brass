@@ -98,6 +98,10 @@ my @types_audit = (
 
 my @types_other_security = (
     {
+        identifier => 'objective',
+        name       => 'Objective',
+    },
+    {
         identifier => 'other_supplier',
         name       => 'Supplier issue related to security',
     },

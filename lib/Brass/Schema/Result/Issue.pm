@@ -119,6 +119,12 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "related_issue_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "target_date",
+  { data_type => "datetime", is_nullable => 1, datetime_undef_if_invalid => 1 },
+  "resources_required",
+  { data_type => "text", is_nullable => 1 },
+  "success_description",
+  { data_type => "text", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
