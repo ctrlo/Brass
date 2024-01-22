@@ -64,7 +64,7 @@
                 </div>
                 <div class="form-group objective">
                     <label for="target_date">Target date</label>
-                    <input type="text" class="form-control datepicker" id="target_date" name="target_date" value="[% issue.target_date | html_entity %]">
+                    <input type="text" class="form-control datepicker" id="target_date" name="target_date" value="[% issue.target_date.ymd | html_entity %]">
                 </div>
                 <div class="form-group objective">
                     <label for="resources_required">Resources required</label>
