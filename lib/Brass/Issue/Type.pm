@@ -79,6 +79,12 @@ has is_objective => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->identifier eq 'objective'; },
 );
 
+has is_nc => (
+    is      => 'ro',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->identifier =~ /nc_major|nc_minor/; },
+);
+
 has is_general => (
     is => 'lazy',
 );

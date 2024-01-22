@@ -53,7 +53,7 @@ $('#editor').on('change', function(){
 /* Issues */
 $('.issuetype').on('change', function(){
     let $selected = $(this).find(":selected");
-    if ($selected.data('is-breach')) {
+    if ($selected.data('is-breach') || $selected.data('is-nc')) {
         $('.rca').show();
     } else {
         $('.rca').hide();

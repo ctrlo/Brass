@@ -46,7 +46,7 @@
                             <optgroup label="[% group.name | html %]">
                                 [% FOREACH type IN group.values %]
                                     <option value="[% type.id %]" data-is-breach="[% type.is_breach %]" data-is-general="[% type.is_general %]"
-                                        data-is-objective="[% type.is_objective %]"
+                                        data-is-objective="[% type.is_objective %]" data-is-nc="[% type.is_nc %]"
                                         [% IF issue.type == type %]selected[% END %]>[% type.name | html_entity %]
                                     </option>
                                 [% END %]
