@@ -529,7 +529,7 @@ sub write
         security_considerations => $self->security_considerations,
         rca                     => $self->rca,
         corrective_action       => $self->corrective_action,
-        target_date             => $self->target_date,
+        target_date             => $self->target_date || undef,
         resources_required      => $self->resources_required,
         success_description     => $self->success_description,
         reference               => $self->reference,
