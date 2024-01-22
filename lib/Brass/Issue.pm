@@ -90,6 +90,26 @@ has corrective_action => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->corrective_action; },
 );
 
+has target_date => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->target_date; },
+);
+
+has resources_required => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->resources_required; },
+);
+
+has success_description => (
+    is      => 'rw',
+    isa     => Maybe[Str],
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->success_description; },
+);
+
 has reference => (
     is      => 'rw',
     isa     => Maybe[Str],
@@ -477,6 +497,9 @@ sub inflate_result {
         security_considerations => $data->{security_considerations},
         rca                     => $data->{rca},
         corrective_action       => $data->{corrective_action},
+        target_date             => $data->{target_date},
+        resources_required      => $data->{resources_required},
+        success_description     => $data->{success_description},
         reference               => $data->{reference},
         set_type                => $data->{type},
         set_owner               => $data->{owner},
@@ -506,6 +529,9 @@ sub write
         security_considerations => $self->security_considerations,
         rca                     => $self->rca,
         corrective_action       => $self->corrective_action,
+        target_date             => $self->target_date,
+        resources_required      => $self->resources_required,
+        success_description     => $self->success_description,
         reference               => $self->reference,
         type                    => ($self->type && $self->type->id),
         project                 => $self->project->id,

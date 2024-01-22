@@ -685,6 +685,9 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
             $issue->security_considerations(param 'security_considerations');
             $issue->rca(param 'rca');
             $issue->corrective_action(param 'corrective_action');
+            $issue->target_date(param 'target_date');
+            $issue->resources_required(param 'resources_required');
+            $issue->success_description(param 'success_description');
             $issue->set_project(param 'project');
             $issue->set_priority(param 'priority');
             $issue->set_type(param 'type');
