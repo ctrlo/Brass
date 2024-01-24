@@ -61,6 +61,7 @@ sub delete_cert
 {   my $self = shift;
     my $guard = $self->result_source->schema->txn_scope_guard;
     $self->server_certs->delete;
+    $_->purge foreach $self->cert_locations;
     $self->cert_locations->delete;
     $self->delete;
     $guard->commit;
