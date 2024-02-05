@@ -896,7 +896,11 @@ any ['get', 'post'] => '/doc/download/:code' => sub {
             download_ip_address => request->remote_address,
         });
 
-        my $version_id = $doc->signed ? $doc->signed->id : $doc->published->id;
+        my $version_id = $doc->signed
+            ? $doc->signed->id
+            : $doc->published
+            ? $doc->published->id
+            : $doc->draft->id;
         my $version    = schema('doc')->resultset('Version')->find($version_id);
 
         _send_doc($doc, $version);
