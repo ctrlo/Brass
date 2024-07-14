@@ -463,6 +463,7 @@ any ['get', 'post'] => '/config/pwd/?:id?' => require_role 'config' => sub {
             $pwd->publickey(param 'publickey');
             $pwd->last_changed($strp->parse_datetime(param 'last_changed'));
             $pwd->set_uad(param 'uad');
+            $pwd->servertypes([body_parameters->get_all('servertypes')]);
             $pwd->write;
             redirect '/config/pwd';
         }
@@ -473,9 +474,10 @@ any ['get', 'post'] => '/config/pwd/?:id?' => require_role 'config' => sub {
             $pwd->delete;
             redirect '/config/pwd';
         }
-        $params->{pwd}     = $pwd;
-        $params->{uads}    = $uads->all;
-        $params->{servers} = $servers->all;
+        $params->{pwd}         = $pwd;
+        $params->{uads}        = $uads->all;
+        $params->{servers}     = $servers->all;
+        $params->{servertypes} = [$schema->resultset('Servertype')->all];
     }
 
     template 'config/pwd' => $params;

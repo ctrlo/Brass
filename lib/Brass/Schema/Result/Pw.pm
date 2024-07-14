@@ -49,6 +49,13 @@ __PACKAGE__->belongs_to(
   },
 );
 
+__PACKAGE__->has_many(
+  "pw_servertypes",
+  "Brass::Schema::Result::PwServertype",
+  { "foreign.pw_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 __PACKAGE__->belongs_to(
   "uad",
   "Brass::Schema::Result::Uad",

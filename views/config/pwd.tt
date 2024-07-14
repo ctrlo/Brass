@@ -33,6 +33,18 @@
                     <label for="publickey">SSH public key</label>
                     <textarea name="publickey" id="publickey" class="form-control" rows="10">[% pwd.publickey | html %]</textarea>
                 </div>
+
+                <div class="form-group">
+                    <label>Restrict to these server types only (optional):</label>
+                    [% FOREACH servertype IN servertypes %]
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="servertypes" value="[% servertype.id %]"
+                                    [% IF pwd.has_servertype(servertype.id) %]checked[% END %]>[% servertype.name | html %]
+                            </label>
+                        </div>
+                    [% END %]
+                </div>
                 [% IF user.has_permission('config_write') %]
                     <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
                     [% IF pwd.id %]

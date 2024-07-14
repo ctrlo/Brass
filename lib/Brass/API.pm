@@ -302,15 +302,22 @@ get 'api/server/' => sub {
     elsif ($action eq 'sshkeys')
     {
         $server or error __"Please specify server";
+        my $server_rs = $schema->resultset('Server')->by_name($server)
+            or error __"Server not found";
         my ($serv) = $schema->resultset('Server')->search({
-            'me.name'      => $server,
-            'user.deleted' => undef,
+            'me.name'                      => $server,
+            'user.deleted'                 => undef,
+            # Restrict keys to either ones without a servertype restriction, or
+            # ones that match the servertype of this server
+            'pw_servertypes.servertype_id' => [undef, map { $_->servertype_id } $server_rs->server_servertypes],
         },{
             prefetch => {
                 server_servertypes => {
                     servertype => {
                         user_servertypes => {
-                            user => 'pws',
+                            user => {
+                                pws => 'pw_servertypes',
+                            },
                         },
                     },
                 },

@@ -189,6 +189,17 @@ sub write
             server_id => $s,
         });
     }
+    # Update all the servertypes
+    $self->schema->resultset('PwServertype')->search({
+        pw_id => $self->id,
+    })->delete;
+    foreach my $id (@{$self->servertypes})
+    {
+        $self->schema->resultset('PwServertype')->create({
+            pw_id         => $self->id,
+            servertype_id => $id,
+        });
+    }
     $guard->commit;
 }
 
@@ -239,6 +250,23 @@ sub _build_servers
     })->all;
     my %servers = map { $_->server->id => $_->server->name } @servers;
     \%servers;
+}
+
+sub has_servertype
+{   my ($self, $servertype_id) = @_;
+    !! grep $_ == $servertype_id, @{$self->servertypes};
+}
+
+has servertypes => (
+    is      => 'rw',
+    isa     => ArrayRef,
+    lazy    => 1,
+    builder => 1,
+);
+
+sub _build_servertypes
+{   my $self = shift;
+    [map $_->servertype_id, $self->_rset->pw_servertypes];
 }
 
 1;
