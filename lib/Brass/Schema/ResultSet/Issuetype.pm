@@ -98,6 +98,10 @@ my @types_audit = (
 
 my @types_other_security = (
     {
+        identifier => 'isms_change',
+        name       => 'ISMS Change',
+    },
+    {
         identifier => 'objective',
         name       => 'Objective',
     },
