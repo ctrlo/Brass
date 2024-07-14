@@ -344,6 +344,7 @@ sub delete
     $self->schema->resultset('ServerServertype')->search({ server_id => $self->id })->delete;
     $self->schema->resultset('ServerPw')->search({ server_id => $self->id })->delete;
     $self->schema->resultset('Pw')->search({ server_id => $self->id })->delete;
+    $self->schema->resultset('Site')->search({ server_id => $self->id })->delete;
     $self->_rset->delete;
     $guard->commit;
 }
