@@ -182,7 +182,7 @@ get 'api/cert/' => sub {
             join => ['use', 'server'],
         })->all;
 
-        error __x"Use {use} not found for server {name}",
+        error __x"Certificate use {use} not found for server {name}",
             use => $param, name => $server
                 if !@uses;
 
