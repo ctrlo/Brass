@@ -252,6 +252,20 @@ Related object: L<Brass::Schema::Result::UserPermission>
 =cut
 
 __PACKAGE__->has_many(
+  "docreads",
+  "Brass::Schema::Result::UserDocread",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+__PACKAGE__->has_many(
+  "user_docreadtypes",
+  "Brass::Schema::Result::UserDocreadtype",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+__PACKAGE__->has_many(
   "user_permissions",
   "Brass::Schema::Result::UserPermission",
   { "foreign.user" => "self.id" },
@@ -341,6 +355,15 @@ sub update_projects
     }
 }
 
+sub update_docreadtypes
+{   my ($self, @docreadtype_ids) = @_;
+    $self->user_docreadtypes->delete; # lazy
+    foreach my $docreadtype_id (@docreadtype_ids)
+    {
+        $self->create_related('user_docreadtypes', {docreadtype_id => $docreadtype_id});
+    }
+}
+
 sub update_servertypes
 {   my ($self, @servertype_ids) = @_;
     $self->user_servertypes->delete; # lazy
@@ -392,6 +415,11 @@ sub has_permission
 sub has_project
 {   my ($self, $project_id) = @_;
     (grep { $_->project->id == $project_id } $self->user_projects) ? 1 : 0;
+}
+
+sub has_docreadtype
+{   my ($self, $docreadtype_id) = @_;
+    (grep { $_->docreadtype_id == $docreadtype_id } $self->user_docreadtypes) ? 1 : 0;
 }
 
 sub servertypes_as_string

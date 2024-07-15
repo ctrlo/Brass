@@ -1,0 +1,22 @@
+<h1>Confirmation of document reading</h1>
+<table class="table table-striped">
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Last read</th>
+        <th></th>
+    </tr>
+    <form method="post">
+        <input type="hidden" name="csrf_token" value="[% csrf_token %]">
+        [% FOREACH doc IN docs %]
+            <tr>
+                <td>[% doc.id %]</td>
+                <td><a href="/doc/latest/[% doc.id %]">[% doc.title | html %]</a></td>
+                <td>[% doc.last_read(user) | html %]</td>
+                <td>
+                    <button type="submit" name="have_read_doc" value="[% doc.id %]" class="btn btn-primary">I have read this document</button>
+                </td>
+            </tr>
+        [% END %]
+    </form>
+</table>

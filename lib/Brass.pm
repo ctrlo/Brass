@@ -287,7 +287,7 @@ any ['get', 'post'] => '/user/:id' => require_role 'user_admin' => sub {
         $user->update_permissions(body_parameters->get_all('permissions'));
         $user->update_projects(body_parameters->get_all('projects'));
         $user->update_servertypes(body_parameters->get_all('servertypes'));
-        $user->update_servertypes(body_parameters->get_all('servertypes'));
+        $user->update_docreadtypes(body_parameters->get_all('docreadtypes'));
         $user->update_topics(
             doc         => [body_parameters->get_all('doc')],
             doc_publish => [body_parameters->get_all('doc_publish')],
@@ -309,12 +309,13 @@ any ['get', 'post'] => '/user/:id' => require_role 'user_admin' => sub {
     }
 
     template 'user' => {
-        u           => $user,
-        permissions => [$schema->resultset('Permission')->all],
-        projects    => [$schema->resultset('Project')->all],
-        servertypes => [$schema->resultset('Servertype')->all],
-        topics      => [$schema_doc->resultset('Topic')->all],
-        page        => 'user',
+        u            => $user,
+        permissions  => [$schema->resultset('Permission')->all],
+        projects     => [$schema->resultset('Project')->all],
+        servertypes  => [$schema->resultset('Servertype')->all],
+        docreadtypes => [$schema->resultset('Docreadtype')->all],
+        topics       => [$schema_doc->resultset('Topic')->all],
+        page         => 'user',
     };
 };
 
@@ -788,6 +789,42 @@ get '/file/:file' => require_login sub {
     }
 };
 
+any ['get', 'post'] => '/docread' => require_role doc => sub {
+
+    my $schema    = schema;
+    my $docschema = schema('doc');
+
+    if (my $doc_id = param('have_read_doc'))
+    {
+        my $read = {
+            user_id    => logged_in_user->id,
+            doc_id     => $doc_id,
+            datetime   => DateTime->now,
+            ip_address => request->remote_address,
+        };
+        if (process sub { $schema->resultset('UserDocread')->create($read) })
+        {
+            forwardHome({ success => "The document reading has been registered successfully" }, "docread" )
+        }
+    }
+
+    my @doc_ids = map $_->doc_id, $schema->resultset('DocDocreadtype')->search({
+        'user_docreadtypes.user_id' => logged_in_user->id,
+    },{
+        join => {
+            docreadtype => 'user_docreadtypes',
+        },
+    })->all;
+    my $docs    = $docschema->resultset('Doc')->search({
+        id      => \@doc_ids,
+        retired => undef,
+    });
+    template 'docread' => {
+        docs        => [$docs->all],
+        page        => 'docread',
+    };
+};
+
 get '/doc' => require_role doc => sub {
 
     my $schema  = schema('doc');
@@ -916,18 +953,20 @@ any ['get', 'post'] => '/doc/download/:code' => sub {
 
 any ['get', 'post'] => '/doc/edit/:id' => require_role doc => sub {
 
-    my $id     = param 'id';
-    my $schema = schema('doc');
-    my $doc    = Brass::Doc->new(
-        id     => $id,
-        schema => $schema,
+    my $id        = param 'id';
+    my $schema    = schema;
+    my $docschema = schema('doc');
+    my $doc       = Brass::Doc->new(
+        id           => $id,
+        schema       => $docschema,
+        schema_brass => $schema,
     );
 
     !$id || $doc->user_can('read')
         or error "Sorry, you do not have access to this documentation topic";
 
-    my $topics = Brass::Topics->new(schema => $schema);
-    my $classifications = Brass::Classifications->new(schema => $schema);
+    my $topics = Brass::Topics->new(schema => $docschema);
+    my $classifications = Brass::Classifications->new(schema => $docschema);
 
     if (my $submit = param 'submit')
     {
@@ -936,6 +975,7 @@ any ['get', 'post'] => '/doc/edit/:id' => require_role doc => sub {
         $doc->title(param 'title');
         $doc->set_topic(param 'topic');
         $doc->set_classification(param 'classification');
+        $doc->docreadtypes([body_parameters->get_all('docreadtypes')]);
         $doc->multiple(param 'multiple');
         $doc->write;
         redirect '/doc';
@@ -945,6 +985,7 @@ any ['get', 'post'] => '/doc/edit/:id' => require_role doc => sub {
         doc             => $doc,
         topics          => [$topics->all],
         classifications => [$classifications->all],
+        docreadtypes    => [$schema->resultset('Docreadtype')->all],
         page            => 'doc_edit',
     };
 };

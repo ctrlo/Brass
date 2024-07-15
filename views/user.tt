@@ -40,6 +40,18 @@
             </div>
 
             <div class="form-group">
+                <label>Mandatory document reading types</label>
+                [% FOREACH docreadtype IN docreadtypes %]
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="docreadtypes" value="[% docreadtype.id %]"
+                                [% IF u.has_docreadtype(docreadtype.id) %]checked[% END %]>[% docreadtype.name | html %]
+                        </label>
+                    </div>
+                [% END %]
+            </div>
+
+            <div class="form-group">
                 <label>Server types</label>
                 [% FOREACH servertype IN servertypes %]
                     <div class="checkbox">

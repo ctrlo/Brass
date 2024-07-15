@@ -1,0 +1,181 @@
+{
+   "belongs_to" : {
+      "fetch" : 0
+   },
+   "has_many" : {
+      "fetch" : 0
+   },
+   "might_have" : {
+      "fetch" : 0
+   },
+   "sets" : [
+      {
+         "class" : "Status",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Eventtype"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Uad"
+      },
+      {
+         "quantity" : "all",
+         "class" : "ServerPw"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Calendar"
+      },
+      {
+         "quantity" : "all",
+         "class" : "User"
+      },
+      {
+         "class" : "ServerCert",
+         "quantity" : "all"
+      },
+      {
+         "class" : "Comment",
+         "quantity" : "all"
+      },
+      {
+         "class" : "Site",
+         "quantity" : "all"
+      },
+      {
+         "class" : "CertUse",
+         "quantity" : "all"
+      },
+      {
+         "class" : "File",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Docsend"
+      },
+      {
+         "quantity" : "all",
+         "class" : "DocDocreadtype"
+      },
+      {
+         "quantity" : "all",
+         "class" : "PwServertype"
+      },
+      {
+         "class" : "IssuePriority",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "UserServertype"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Tag"
+      },
+      {
+         "quantity" : "all",
+         "class" : "IssueTag"
+      },
+      {
+         "class" : "Event",
+         "quantity" : "all"
+      },
+      {
+         "class" : "CertLocation",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Pw"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Customer"
+      },
+      {
+         "class" : "Server",
+         "quantity" : "all"
+      },
+      {
+         "class" : "UserDocread",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Permission"
+      },
+      {
+         "class" : "UserPermission",
+         "quantity" : "all"
+      },
+      {
+         "class" : "Project",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Issue"
+      },
+      {
+         "quantity" : "all",
+         "class" : "UserDocreadtype"
+      },
+      {
+         "class" : "UserTopic",
+         "quantity" : "all"
+      },
+      {
+         "class" : "IssueStatus",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Priority"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Docreadtype"
+      },
+      {
+         "class" : "App",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "ServerServertype"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Issuetype"
+      },
+      {
+         "class" : "Cert",
+         "quantity" : "all"
+      },
+      {
+         "quantity" : "all",
+         "class" : "UserProject"
+      },
+      {
+         "quantity" : "all",
+         "class" : "CertLocationUse"
+      },
+      {
+         "class" : "Servertype",
+         "quantity" : "all"
+      },
+      {
+         "class" : "EventPerson",
+         "quantity" : "all"
+      },
+      {
+         "class" : "Domain",
+         "quantity" : "all"
+      }
+   ]
+}

@@ -204,6 +204,19 @@ has set_classification => (
     },
 );
 
+has docreadtypes => (
+    is  => 'rw',
+    isa => ArrayRef,
+);
+
+sub has_docreadtype
+{   my ($self, $docreadtype_id) = @_;
+    !! $self->schema_brass->resultset('DocDocreadtype')->search({
+        doc_id         => $self->id,
+        docreadtype_id => $docreadtype_id,
+    })->count;
+}
+
 sub set_owner
 {   my ($self, $id) = @_;
     # $self->topic(Brass::Topic->new(id => $id, schema => $self->schema));
@@ -637,6 +650,16 @@ sub write
     }
     else {
         $self->schema->resultset('Doc')->create($values);
+    }
+    $self->schema_brass->resultset('DocDocreadtype')->search({
+        doc_id => $self->id,
+    })->delete;
+    foreach my $docreadtype_id (@{$self->docreadtypes})
+    {
+        $self->schema_brass->resultset('DocDocreadtype')->create({
+            doc_id         => $self->id,
+            docreadtype_id => $docreadtype_id,
+        });
     }
 }
 
