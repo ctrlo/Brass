@@ -1,0 +1,7 @@
+# Deploy database
+
+DBIC_MIGRATION_USERNAME=brass DBIC_MIGRATION_PASSWORD=xxx dbic-migration -Ilib --schema_class='Brass::Schema' --dsn='dbi:mysql:database=brass' --database MySQL --dbic_connect_attrs quote_names=1 install
+
+# Import fixtures
+
+DBIC_MIGRATION_USERNAME=brass DBIC_MIGRATION_PASSWORD=xxx dbic-migration -Ilib --schema_class='Brass::Schema' --dsn='dbi:mysql:database=brass' --database MySQL --dbic_connect_attrs quote_names=1 populate --fixture_set permission
