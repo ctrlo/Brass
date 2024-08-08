@@ -71,27 +71,28 @@ sub delete_cert
 sub as_hash_single
 {   my $self = shift;
 
-    # This should only be called as part of a query that returns only one
-    # location and use
-    error __"More locations than expected for this certificate"
-        if $self->cert_locations > 1;
-    error __"No locations defined for this certificate"
-        if !$self->cert_locations;
-    my $location = $self->cert_locations->next;
-
-    error __"More uses than expected for this certificate"
-        if $location->cert_location_uses > 1;
-    error __"No use defined for this certificate"
-        if !$location->cert_location_uses;
-    my $use = $location->cert_location_uses->next->use;
-
     my $hash = $self->_as_hash;
-    $hash->{use}           = $use->name,
-    $hash->{filename_cert} = $location->filename_cert;
-    $hash->{filename_key}  = $location->filename_key;
-    $hash->{filename_ca}   = $location->filename_ca;
-    $hash->{file_user}     = $location->file_user;
-    $hash->{file_group}    = $location->file_group;
+
+    foreach my $location ($self->cert_locations)
+    {
+        error __"More uses than expected for this certificate"
+            if $location->cert_location_uses > 1;
+        error __"No use defined for this certificate"
+            if !$location->cert_location_uses;
+
+        my $use = $location->cert_location_uses->next->use;
+
+        $hash->{locations} ||= [];
+
+        push @{$hash->{locations}}, {
+            use           => $use->name,
+            filename_cert => $location->filename_cert,
+            filename_key  => $location->filename_key,
+            filename_ca   => $location->filename_ca,
+            file_user     => $location->file_user,
+            file_group    => $location->file_group,
+        }
+    }
 
     $hash;
 }
