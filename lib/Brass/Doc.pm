@@ -651,15 +651,18 @@ sub write
     else {
         $self->schema->resultset('Doc')->create($values);
     }
-    $self->schema_brass->resultset('DocDocreadtype')->search({
-        doc_id => $self->id,
-    })->delete;
-    foreach my $docreadtype_id (@{$self->docreadtypes})
+    if ($self->docreadtypes)
     {
-        $self->schema_brass->resultset('DocDocreadtype')->create({
-            doc_id         => $self->id,
-            docreadtype_id => $docreadtype_id,
-        });
+        $self->schema_brass->resultset('DocDocreadtype')->search({
+            doc_id => $self->id,
+        })->delete;
+        foreach my $docreadtype_id (@{$self->docreadtypes})
+        {
+            $self->schema_brass->resultset('DocDocreadtype')->create({
+                doc_id         => $self->id,
+                docreadtype_id => $docreadtype_id,
+            });
+        }
     }
 }
 

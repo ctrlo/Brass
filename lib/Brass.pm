@@ -845,8 +845,9 @@ any ['get', 'post'] => '/doc/view/:id' => require_role doc => sub {
     my $id     = param 'id';
     my $schema = schema('doc');
     my $doc    = Brass::Doc->new(
-        id     => $id,
-        schema => $schema,
+        id           => $id,
+        schema       => $schema,
+        schema_brass => schema,
     );
 
     $doc->user_can('read')
