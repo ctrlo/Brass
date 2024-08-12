@@ -107,7 +107,7 @@ hook before => sub {
 
     header "X-Frame-Options" => "DENY"; # Prevent clickjacking
 
-    my $db = Brass::DocDB->new(schema => schema('doc'));
+    my $db = Brass::DocDB->new(schema => schema('doc'), schema_brass => schema);
     $db->setup;
 
     if ($user->user && $user->user->has_permission('user_admin'))
@@ -844,7 +844,7 @@ any ['get', 'post'] => '/docreadstatus' => require_role user_admin => sub {
 get '/doc' => require_role doc => sub {
 
     my $schema  = schema('doc');
-    my $docs    = Brass::Docs->new(schema => $schema);
+    my $docs    = Brass::Docs->new(schema => $schema, schema_brass => schema);
     my @topics  = Brass::Topics->new(schema => $schema)->all;
     my $topic_id = param('topic') || session('topic') || $topics[0]->id;
     session 'topic', $topic_id;
@@ -941,8 +941,9 @@ any ['get', 'post'] => '/doc/download/:code' => sub {
         and error "This document has already been downloaded";
 
     my $doc    = Brass::Doc->new(
-        id     => $docsend->doc_id,
-        schema => schema('doc'),
+        id           => $docsend->doc_id,
+        schema       => schema('doc'),
+        schema_brass => schema,
     );
 
     if (param 'download')
