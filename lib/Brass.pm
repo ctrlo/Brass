@@ -837,7 +837,7 @@ any ['get', 'post'] => '/docreadstatus' => require_role user_admin => sub {
     template 'docreadstatus' => {
         docs  => [$docs->all],
         users => [$schema->resultset('User')->active->docread->all],
-        page  => 'docread',
+        page  => 'docreadstatus',
     };
 };
 

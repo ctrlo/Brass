@@ -20,7 +20,7 @@
                         <td class="text-danger">Not yet read</td>
                     [% END %]
                 [% ELSE %]
-                    <td>Nope</td>
+                    <td class="text-muted">Not required</td>
                 [% END %]
             [% END %]
         </tr>

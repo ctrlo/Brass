@@ -12,7 +12,7 @@
             <tr>
                 <td>[% doc.id %]</td>
                 <td><a href="/doc/latest/[% doc.id %]">[% doc.title | html %]</a></td>
-                <td>[% doc.last_read(user) | html %]</td>
+                <td>[% doc.last_read(user).date | html %]</td>
                 <td>
                     <button type="submit" name="have_read_doc" value="[% doc.id %]" class="btn btn-primary">I have read this document</button>
                 </td>
