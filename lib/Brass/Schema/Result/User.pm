@@ -422,6 +422,11 @@ sub has_docreadtype
     (grep { $_->docreadtype_id == $docreadtype_id } $self->user_docreadtypes) ? 1 : 0;
 }
 
+sub must_read_doc
+{   my ($self, $doc_id) = @_;
+    (grep { $_->docreadtype->doc_docreadtypes->search({doc_id => $doc_id})->count } $self->user_docreadtypes) ? 1 : 0;
+}
+
 sub servertypes_as_string
 {   my $self = shift;
     join ', ', map $_->servertype->name, $self->user_servertypes->all;

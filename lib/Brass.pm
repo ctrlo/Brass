@@ -825,6 +825,22 @@ any ['get', 'post'] => '/docread' => require_role doc => sub {
     };
 };
 
+any ['get', 'post'] => '/docreadstatus' => require_role user_admin => sub {
+
+    my $schema    = schema;
+    my $docschema = schema('doc');
+
+    my @doc_ids = map $_->doc_id, $schema->resultset('DocDocreadtype')->all;
+    my $docs = $docschema->resultset('Doc')->active->search({
+        id => \@doc_ids,
+    });
+    template 'docreadstatus' => {
+        docs  => [$docs->all],
+        users => [$schema->resultset('User')->active->docread->all],
+        page  => 'docread',
+    };
+};
+
 get '/doc' => require_role doc => sub {
 
     my $schema  = schema('doc');

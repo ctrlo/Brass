@@ -18,6 +18,16 @@ sub active
     });
 }
 
+sub docread
+{   my $self = shift;
+    $self->search_rs({
+        'user_docreadtypes.id' => { '!=' => undef },
+    },{
+        join     => 'user_docreadtypes',
+        collapse => 1,
+    });
+}
+
 sub keys
 {   my $self = shift;
     $self->search_rs({

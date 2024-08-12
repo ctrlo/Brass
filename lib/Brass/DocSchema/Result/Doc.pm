@@ -188,6 +188,7 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+# Last read date for a particular user
 sub last_read
 {   my ($self, $user) = @_;
     my $lr = $user->docreads->search({
@@ -197,7 +198,15 @@ sub last_read
         rows     => 1,
     })->next
         or return;
-    $lr->datetime;
+    my $dt = $lr->datetime;
+    my $expiry = DateTime->now->subtract(years => 1);
+    my $status = $dt > $expiry->clone->add(months => 1) ? 'success'
+        : $dt > $expiry ? 'warning'
+        : 'danger';
+    {
+        date   => $dt,
+        status => $status,
+    }
 }
 
 1;

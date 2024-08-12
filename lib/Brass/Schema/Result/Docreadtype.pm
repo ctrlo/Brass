@@ -26,7 +26,7 @@ __PACKAGE__->has_many(
 
 __PACKAGE__->has_many(
   "doc_docreadtypes",
-  "Brass::Schema::Result::UserDocreadtype",
+  "Brass::Schema::Result::DocDocreadtype",
   { "foreign.docreadtype_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );

@@ -50,6 +50,9 @@
                                     <ul class="dropdown-menu">
                                         <li [% IF page=="doc" %]class="active"[% END %]><a href="/doc">Documents</a></li>
                                         <li [% IF page=="docread" %]class="active"[% END %]><a href="/docread">Required reading</a></li>
+                                        [% IF user.has_permission('user_admin') %]
+                                            <li [% IF page=="docreadstatus" %]class="active"[% END %]><a href="/docreadstatus">Required reading status</a></li>
+                                        [% END %]
                                         <li [% IF page=="doc/image" %]class="active"[% END %]><a href="/doc/image/">Images</a></li>
                                     </ul>
                                     </li>
