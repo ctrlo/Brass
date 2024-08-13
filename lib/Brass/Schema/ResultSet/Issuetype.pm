@@ -117,6 +117,10 @@ my @types_other_security = (
         identifier => 'other_customer',
         name       => 'Customer security-related request',
     },
+    {
+        identifier => 'data_deletion',
+        name       => 'Data deletion action',
+    },
 );
 
 # Populate predefined issue types
