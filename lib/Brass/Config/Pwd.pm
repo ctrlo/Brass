@@ -266,6 +266,7 @@ has servertypes => (
 
 sub _build_servertypes
 {   my $self = shift;
+    return [] if !$self->_rset;
     [map $_->servertype_id, $self->_rset->pw_servertypes];
 }
 
