@@ -156,6 +156,7 @@ sub _as_hash
         content_cert  => $self->content_cert =~ s/(.+)\v*$/$1\n/r,
         content_key   => $self->content_key  =~ s/(.+)\v*$/$1\n/r,
         content_ca    => $self->content_ca   =~ s/(.+)\v*$/$1\n/r,
+        cn            => $self->cn,
     };
 }
 
