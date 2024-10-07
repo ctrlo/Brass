@@ -20,6 +20,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "smtp_relayhost",
   { data_type => "text", is_nullable => 1 },
+  "wazuh_manager",
+  { data_type => "text", is_nullable => 1 },
 );
 
 __PACKAGE__->set_primary_key("id");

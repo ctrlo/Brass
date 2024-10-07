@@ -396,6 +396,7 @@ any ['get', 'post'] => '/config/site/' => require_role 'config' => sub {
             unless user_has_role 'config_write';
         $config->smtp_relayhost(body_parameters->get('smtp_relayhost'));
         $config->internal_networks(body_parameters->get('internal_networks'));
+        $config->wazuh_manager(body_parameters->get('wazuh_manager'));
         if (process sub { $config->insert_or_update })
         {
             forwardHome({ success => "The configuration has been updated successfully" }, "config/site/" );

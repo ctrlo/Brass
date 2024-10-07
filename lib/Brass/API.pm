@@ -414,6 +414,10 @@ get 'api/site/' => sub {
     {
         $output = [$config->internal_networks_all];
     }
+    elsif ($action eq 'wazuh_manager')
+    {
+        $output = [$config->wazuh_manager];
+    }
     else {
         error __x"Unknown action {action}", action => $action;
     }
