@@ -408,11 +408,11 @@ get 'api/site/' => sub {
 
     if ($action eq 'smtp')
     {
-        $return = [$config->smtp_relayhost];
+        $output = [$config->smtp_relayhost];
     }
     elsif ($action eq 'internal_networks')
     {
-        $return = [$config->internal_networks_all];
+        $output = [$config->internal_networks_all];
     }
     else {
         error __x"Unknown action {action}", action => $action;
