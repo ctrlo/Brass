@@ -383,6 +383,31 @@ any ['get', 'post'] => '/config/server/?:id?' => require_role 'config' => sub {
     template 'config/server' => $params;
 };
 
+any ['get', 'post'] => '/config/site/' => require_role 'config' => sub {
+
+    my $schema  = schema;
+
+    my $config = $schema->resultset('Config')->next
+        || $schema->resultset('Config')->new({});
+
+    if (body_parameters->get('save'))
+    {
+        error __"No permission to update config"
+            unless user_has_role 'config_write';
+        $config->smtp_relayhost(body_parameters->get('smtp_relayhost'));
+        $config->internal_networks(body_parameters->get('internal_networks'));
+        if (process sub { $config->insert_or_update })
+        {
+            forwardHome({ success => "The configuration has been updated successfully" }, "config/site/" );
+        }
+    }
+
+    template 'config/site' => {
+        config => $config,
+        page   => 'config/site',
+    };
+};
+
 any ['get', 'post'] => '/config/uad/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';
