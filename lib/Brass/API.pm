@@ -392,3 +392,36 @@ get 'api/server/' => sub {
     });
 };
 
+get 'api/site/' => sub {
+    my $user = var 'api_user'
+        or error __"Authentication required";
+
+    my $action = query_parameters->get('action')
+        or error __"Need required action";
+
+    my $schema = schema;
+
+    my $config = $schema->resultset('Config')->next
+        or error __x"Configuration information not defined. Please define in Brass in the Config => Site menu";
+
+    my $output;
+
+    if ($action eq 'smtp')
+    {
+        $return = [$config->smtp_relayhost];
+    }
+    elsif ($action eq 'internal_networks')
+    {
+        $return = [$config->internal_networks_all];
+    }
+    else {
+        error __x"Unknown action {action}", action => $action;
+    }
+
+    content_type 'application/json';
+    encode_json({
+        "is_error" => 0,
+        "result"   => encode_json($output),
+    });
+};
+

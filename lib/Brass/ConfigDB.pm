@@ -54,12 +54,8 @@ sub run
     my $email      = $cfg->val($namespace, 'email')
         or die "Email config parameter missing";
 
-    if ($type eq 'smtp')
-    {
-        my $smtp = $cfg->val($namespace, 'smtp');
-        $smtp or error __"smtp parameter is missing from .configdb";
-        return $smtp;
-    }
+    error __"smtp parameter type has been replaced by site type"
+        if $type eq 'smtp';
 
     $type or error __"Please provide type of request with --type";
     $action or error __"Please specify action with --action";
@@ -128,6 +124,11 @@ sub run
         else {
             die "Unknown action $action";
         }
+    }
+    elsif ($type eq 'site')
+    {
+        push @path, 'site';
+        push @query, (action => $action);
     }
     else
     {

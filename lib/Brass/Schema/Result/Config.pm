@@ -24,10 +24,15 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+sub internal_networks_all
+{   my $self = shift;
+    split /[\s,]+/, $self->internal_networks;
+}
+
 sub validate
 {   my $self = shift;
 
-    foreach my $range (split /[\s,]+/, $self->internal_networks)
+    foreach my $range ($self->internal_networks_all)
     {
         Net::CIDR::cidrvalidate($range)
             or error __x"Invalid IP range restriction: {range}", range => $range;
