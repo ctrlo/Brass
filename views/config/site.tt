@@ -1,0 +1,18 @@
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <input type="hidden" name="csrf_token" value="[% csrf_token %]">
+            <div class="form-group">
+                <label for="smtp_relayhost">SMTP relay host</label>
+                <input type="text" class="form-control" id="smtp_relayhost" name="smtp_relayhost" value="[% config.smtp_relayhost | html %]">
+            </div>
+            <div class="form-group">
+                <label for="internal_networks">Internal networks</label>
+                <textarea name="internal_networks" id="internal_networks" class="form-control" rows="5">[% config.internal_networks | html %]</textarea>
+            </div>
+            [% IF user.has_permission('config_write') %]
+                <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
+            [% END %]
+        </form>
+    </div>
+<div>
