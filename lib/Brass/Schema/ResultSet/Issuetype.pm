@@ -121,6 +121,10 @@ my @types_other_security = (
         identifier => 'data_deletion',
         name       => 'Data deletion action',
     },
+    {
+        identifier => 'identified_risk',
+        name       => 'Identification of possible new risk to be assessed',
+    },
 );
 
 # Populate predefined issue types
