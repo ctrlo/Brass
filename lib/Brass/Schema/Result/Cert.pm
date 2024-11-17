@@ -91,6 +91,7 @@ sub as_hash_single
             filename_ca   => $location->filename_ca,
             file_user     => $location->file_user,
             file_group    => $location->file_group,
+            format        => $location->format,
         }
     }
 
@@ -131,6 +132,7 @@ sub as_hash_multiple
                 filename_ca   => $location->filename_ca,
                 file_user     => $location->file_user,
                 file_group    => $location->file_group,
+                format        => $location->format,
             };
         }
     }
