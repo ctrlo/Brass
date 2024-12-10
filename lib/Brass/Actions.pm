@@ -16,6 +16,9 @@ my %allowed_action = (
     disk => {
         username => 0,
     },
+    splunk => {
+        username => 1,
+    },
     sqldb => {
         username => 1,
     },
