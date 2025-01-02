@@ -22,6 +22,9 @@ my %allowed_action = (
     sqldb => {
         username => 1,
     },
+    ssh => {
+        username => 1,
+    },
     system => {
         username => 1,
     },
