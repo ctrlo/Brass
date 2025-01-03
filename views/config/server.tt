@@ -52,7 +52,7 @@
                             <label>
                                 [% st = type.id %]
                                 <input name="type" type="checkbox" value="[% st %]" [% IF server.types.$st %]checked[% END %]>
-                                [% type.name | html %]
+                                [% type.as_string | html %]
                             </label>
                         </div>
                     [% END %]

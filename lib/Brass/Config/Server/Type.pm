@@ -43,6 +43,12 @@ has name => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->name; },
 );
 
+has description => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->description; },
+);
+
 sub _build__rset
 {   my $self = shift;
     $self->schema->resultset('Servertype')->find($self->id);
@@ -50,7 +56,9 @@ sub _build__rset
 
 sub as_string
 {   my $self = shift;
-    $self->name;
+    my $string = $self->name;
+    $string .= " (".$self->description.")" if $self->description;
+    $string;
 }
 
 sub as_integer
@@ -63,6 +71,7 @@ sub inflate_result {
     $_[0]->new(
         id          => $data->{id},
         name        => $data->{name},
+        description => $data->{description},
         schema      => $_[1]->schema,
     );
 }
