@@ -252,9 +252,14 @@ get 'api/server/' => sub {
     my $output = '';
     if ($action eq 'summary')
     {
-        my @types = $schema->resultset('Servertype')->search({},{
+        my $rs = $schema->resultset('Servertype')->search({},{
             prefetch => { server_servertypes => 'server' },
-        })->all;
+        });
+
+        $rs = $rs->search({ 'me.name' => $param })
+            if $param;
+
+        my @types = $rs->all;
 
         foreach my $type (@types)
         {
