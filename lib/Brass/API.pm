@@ -261,18 +261,18 @@ get 'api/server/' => sub {
 
         my @types = $rs->all;
 
+        my %return;
         foreach my $type (@types)
         {
             next unless $type->server_servertypes->count;
             $output .= $type->name.":";
-            my @servers;
+            $return{$type->name} ||= [];
             foreach my $server ($type->server_servertypes)
             {
-                push @servers, $server->server->name;
+                push @{$return{$type->name}}, $server->server->name;
             }
-            $output .= join ',', @servers;
-            $output .= "\n";
         }
+        $output = encode_json(\%return);
     }
     elsif ($action eq 'domain')
     {
