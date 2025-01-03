@@ -78,7 +78,11 @@
                 <td>[% pwd.uad | html %]</td>
                 <td>[% pwd.last_changed.ymd %]</td>
                 <td>[% pwd.fingerprint | html %]</td>
-                <td>[% pwd.user.servertypes_as_string | html %]</td>
+                <td>
+                    [% FOREACH st IN pwd.servertypes %]
+                        [% st.name | html %]
+                    [% END %]
+                </td>
             </tr>
         [% END %]
     </table>

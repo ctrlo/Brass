@@ -490,7 +490,7 @@ any ['get', 'post'] => '/config/pwd/?:id?' => require_role 'config' => sub {
             $pwd->publickey(param 'publickey');
             $pwd->last_changed($strp->parse_datetime(param 'last_changed'));
             $pwd->set_uad(param 'uad');
-            $pwd->servertypes([body_parameters->get_all('servertypes')]);
+            $pwd->servertype_ids([body_parameters->get_all('servertypes')]);
             $pwd->write;
             redirect '/config/pwd';
         }

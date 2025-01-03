@@ -193,7 +193,7 @@ sub write
     $self->schema->resultset('PwServertype')->search({
         pw_id => $self->id,
     })->delete;
-    foreach my $id (@{$self->servertypes})
+    foreach my $id (@{$self->servertype_ids})
     {
         $self->schema->resultset('PwServertype')->create({
             pw_id         => $self->id,
@@ -254,20 +254,30 @@ sub _build_servers
 
 sub has_servertype
 {   my ($self, $servertype_id) = @_;
-    !! grep $_ == $servertype_id, @{$self->servertypes};
+    !! grep $_ == $servertype_id, @{$self->servertype_ids};
 }
 
-has servertypes => (
+has servertype_ids => (
     is      => 'rw',
     isa     => ArrayRef,
     lazy    => 1,
     builder => 1,
 );
 
-sub _build_servertypes
+sub _build_servertype_ids
 {   my $self = shift;
     return [] if !$self->_rset;
     [map $_->servertype_id, $self->_rset->pw_servertypes];
+}
+
+# A combination of the servertypes assigned to this password and those servers
+# the user has access to
+sub servertypes
+{   my $self = shift;
+    $self->_rset->pw_servertypes->count
+        or return [map $_->servertype, $self->_rset->user->user_servertypes];
+    my %user_st = map { $_->get_column('servertype') => 1 } $self->_rset->user->user_servertypes;
+    [grep $user_st{$_->id}, map $_->servertype, $self->_rset->pw_servertypes];
 }
 
 1;
