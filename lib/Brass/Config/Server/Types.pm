@@ -32,7 +32,7 @@ has all => (
 
 sub _build_all
 {   my $self = shift;
-    my $type_rs = $self->schema->resultset('Servertype')->search;
+    my $type_rs = $self->schema->resultset('Servertype')->search({},{ order_by => 'me.name' });
     $type_rs->result_class('Brass::Config::Server::Type');
     my @all = $type_rs->all;
     \@all;
