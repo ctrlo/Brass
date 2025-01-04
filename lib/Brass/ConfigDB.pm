@@ -149,7 +149,7 @@ sub run
 
     my $decoded = decode_json $response->decoded_content;
     error $decoded->{message} if $decoded->{is_error};
-    if ($action eq 'metadata') # double-encoded
+    if ($action eq 'metadata' || $action eq 'summary') # double-encoded
     {
         return undef if !$decoded->{result}; # No metadata
         return decode_json $decoded->{result};
