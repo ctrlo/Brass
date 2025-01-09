@@ -88,7 +88,12 @@
                                         </a>
                                     </td>
                                 [% END %]
-                                <td>[% cert.cert.cn | html %]</td>
+                                <td>
+                                    [% cert.cert.cn | html %]
+                                    [% IF cert.cert.description %]
+                                        ([% cert.cert.description | html %])
+                                    [% END %]
+                                </td>
                                 <td>[% cert.cert.type | html %]</td>
                                 <td>[% cert.cert.usedby | html %]</td>
                                 <td>[% cert.use.name | html %]</td>

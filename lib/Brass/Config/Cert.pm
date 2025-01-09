@@ -53,6 +53,12 @@ has type => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->type; },
 );
 
+has description => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->description; },
+);
+
 has expiry => (
     is      => 'rw',
     isa     => Maybe[DateAndTime],
@@ -158,6 +164,7 @@ sub inflate_result {
         type        => $data->{type},
         expiry      => $expiry,
         usedby      => $data->{usedby},
+        description => $data->{description},
         filename    => $data->{filename},
         file_user   => $data->{file_user},
         file_group  => $data->{file_group},
