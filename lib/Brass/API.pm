@@ -141,36 +141,14 @@ get 'api/site/' => sub {
     my $user = var 'api_user'
         or error __"Authentication required";
 
-    my $action = query_parameters->get('action')
-        or error __"Need required action";
-
-    my $schema = schema;
-
-    my $config = $schema->resultset('Config')->next
-        or error __x"Configuration information not defined. Please define in Brass in the Config => Site menu";
-
-    my $output;
-
-    if ($action eq 'smtp')
-    {
-        $output = [$config->smtp_relayhost];
-    }
-    elsif ($action eq 'internal_networks')
-    {
-        $output = [$config->internal_networks_all];
-    }
-    elsif ($action eq 'wazuh_manager')
-    {
-        $output = [$config->wazuh_manager];
-    }
-    else {
-        error __x"Unknown action {action}", action => $action;
-    }
+    my $return = $cdb->run_site(
+        action => query_parameters->get('action'),
+    );
 
     content_type 'application/json';
     encode_json({
         "is_error" => 0,
-        "result"   => encode_json($output),
+        "result"   => encode_json($return),
     });
 };
 

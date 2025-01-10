@@ -53,7 +53,6 @@ sub _run_local
     my $type = delete $params{type}
         or error __"Please provide type of request with --type";
 
-    # XXX More types to be migrated
     if ($type eq 'pwd')
     {
         $self->run_pwd(%params);
@@ -65,6 +64,13 @@ sub _run_local
     elsif ($type eq 'server')
     {
         $self->run_server(%params);
+    }
+    elsif ($type eq 'site')
+    {
+        $self->run_site(%params);
+    }
+    else {
+        error __x"Unknown type: {type}", type => $type;
     }
 }
 
@@ -483,6 +489,33 @@ sub run_server
     }
     else {
         die "Unknown action $action";
+    }
+}
+
+sub run_site
+{   my ($self, %params) = @_;
+
+    my $schema = $self->schema;
+    my $action = $params{action}
+        or error __"Need required action";
+
+    my $config = $schema->resultset('Config')->next
+        or error __x"Configuration information not defined. Please define in Brass in the Config => Site menu";
+
+    if ($action eq 'smtp')
+    {
+        return [$config->smtp_relayhost];
+    }
+    elsif ($action eq 'internal_networks')
+    {
+        return [$config->internal_networks_all];
+    }
+    elsif ($action eq 'wazuh_manager')
+    {
+        return [$config->wazuh_manager];
+    }
+    else {
+        error __x"Unknown action {action}", action => $action;
     }
 }
 
