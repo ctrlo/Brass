@@ -30,7 +30,37 @@ use CtrlO::Crypt::XkcdPassword;
 use URI;
 use URI::QueryParam;
 
+has is_local => (
+    is => 'ro',
+);
+
+has schema => (
+    is => 'ro',
+);
+
 sub run
+{   my ($self, %params) = @_;
+
+    return $self->_run_local(%params)
+        if $self->is_local;
+
+    $self->_run_remote(%params);
+}
+
+sub _run_local
+{   my ($self, %params) = @_;
+
+    my $type = delete $params{type}
+        or error __"Please provide type of request with --type";
+
+    # XXX More types to be migrated
+    if ($type eq 'pwd')
+    {
+        $self->run_pwd(%params);
+    }
+}
+
+sub _run_remote
 {   my ($self, %params) = @_;
 
     my $server    = $params{server};
@@ -157,6 +187,74 @@ sub run
     else {
         return $decoded->{result};
     }
+}
+
+sub run_pwd
+{   my ($self, %params) = @_;
+
+    my $server = $params{server}
+        or error __"Please specify server";
+
+    my $action = $params{action}
+        or error __"Need required action";
+
+    Brass::Actions::is_allowed_action($action)
+        or error __x"Invalid action: {action}", action => $action;
+
+    my $param = $params{param};
+
+    !Brass::Actions::action_requires_pwd($action) || $param
+        or error __x"Please specify required username for {action} password",
+            action => $action;
+
+    my $pwdpass = $params{pwdpass}
+        or error __"Please provide the password encryption passphrase";
+
+    my ($username) = $self->schema->resultset('Pw')->search({
+        'server.name' => $server,
+        'me.username' => $param,
+        'me.type'     => $action,
+    },{
+        join => 'server',
+    });
+
+    my $cipher = Crypt::CBC->new(
+        -key    => $pwdpass,
+        -cipher => 'Blowfish'
+    );
+
+    my $pass = $params{pass};
+    if (defined $pass) {
+      # check password is strong
+      my $pwcheck = Data::Password::Check->check({
+                                                  password => $pass,
+                                                  tests => [qw(length silly repeated)]
+                                                 });
+      if ($pwcheck->has_errors) {
+        error __"Please use a secure password, provided password is not secure : " .
+          join(',', @{ $pwcheck->error_list });
+      }
+    }
+    if ($username) {
+      # update password if new one provided
+      if ($pass) {
+        my $pw = $cipher->encrypt($pass);
+        $username->pwencrypt($pw);
+        $username->update();
+      }
+      else {
+        $pass = $cipher->decrypt($username->pwencrypt);
+      }
+    }
+    else {
+      $pass //= randompw();
+      my $pw = $cipher->encrypt($pass);
+      my $s = $self->schema->resultset('Server')->find_or_create({ name => $server });
+      my $u = $self->schema->resultset('Pw')->create({ server_id => $s->id, username => $param, pwencrypt => $pw, type => $action });
+      $pass = $cipher->decrypt($u->pwencrypt);
+    }
+
+    return $pass;
 }
 
 sub randompw()

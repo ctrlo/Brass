@@ -21,8 +21,8 @@ package Brass::API;
 use strict; use warnings;
 
 use Brass::Actions ();
+use Brass::ConfigDB;
 use Crypt::Blowfish;
-use Crypt::CBC;
 use Crypt::JWT qw(decode_jwt);
 use Crypt::PK::ECC;
 use Dancer2 appname => 'Brass';
@@ -79,10 +79,7 @@ hook before => sub {
     var payload  => $client;
 };
 
-sub randompw()
-{   my $pwgen = CtrlO::Crypt::XkcdPassword->new;
-    $pwgen->xkcd( words => 3, digits => 2 );
-}
+my $cdb = Brass::ConfigDB->new(is_local => 1, schema => schema);
 
 get 'api/pwd/' => sub {
     my $user = var 'api_user'
@@ -93,63 +90,14 @@ get 'api/pwd/' => sub {
     my $passphrase = var('payload')->{passphrase}
         or error __"Need passphrase for retrieving and setting passwords";
 
-    my $server = query_parameters->get('server')
-        or error __"Please specify server";
-
-    my $action = query_parameters->get('action')
-        or error __"Need required action";
-
-    Brass::Actions::is_allowed_action($action)
-        or error __x"Invalid action: {action}", action => $action;
-
-    my $param = query_parameters->get('param');
-    !Brass::Actions::action_requires_pwd($action) || $param
-        or error __x"Please specify required username for {action} password",
-            action => $action;
-
-    my ($username) = $schema->resultset('Pw')->search({
-        'server.name' => $server,
-        'me.username' => $param,
-        'me.type'     => $action,
-    },{
-        join => 'server',
-    });
-
-    my $cipher = Crypt::CBC->new(
-        -key => $passphrase,
-        -cipher => 'Blowfish'
+    my $pass = $cdb->run_pwd(
+        server    => query_parameters->get('server'),
+        pass      => query_parameters->get('pass'),
+        action    => query_parameters->get('action'),
+        param     => query_parameters->get('param'),
+        pwdpass   => $passphrase,
     );
 
-    my $pass = query_parameters->get('pass');
-    if (defined $pass) {
-      # check password is strong
-      my $pwcheck = Data::Password::Check->check({
-                                                  password => $pass,
-                                                  tests => [qw(length silly repeated)]
-                                                 });
-      if ($pwcheck->has_errors) {
-        error __"Please use a secure password, provided password is not secure : " .
-          join(',', @{ $pwcheck->error_list });
-      }
-    }
-    if ($username) {
-      # update password if new one provided
-      if ($pass) {
-        my $pw = $cipher->encrypt($pass);
-        $username->pwencrypt($pw);
-        $username->update();
-      }
-      else {
-        $pass = $cipher->decrypt($username->pwencrypt);
-      }
-    }
-    else {
-      $pass //= randompw;
-      my $pw = $cipher->encrypt($pass);
-      my $s = $schema->resultset('Server')->find_or_create({ name => $server });
-      my $u = $schema->resultset('Pw')->create({ server_id => $s->id, username => $param, pwencrypt => $pw, type => $action });
-      $pass = $cipher->decrypt($u->pwencrypt);
-    }
     content_type 'application/json';
     encode_json({
         "is_error" => 0,
