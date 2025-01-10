@@ -111,78 +111,16 @@ get 'api/cert/' => sub {
 
     my $schema = schema;
 
-    my $action = query_parameters->get('action')
-        or error __"Need required action";
-    my $server = query_parameters->get('server');
-    my $param  = query_parameters->get('param');
-
-    my $output;
-    if ($action eq 'summary')
-    {
-        $server or error __"Please specify server";
-        $param or error __"Please specify certificate use";
-
-        my @certs;
-        my @uses = $schema->resultset('ServerCert')->search({
-            'server.name' => $server,
-            'use.name'    => $param,
-        },{
-            join => ['use', 'server'],
-        })->all;
-
-        error __x"Certificate use {use} not found for server {name}",
-            use => $param, name => $server
-                if !@uses;
-
-        foreach my $use (@uses)
-        {
-            my $cert = $schema->resultset('Cert')->search({
-                'me.id'                     => $use->cert_id,
-                'cert_location_uses.use_id' => $use->get_column('use'),
-            },{
-                prefetch => {
-                    cert_locations => 'cert_location_uses',
-                },
-            });
-
-            error __x"More than one location configured for use \"{use}\" of certificate {id}",
-                use => $use->use->name, id => $use->cert_id
-                    if $cert->count > 1;
-
-            error __x"Location information not configured for use \"{use}\" of certificate {id}",
-                use => $use->use->name, id => $use->cert_id
-                    if !$cert->count;
-
-            push @certs, $cert->next->as_hash_single;
-        }
-
-        $output = \@certs;
-    }
-    elsif ($action eq 'servers')
-    {
-        $param or error __"Please specify certificate ID";
-
-        my $cert = $schema->resultset('Cert')->find($param)
-            or error __x"Certificate ID {id} not found", id => $param;
-
-        my @servers = $schema->resultset('Server')->search({
-            'cert.id' => $param,
-        },{
-            prefetch => {
-                server_certs => 'cert' ,
-            },
-        })->all;
-
-        $output = $cert->as_hash_multiple;
-    }
-    else {
-        error __x"Unknown action {action}", action => $action;
-    }
+    my $return = $cdb->run_cert(
+        server    => query_parameters->get('server'),
+        action    => query_parameters->get('action'),
+        param     => query_parameters->get('param'),
+    );
 
     content_type 'application/json';
     encode_json({
         "is_error" => 0,
-        "result"   => encode_json($output),
+        "result"   => encode_json($return),
     });
 };
 

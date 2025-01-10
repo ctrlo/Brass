@@ -58,12 +58,13 @@ if (!$is_local && !defined $sshpass)
 }
 
 my ($pwdpass, $schema);
-if ($is_local && $type eq 'pwd')
+if ($is_local)
 {
     # If we are running directly on the server, get passphrase to
     # ecnrypt/decrypt passwords (this is kept locally in /.configdb if
     # accessing the database remotely)
-    $pwdpass = _get_passphrase("Please enter the passphrase for password encyrption and decryption:");
+    $pwdpass = _get_passphrase("Please enter the passphrase for password encyrption and decryption:")
+        if $type eq 'pwd';
 
     # Get direct connection from database - not needed for running on remote
     # server

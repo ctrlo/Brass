@@ -58,6 +58,10 @@ sub _run_local
     {
         $self->run_pwd(%params);
     }
+    elsif ($type eq 'cert')
+    {
+        $self->run_cert(%params);
+    }
 }
 
 sub _run_remote
@@ -255,6 +259,79 @@ sub run_pwd
     }
 
     return $pass;
+}
+
+sub run_cert
+{   my ($self, %params) = @_;
+
+    my $server = $params{server};
+    my $param  = $params{param};
+    my $action = $params{action}
+        or error __"Need required action";
+
+    my $return;
+
+    if ($action eq 'summary')
+    {
+        $server or error __"Please specify server";
+        $param or error __"Please specify certificate use";
+
+        my @certs;
+        my @uses = $self->schema->resultset('ServerCert')->search({
+            'server.name' => $server,
+            'use.name'    => $param,
+        },{
+            join => ['use', 'server'],
+        })->all;
+
+        error __x"Certificate use {use} not found for server {name}",
+            use => $param, name => $server
+                if !@uses;
+
+        foreach my $use (@uses)
+        {
+            my $cert = $self->schema->resultset('Cert')->search({
+                'me.id'                     => $use->cert_id,
+                'cert_location_uses.use_id' => $use->get_column('use'),
+            },{
+                prefetch => {
+                    cert_locations => 'cert_location_uses',
+                },
+            });
+
+            error __x"More than one location configured for use \"{use}\" of certificate {id}",
+                use => $use->use->name, id => $use->cert_id
+                    if $cert->count > 1;
+
+            error __x"Location information not configured for use \"{use}\" of certificate {id}",
+                use => $use->use->name, id => $use->cert_id
+                    if !$cert->count;
+
+            push @certs, $cert->next->as_hash_single;
+        }
+
+        return \@certs;
+    }
+    elsif ($action eq 'servers')
+    {
+        $param or error __"Please specify certificate ID";
+
+        my $cert = $self->schema->resultset('Cert')->find($param)
+            or error __x"Certificate ID {id} not found", id => $param;
+
+        my @servers = $self->schema->resultset('Server')->search({
+            'cert.id' => $param,
+        },{
+            prefetch => {
+                server_certs => 'cert' ,
+            },
+        })->all;
+
+        return $cert->as_hash_multiple;
+    }
+    else {
+        error __x"Unknown action {action}", action => $action;
+    }
 }
 
 sub randompw()
