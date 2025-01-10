@@ -124,7 +124,7 @@ get 'api/server/' => sub {
     my $user = var 'api_user'
         or error __"Authentication required";
 
-    my $return = $cdb->run_cert(
+    my $return = $cdb->run_server(
         server    => query_parameters->get('server'),
         action    => query_parameters->get('action'),
         param     => query_parameters->get('param'),
