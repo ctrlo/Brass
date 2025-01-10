@@ -31,6 +31,8 @@ WriteMakefile(
         'Log::Report'                => 0,
         'LWP::Protocol::https'       => 0,
         'LWP::UserAgent'             => 0,
+        'Moo'                        => 0,
+        'MooX::Types::MooseLike'     => 0,
         'Term::ReadKey'              => 0,
         'Test::More'                 => 0,
         'Text::Markdown'             => 0,
