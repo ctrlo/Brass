@@ -85,8 +85,6 @@ get 'api/pwd/' => sub {
     my $user = var 'api_user'
         or error __"Authentication required";
 
-    my $schema = schema;
-
     my $passphrase = var('payload')->{passphrase}
         or error __"Need passphrase for retrieving and setting passwords";
 
@@ -109,8 +107,6 @@ get 'api/cert/' => sub {
     my $user = var 'api_user'
         or error __"Authentication required";
 
-    my $schema = schema;
-
     my $return = $cdb->run_cert(
         server    => query_parameters->get('server'),
         action    => query_parameters->get('action'),
@@ -128,158 +124,16 @@ get 'api/server/' => sub {
     my $user = var 'api_user'
         or error __"Authentication required";
 
-    my $schema = schema;
-
-    my $action = query_parameters->get('action')
-        or error __"Need required action";
-    my $server = query_parameters->get('server');
-    my $param  = query_parameters->get('param');
-
-    my $output = '';
-    if ($action eq 'summary')
-    {
-        my $rs = $schema->resultset('Servertype')->search({},{
-            prefetch => { server_servertypes => 'server' },
-        });
-
-        $rs = $rs->search({ 'me.name' => $param })
-            if $param;
-
-        my @types = $rs->all;
-
-        my %return;
-        foreach my $type (@types)
-        {
-            next unless $type->server_servertypes->count;
-            $output .= $type->name.":";
-            $return{$type->name} ||= [];
-            foreach my $server ($type->server_servertypes)
-            {
-                push @{$return{$type->name}}, $server->server->name;
-            }
-        }
-        $output = encode_json(\%return);
-    }
-    elsif ($action eq 'domain')
-    {
-        $server or error __"Please specify server";
-        my ($serv) = $schema->resultset('Server')->search({
-            'me.name' => $server,
-        },{
-            prefetch => 'domain',
-        });
-        $output .= $serv->domain->name;
-    }
-    elsif ($action eq 'is_production')
-    {
-        $server or error __"Please specify server";
-        my ($serv) = $schema->resultset('Server')->search({
-            'me.name' => $server,
-        },{
-            prefetch => 'domain',
-        });
-        $output .= $serv->is_production;
-    }
-    elsif ($action eq 'metadata')
-    {
-        $server or error __"Please specify server";
-        my ($serv) = $schema->resultset('Server')->search({
-            'me.name' => $server,
-        },{
-            prefetch => 'domain',
-        });
-        $output .= ($serv->metadata || '{}');
-    }
-    elsif ($action eq 'sshkeys')
-    {
-        $server or error __"Please specify server";
-        my $server_rs = $schema->resultset('Server')->by_name($server)
-            or error __"Server not found";
-        my ($serv) = $schema->resultset('Server')->search({
-            'me.name'                      => $server,
-            'user.deleted'                 => undef,
-            # Restrict keys to either ones without a servertype restriction, or
-            # ones that match the servertype of this server
-            'pw_servertypes.servertype_id' => [undef, map { $_->servertype_id } $server_rs->server_servertypes],
-        },{
-            prefetch => {
-                server_servertypes => {
-                    servertype => {
-                        user_servertypes => {
-                            user => {
-                                pws => 'pw_servertypes',
-                            },
-                        },
-                    },
-                },
-            },
-        });
-        my %keys;
-        foreach my $st ($serv->server_servertypes)
-        {
-            foreach my $ust ($st->servertype->user_servertypes)
-            {
-                foreach my $pw ($ust->user->pws)
-                {
-                    my $key = $pw->publickey or next;
-                    $key =~ s/\s+$//; # May or may not have trailing space
-                    $keys{$key} = 1 if $key;
-                }
-            }
-        }
-        $output .= "$_\n" foreach keys %keys;
-    }
-    elsif ($action eq 'sudo')
-    {
-        $server or error __"Please specify server";
-        my $serv = $schema->resultset('Server')->search({
-            'me.name' => $server,
-        })->next
-            or error __x"Server {server} not found", server => $server;
-        $output .= $serv->sudo if $serv->sudo;
-    }
-    elsif ($action eq 'update')
-    {
-        $server or error "Please specify server";
-        my $update = 
-        my $data = request->body;
-        # Valid?
-        my $decoded;
-        try { $decoded = decode_json $data };
-        error "Unable to decode request body data as JSON: $@"
-            if $@;
-
-        my %update;
-        $update{update_result} = $decoded->{update_result}
-            or error __"Please specify update result";
-        $update{update_datetime} = $decoded->{update_datetime}
-            or error __"Update datetime required";
-        $update{restart_required} = $decoded->{restart_required}
-            or error __"Please specify update restart_required";
-        $update{os_version} = $decoded->{os_version}
-            or error __"Please specify update os_version";
-        $update{backup_verify} = $decoded->{backup_verify};
-        defined $update{backup_verify}
-            or error __"Please specify update backup_verify";
-        my ($serv) = $schema->resultset('Server')->search({
-            'me.name' => $server,
-        });
-        $serv->update({
-            update_datetime  => DateTime->from_epoch(epoch => $update{update_datetime}),
-            update_result    => $update{update_result},
-            restart_required => $update{restart_required},
-            os_version       => $update{os_version},
-            backup_verify    => $update{backup_verify},
-        });
-    }
-    else {
-        die "Unknown action $action";
-    }
+    my $return = $cdb->run_cert(
+        server    => query_parameters->get('server'),
+        action    => query_parameters->get('action'),
+        param     => query_parameters->get('param'),
+    );
 
     content_type 'application/json';
     encode_json({
         "is_error" => 0,
-        "result"   => $output,
+        "result"   => $return,
     });
 };
 
