@@ -38,6 +38,7 @@ WriteMakefile(
         'Moo'                        => 0,
         'MooX::Singleton'            => 0,
         'MooX::Types::MooseLike'     => 0,
+        'Net::CIDR'                  => 0,
         'Sys::Hostname'              => 0,
         'Term::ReadKey'              => 0,
         'Test::More'                 => 0,
