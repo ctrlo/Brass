@@ -23,6 +23,7 @@ WriteMakefile(
         'CtrlO::Crypt::XkcdPassword' => 0,
         'Crypt::CBC'                 => 0,
         'Crypt::JWT'                 => 0,
+        'Data::ICal'                 => 0,
         'DateTime'                   => 0,
         'DBIx::Class'                => 0,
         'File::HomeDir'              => 0,
