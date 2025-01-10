@@ -24,6 +24,7 @@ WriteMakefile(
         'Crypt::CBC'                 => 0,
         'Crypt::JWT'                 => 0,
         'DateTime'                   => 0,
+        'DBIx::Class'                => 0,
         'File::HomeDir'              => 0,
         'Getopt::Long'               => 0,
         'JSON'                       => 0,
