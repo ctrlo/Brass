@@ -25,6 +25,7 @@ WriteMakefile(
         'Crypt::JWT'                 => 0,
         'Data::ICal'                 => 0,
         'DateTime'                   => 0,
+        'DateTime::Format::ICal'     => 0,
         'DBIx::Class'                => 0,
         'File::HomeDir'              => 0,
         'Getopt::Long'               => 0,
