@@ -452,7 +452,7 @@ sub run_server
             'me.name' => $server,
         })->next
             or error __x"Server {server} not found", server => $server;
-        return $serv->sudo ? 1 : 0;
+        return $serv->sudo;
     }
     elsif ($action eq 'update')
     {
