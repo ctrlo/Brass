@@ -457,7 +457,8 @@ sub run_server
     elsif ($action eq 'update')
     {
         $server or error "Please specify server";
-        my $data = request->body;
+        my $data = $params{request_body}
+            or panic "Request body missing";
         # Valid?
         my $decoded;
         try { $decoded = decode_json $data };
@@ -486,6 +487,7 @@ sub run_server
             os_version       => $update{os_version},
             backup_verify    => $update{backup_verify},
         });
+        return 1;
     }
     else {
         die "Unknown action $action";

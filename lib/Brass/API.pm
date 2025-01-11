@@ -125,9 +125,10 @@ get 'api/server/' => sub {
         or error __"Authentication required";
 
     my $return = $cdb->run_server(
-        server    => query_parameters->get('server'),
-        action    => query_parameters->get('action'),
-        param     => query_parameters->get('param'),
+        server       => query_parameters->get('server'),
+        action       => query_parameters->get('action'),
+        param        => query_parameters->get('param'),
+        request_body => request->body,
     );
 
     content_type 'application/json';
