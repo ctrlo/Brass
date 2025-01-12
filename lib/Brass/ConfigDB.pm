@@ -146,7 +146,7 @@ sub _run_remote
     {
         push @path, 'server';
         push @query, (server => $server, action => $action, param => $param);
-        if ($action =~ /^(summary|domain|is_production|sshkeys|sudo|metadata)$/)
+        if ($action =~ /^(summary|domain|is_production|sshkeys|sudo|metadata|metasearch)$/)
         {
         }
         elsif ($action eq 'update')
@@ -375,6 +375,21 @@ sub run_server
             }
         }
         return encode_json(\%return);
+    }
+    elsif ($action eq 'metasearch')
+    {
+        $param =~ /^.+=.*$/
+            or error "Supply search with --param=key=value";
+        my ($key, $value) = split /=/, $param;
+        my @servers;
+        foreach my $server ($schema->resultset('Server')->all)
+        {
+            $server->metadata or next;
+            my $meta = decode_json $server->metadata;
+            push @servers, $server->name
+                if $meta->{$key} && $meta->{$key} eq $value;
+        }
+        return encode_json(\@servers);
     }
     elsif ($action eq 'domain')
     {
