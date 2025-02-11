@@ -1,0 +1,19 @@
+<h1>Issue statistics</h1>
+
+<p class="lead">Issue statistics for last quarter from [% statistics.from.ymd | html %] to [% statistics.to.ymd | html %]</p>
+
+<h4>New opened security-related issues</h4>
+
+<ul>
+    [% FOREACH issue IN statistics.new_incidents %]
+        <li>[% issue.title | html %] (opened [% issue.opened.ymd %])</li>
+    [% END %]
+</ul>
+
+<h4>Total number of open security-related issues</h4>
+
+<ul>
+    [% FOREACH k IN statistics.existing.keys %]
+        <li>[% k | html %]: [% statistics.existing.$k | html %]</li>
+    [% END %]
+</ul>

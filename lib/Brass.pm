@@ -636,6 +636,18 @@ any ['get', 'post'] => '/calendar/:id/' => require_any_role [qw(config)] => sub 
     };
 };
 
+any ['get', 'post'] => '/issue/stats/' => require_any_role [qw(issue_read issue_read_all)] => sub {
+
+    my $schema  = schema;
+
+    my $statistics = $schema->resultset('Issue')->statistics;
+
+    template 'issue_statistics' => {
+        statistics => $statistics,
+        page       => 'statistics',
+    };
+};
+
 any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_read_project issue_read_all)] => sub {
 
     my $id      = param 'id';

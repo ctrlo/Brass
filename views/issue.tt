@@ -234,6 +234,7 @@
             <a href="/issue/0" class="btn btn-default">New issue</a>
         [% END %]
         <a href="" data-toggle="modal" data-target="#modal_filter" class="btn btn-default">Filtering...</a>
+        <a href="/issue/stats/" class="btn btn-default">Statistics</a>
     </p>
     <table class="table table-striped">
         <tr>
