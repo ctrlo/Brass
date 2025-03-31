@@ -124,14 +124,16 @@ get 'api/server/' => sub {
     my $user = var 'api_user'
         or error __"Authentication required";
 
-    my $data = $params{request_body}
-        or panic "Request body missing";
+    my $data = request->body;
 
     # Valid?
     my $decoded;
-    try { $decoded = decode_json $data };
-    error "Unable to decode request body data as JSON: $@"
-        if $@;
+    if ($data)
+    {
+        try { $decoded = decode_json $data };
+        error "Unable to decode request body data as JSON: $@"
+            if $@;
+    }
 
     my $return = $cdb->run_server(
         server  => query_parameters->get('server'),
