@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package Brass::ConfigDB;
 
 use Brass::Actions;
+use Brass::Schema;
 use Config::IniFiles;
 use Crypt::CBC;
 use Crypt::JWT qw(encode_jwt);
@@ -30,14 +31,33 @@ use Moo;
 use CtrlO::Crypt::XkcdPassword;
 use URI;
 use URI::QueryParam;
+use YAML qw/LoadFile/;
 
 has is_local => (
-    is => 'ro',
+    is => 'lazy',
 );
 
+sub _build_is_local
+{   my $self = shift;
+    -d '/srv/Brass';
+}
+
 has schema => (
-    is => 'ro',
+    is => 'lazy',
 );
+
+sub _build_schema
+{   my $self = shift;
+    panic "Schema needs to be defined"
+        if ! $self->is_local;
+    my $config_file = '/srv/Brass/config.yml';
+    -f $config_file
+        or error __x"Unable to find config file {file}", file => $config_file;
+    my $config = LoadFile $config_file;
+    my $db_config = $config->{plugins}->{DBIC}->{default};
+    my @connect = ($db_config->{dsn}, $db_config->{user}, $db_config->{password}, $db_config->{options});
+    Brass::Schema->connect(@connect);
+}
 
 sub run
 {   my ($self, %params) = @_;
@@ -159,8 +179,7 @@ sub _run_remote
             $update->{os_version} or die "Please specify os_version with --update option";
             defined $update->{backup_verify} or die "Please specify backup_verify with --update option";
             $data = encode_json {
-                update_datetime  => DateTime->now->epoch,
-                update_result    => $update->{result},
+                update_result    => $update->{update_result},
                 restart_required => $update->{restart_required},
                 os_version       => $update->{os_version},
                 backup_verify    => $update->{backup_verify},
@@ -375,7 +394,7 @@ sub run_server
                 push @{$return{$type->name}}, $server->server->name;
             }
         }
-        return encode_json(\%return);
+        return \%return;
     }
     elsif ($action eq 'metasearch')
     {
@@ -390,7 +409,7 @@ sub run_server
             push @servers, $server->name
                 if $meta->{$key} && $meta->{$key} eq $value;
         }
-        return encode_json(\@servers);
+        return \@servers;
     }
     elsif ($action eq 'domain')
     {
@@ -473,19 +492,12 @@ sub run_server
     elsif ($action eq 'update')
     {
         $server or error "Please specify server";
-        my $data = $params{request_body}
-            or panic "Request body missing";
-        # Valid?
-        my $decoded;
-        try { $decoded = decode_json $data };
-        error "Unable to decode request body data as JSON: $@"
-            if $@;
+        my $decoded = $params{update}
+            or panic "Update data missing";
 
         my %update;
         $update{update_result} = $decoded->{update_result}
             or error __"Please specify update result";
-        $update{update_datetime} = $decoded->{update_datetime}
-            or error __"Update datetime required";
         $update{restart_required} = $decoded->{restart_required}
             or error __"Please specify update restart_required";
         $update{os_version} = $decoded->{os_version}
@@ -497,7 +509,7 @@ sub run_server
             'me.name' => $server,
         });
         $serv->update({
-            update_datetime  => DateTime->from_epoch(epoch => $update{update_datetime}),
+            update_datetime  => DateTime->now,
             update_result    => $update{update_result},
             restart_required => $update{restart_required},
             os_version       => $update{os_version},
