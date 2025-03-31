@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass::ConfigDB;
 
+use Brass::Actions;
 use Config::IniFiles;
 use Crypt::CBC;
 use Crypt::JWT qw(encode_jwt);
