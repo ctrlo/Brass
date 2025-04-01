@@ -41,6 +41,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "user_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "cancelled",
+  { data_type => "datetime", datetime_undef_if_invalid => 0, is_nullable => 1 },
 );
 
 __PACKAGE__->set_primary_key("id");
@@ -57,11 +59,18 @@ __PACKAGE__->belongs_to(
   },
 );
 
+sub cancel
+{   my $self = shift;
+    $self->update({ cancelled => DateTime->now });
+    $self->send;
+}
+
 sub send
 {   my $self = shift;
 
     my $tz = DateTime::TimeZone->new(name => 'Europe/London');
 
+    my $is_cancelled = defined $self->cancelled;
 
     my $start = $self->start
         or error __"Please enter a start date";
@@ -85,7 +94,8 @@ sub send
     my @attendees = keys %attendees;
 
     my $calendar = Data::ICal->new(auto_uid => 1);
-    $calendar->add_property(method => 'REQUEST');
+    my $method   = $is_cancelled ? 'CANCEL' : 'REQUEST';
+    $calendar->add_property(method => $method);
 
     my $now = DateTime->now;
     my $event = Data::ICal::Entry::Event->new;
@@ -101,7 +111,7 @@ sub send
         class       => 'PUBLIC',
         priority    => 5,
         transp      => 'OPAQUE',
-        status      => 'CONFIRMED',
+        status      => $is_cancelled ? 'CANCELLED' : 'CONFIRMED',
         sequence    => $self->sequence,
     );
 
@@ -124,7 +134,7 @@ sub send
 
     my @parts;
     # Find out if the HTML is blank (need to strip tags)
-    my $html = $self->html;
+    my $html = $is_cancelled ? '<p>This meeting has been canceled</p>' : $self->html;
     my $plain = HTML::FormatText->format_string($html);
     $plain =~ s/^\s+$//;
     $html = '<a href="'.$self->location.'">Click here to join the meeting</a>'
@@ -145,7 +155,7 @@ sub send
     );
 
     push @parts, Mail::Message::Body::String->new(
-        mime_type => 'text/calendar; charset="utf-8"; method=REQUEST',
+        mime_type => qq(text/calendar; charset="utf-8"; method=$method),
         data      => $calendar->as_string,
     )->encode(
         # Default quoted-printable breaks email addresses across lines which

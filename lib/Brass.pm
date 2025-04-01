@@ -597,7 +597,7 @@ any ['get'] => '/calendar/' => require_any_role [qw(config)] => sub {
 
     my $schema  = schema;
 
-    my $calendar = schema->resultset('Calendar')->search_rs({ user_id => logged_in_user->id});
+    my $calendar = schema->resultset('Calendar')->active->search_rs({ user_id => logged_in_user->id});
 
     template 'calendars' => {
         calendar => $calendar,
@@ -615,6 +615,12 @@ any ['get', 'post'] => '/calendar/:id/' => require_any_role [qw(config)] => sub 
     my $calendar = $id
         ? schema->resultset('Calendar')->find($id)
         : schema->resultset('Calendar')->new({});
+
+    if (body_parameters->get('cancel'))
+    {
+        forwardHome({ success => "The invite was cancelled successfully" }, "calendar/" )
+            if process sub { $calendar->cancel };
+    }
 
     if (body_parameters->get('send'))
     {
