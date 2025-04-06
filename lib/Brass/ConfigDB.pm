@@ -174,7 +174,7 @@ sub _run_remote
         {
             $server or die "Please specify server with --server";
             $update or die "Please specify --update option when using update";
-            $update->{result} or die "Please specify result with --update option";
+            $update->{update_result} or die "Please specify update_result with --update option";
             $update->{restart_required} or die "Please specify restart_required with --update option";
             $update->{os_version} or die "Please specify os_version with --update option";
             defined $update->{backup_verify} or die "Please specify backup_verify with --update option";
