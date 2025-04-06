@@ -139,7 +139,7 @@ get 'api/server/' => sub {
         server  => query_parameters->get('server'),
         action  => query_parameters->get('action'),
         param   => query_parameters->get('param'),
-        update  => $data,
+        update  => $decoded,
     );
 
     $return = encode_json $return
