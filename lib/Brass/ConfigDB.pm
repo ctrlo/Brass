@@ -29,6 +29,7 @@ use Log::Report;
 use LWP::UserAgent;
 use Moo;
 use CtrlO::Crypt::XkcdPassword;
+use Term::ReadKey;
 use URI;
 use URI::QueryParam;
 use YAML qw/LoadFile/;
@@ -68,6 +69,21 @@ sub run
     $self->_run_remote(%params);
 }
 
+has pwdpass => (
+    is => 'lazy',
+);
+
+sub _build_pwdpass
+{   my $self = shift;
+    # Get passphrase for encryption of passwords
+    ReadMode ( 'noecho' );
+    print "Please enter the passphrase for the encrypted passwords\n";
+    my $pwdpass = <STDIN>;
+    chomp $pwdpass;
+    ReadMode ( 'normal' );
+    $pwdpass;
+}
+
 sub _run_local
 {   my ($self, %params) = @_;
 
@@ -76,7 +92,7 @@ sub _run_local
 
     if ($type eq 'pwd')
     {
-        $self->run_pwd(%params);
+        $self->run_pwd(%params, pwdpass => $self->pwdpass);
     }
     elsif ($type eq 'cert')
     {
