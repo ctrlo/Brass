@@ -455,7 +455,7 @@ sub run_server
         },{
             prefetch => 'domain',
         });
-        return $serv->metadata || '{}';
+        return $serv->metadata || {};
     }
     elsif ($action eq 'sshkeys')
     {
