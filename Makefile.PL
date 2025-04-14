@@ -27,6 +27,7 @@ WriteMakefile(
         'DateTime'                   => 0,
         'DateTime::Format::ICal'     => 0,
         'DBIx::Class'                => 0,
+        'DBIx::Class::Helpers'       => 0,
         'File::HomeDir'              => 0,
         'Getopt::Long'               => 0,
         'HTML::FormatText'           => 0,
