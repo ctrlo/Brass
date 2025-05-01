@@ -1273,7 +1273,6 @@ sub _send_doc
             push @images, $tempfile; # Stop temp file going out of scope immediately and being deleted
             $content =~ s/%%image\.$id\Q$options%%/\\includegraphics${options}{$tempfile}/g;
         }
-        $content     =~ s/(?<!\\)%/\\%/g;
         my $texdir   = config->{brass}->{tex};
         die "Tex build dir $texdir does not exist" unless -d $texdir;
         write_file("$texdir/$filecore.tex", {binmode => ':utf8'}, $content);
