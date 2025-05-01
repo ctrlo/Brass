@@ -274,8 +274,11 @@ sub _build_servertype_ids
 # the user has access to
 sub servertypes
 {   my $self = shift;
-    $self->_rset->pw_servertypes->count
-        or return [map $_->servertype, $self->_rset->user->user_servertypes];
+    if (!$self->_rset->pw_servertypes->count)
+    {
+        $self->_rset->user or return [];
+        return [map $_->servertype, $self->_rset->user->user_servertypes];
+    }
     my %user_st = map { $_->get_column('servertype') => 1 } $self->_rset->user->user_servertypes;
     [grep $user_st{$_->id}, map $_->servertype, $self->_rset->pw_servertypes];
 }
