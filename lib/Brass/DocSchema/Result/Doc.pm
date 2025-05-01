@@ -1,85 +1,18 @@
 use utf8;
 package Brass::DocSchema::Result::Doc;
 
-=head1 NAME
-
-Brass::DocSchema::Result::Doc
-
-=cut
-
 use strict;
 use warnings;
 
-use base 'DBIx::Class::Core';
+use Moo;
 
-=head1 COMPONENTS LOADED
+extends 'DBIx::Class::Core';
 
-=over 4
-
-=item * L<DBIx::Class::InflateColumn::DateTime>
-
-=back
-
-=cut
+sub BUILDARGS { $_[2] || {} };
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<doc>
-
-=cut
-
 __PACKAGE__->table("doc");
-
-=head1 ACCESSORS
-
-=head2 id
-
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-
-=head2 title
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 1024
-
-=head2 topic_id
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
-
-=head2 review
-
-  data_type: 'date'
-  datetime_undef_if_invalid: 1
-  is_nullable: 1
-
-=head2 owner
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 classification
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 1
-
-=head2 multiple
-
-  data_type: 'smallint'
-  default_value: 0
-  is_nullable: 0
-
-=head2 retired
-
-  data_type: 'datetime'
-  datetime_undef_if_invalid: 1
-  is_nullable: 1
-
-=cut
 
 __PACKAGE__->add_columns(
   "id",
@@ -104,27 +37,7 @@ __PACKAGE__->add_columns(
   },
 );
 
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</id>
-
-=back
-
-=cut
-
 __PACKAGE__->set_primary_key("id");
-
-=head1 RELATIONS
-
-=head2 classification
-
-Type: belongs_to
-
-Related object: L<Brass::DocSchema::Result::Classification>
-
-=cut
 
 __PACKAGE__->belongs_to(
   "classification",
@@ -138,28 +51,12 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 images
-
-Type: has_many
-
-Related object: L<Brass::DocSchema::Result::Image>
-
-=cut
-
 __PACKAGE__->has_many(
   "images",
   "Brass::DocSchema::Result::Image",
   { "foreign.doc_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
-
-=head2 topic
-
-Type: belongs_to
-
-Related object: L<Brass::DocSchema::Result::Topic>
-
-=cut
 
 __PACKAGE__->belongs_to(
   "topic",
@@ -173,14 +70,6 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 versions
-
-Type: has_many
-
-Related object: L<Brass::DocSchema::Result::Version>
-
-=cut
-
 __PACKAGE__->has_many(
   "versions",
   "Brass::DocSchema::Result::Version",
@@ -188,6 +77,22 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+has published => (
+    is => 'lazy',
+);
+
+sub _build_published
+{   my $self = shift;
+    my ($published) = $self->schema->resultset('Version')->search({
+        doc_id => $self->id,
+        minor  => 0,
+        signed => 0,
+    },{
+        rows     => 1,
+        order_by => { -desc => 'major' },
+    })->all;
+    $published;
+}
 # Last read date for a particular user
 sub last_read
 {   my ($self, $user) = @_;
@@ -200,7 +105,8 @@ sub last_read
         or return;
     my $dt = $lr->datetime;
     my $expiry = DateTime->now->subtract(years => 1);
-    my $status = $dt > $expiry->clone->add(months => 1) ? 'success'
+    my $published = $self->published;
+    my $status = $dt > $published && $dt > $expiry ? 'success'
         : $dt > $expiry ? 'warning'
         : 'danger';
     {
