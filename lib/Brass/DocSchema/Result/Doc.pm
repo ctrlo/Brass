@@ -83,15 +83,15 @@ has published => (
 
 sub _build_published
 {   my $self = shift;
-    my ($published) = $self->schema->resultset('Version')->search({
+    my ($published) = $self->versions->search({
         doc_id => $self->id,
         minor  => 0,
         signed => 0,
     },{
         rows     => 1,
         order_by => { -desc => 'major' },
-    })->all;
-    $published;
+    })->all or return;
+    $published->created;
 }
 # Last read date for a particular user
 sub last_read
