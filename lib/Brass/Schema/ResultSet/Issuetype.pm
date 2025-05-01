@@ -121,6 +121,10 @@ my @types_other_security = (
         identifier => 'data_deletion',
         name       => 'Data deletion action',
     },
+    {
+        identifier => 'phishing',
+        name       => 'Security threat of note (e.g. phishing)',
+    },
 );
 
 # Populate predefined issue types
