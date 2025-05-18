@@ -30,9 +30,10 @@ use Getopt::Long;
 use YAML qw/LoadFile/;
 use Term::ReadKey;
 
-my ($server, $type, $action, $param, $use, %update, $namespace, $pass);
+my ($server, $name, $type, $action, $param, $use, %update, $namespace, $pass);
 GetOptions (
     'server=s'    => \$server,
+    'name=s'      => \$name,
     'namespace=s' => \$namespace,
     'type=s'      => \$type,
     'pass=s'      => \$pass,
@@ -82,6 +83,7 @@ my $cdb = Brass::ConfigDB->new(is_local => $is_local, schema => $schema);
 
 my $ret = $cdb->run(
     server    => $server,
+    name      => $name,
     namespace => $namespace,
     type      => $type,
     pass      => $pass,
