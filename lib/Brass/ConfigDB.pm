@@ -102,6 +102,10 @@ sub _run_local
     {
         $self->run_server(%params);
     }
+    elsif ($type eq 'servertype')
+    {
+        $self->run_servertype(%params);
+    }
     elsif ($type eq 'site')
     {
         $self->run_site(%params);
@@ -115,6 +119,7 @@ sub _run_remote
 {   my ($self, %params) = @_;
 
     my $server    = $params{server};
+    my $name      = $params{name};
     my $namespace = $params{namespace} || $ENV{CDB_NAMESPACE};
     my $type      = $params{type};
     my $action    = $params{action};
@@ -205,6 +210,11 @@ sub _run_remote
             die "Unknown action $action";
         }
     }
+    elsif ($type eq 'servertype')
+    {
+        push @path, 'servertype';
+        push @query, (name => $name, action => $action);
+    }
     elsif ($type eq 'site')
     {
         push @path, 'site';
@@ -229,7 +239,7 @@ sub _run_remote
 
     my $decoded = decode_json $response->decoded_content;
     error $decoded->{message} if $decoded->{is_error};
-    if ($action eq 'metadata' || $action eq 'summary' || $type eq 'site') # double-encoded
+    if ($action eq 'metadata' || $action eq 'summary' || $type eq 'site' || $type eq 'servertype') # double-encoded
     {
         return undef if !$decoded->{result}; # No metadata
         return decode_json $decoded->{result};
@@ -538,6 +548,27 @@ sub run_server
     }
 }
 
+sub run_servertype
+{   my ($self, %params) = @_;
+
+    my $schema = $self->schema;
+    my $action = $params{action}
+        or error __"Need required action";
+    my $name = $params{name}
+        or error __"Need name of server type";
+
+    my $servertype = $schema->resultset('Servertype')->search({ name => $name })->next
+        or error __x"Server type {name} not found", name => $name;
+
+    if ($action eq 'summary')
+    {
+        return $servertype->for_api;
+    }
+    else {
+        error __x"Unknown action {action}", action => $action;
+    }
+}
+
 sub run_site
 {   my ($self, %params) = @_;
 
@@ -559,6 +590,10 @@ sub run_site
     elsif ($action eq 'wazuh_manager')
     {
         return [$config->wazuh_manager];
+    }
+    elsif ($action eq 'monitoring_hosts')
+    {
+        return [$config->monitoring_hosts_all];
     }
     else {
         error __x"Unknown action {action}", action => $action;

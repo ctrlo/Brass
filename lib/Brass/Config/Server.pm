@@ -228,7 +228,7 @@ sub set_types
 {   my ($self, $new) = @_;
     $new = ref $new ? $new : [$new || ()];
     my %new = map { $_ => 1 } @$new;
-    my @all = @{Brass::Config::Server::Types->new(schema => $self->schema)->all};
+    my @all = $self->schema->resultset('Servertype')->all;
     @all = grep { exists $new{$_->id} } @all;
     my %types = map { $_->id => $_->name } @all;
     $self->_set_types(\%types);

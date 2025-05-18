@@ -1,0 +1,47 @@
+[% IF servertype %]
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post">
+                <input type="hidden" name="csrf_token" value="[% csrf_token %]">
+                <div class="form-group">
+                    <label for="title">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="[% servertype.name | html %]">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" class="form-control" id="description" name="description" value="[% servertype.description | html %]">
+                </div>
+                <div class="form-group">
+                    <label for="monitoring_hosts">Monitoring hosts</label>
+                    <textarea name="monitoring_hosts" id="monitoring_hosts" class="form-control" rows="5">[% servertype.monitoring_hosts | html %]</textarea>
+                </div>
+                [% IF user.has_permission('config_write') %]
+                    <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
+                    [% IF server.id %]
+                        <button type="submit" name="delete" value="delete" class="btn btn-default">Delete</button>
+                    [% END %]
+                [% END %]
+            </form>
+        </div>
+    <div>
+[% ELSE %]
+    <p>
+        [% IF user.has_permission('config_write') %]
+            <a href="/config/server/0" class="btn btn-default">New server type</a>
+        [% END %]
+    </p>
+    <table class="table table-striped">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+        [% FOREACH servertype IN servertypes.all %]
+            <tr>
+                <td>[% servertype.id %]</td>
+                <td><a href="/config/servertype/[% servertype.id %]">[% servertype.name | html %]</a></td>
+                <td>[% servertype.description | html %]</td>
+            </tr>
+        [% END %]
+    </table>
+[% END %]

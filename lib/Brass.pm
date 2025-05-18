@@ -24,7 +24,6 @@ use Brass::Config::Pwd;
 use Brass::Config::Pwds;
 use Brass::Config::Server;
 use Brass::Config::Servers;
-use Brass::Config::Server::Types;
 use Brass::Config::UAD;
 use Brass::Config::UADs;
 use Brass::CurrentUser;
@@ -319,6 +318,42 @@ any ['get', 'post'] => '/user/:id' => require_role 'user_admin' => sub {
     };
 };
 
+any ['get', 'post'] => '/config/servertype/?:id?' => require_role 'config' => sub {
+
+    my $id      = param 'id';
+    my $schema  = schema;
+
+    my $params = {
+        servertypes => $schema->resultset('Servertype')->search_rs,
+        page        => 'config/servertype',
+    };
+
+    if (defined $id)
+    {
+        my $servertype = $schema->resultset('Servertype')->find($id);
+        if (param 'save')
+        {
+            die "No permission to update server type"
+                unless user_has_role 'config_write';
+            $servertype->name(param 'name');
+            $servertype->description(param 'description');
+            $servertype->monitoring_hosts(param 'monitoring_hosts');
+            $servertype->update;
+            redirect '/config/servertype';
+        }
+        if (param 'delete')
+        {
+            die "No permission to delete server type"
+                unless user_has_role 'config_write';
+            $servertype->delete;
+            redirect '/config/servertype';
+        }
+        $params->{servertype} = $servertype;
+    }
+
+    template 'config/servertype' => $params;
+};
+
 any ['get', 'post'] => '/config/server/?:id?' => require_role 'config' => sub {
 
     my $id      = param 'id';
@@ -327,7 +362,7 @@ any ['get', 'post'] => '/config/server/?:id?' => require_role 'config' => sub {
     my $params = {
         servers   => Brass::Config::Servers->new(schema => $schema)->all,
         domains   => Brass::Config::Domains->new(schema => $schema)->all,
-        types     => Brass::Config::Server::Types->new(schema => $schema)->all,
+        types     => $schema->resultset('Servertype'),
         certs     => $schema->resultset('Cert'),
         cert_uses => $schema->resultset('CertUse'),
         page      => 'config/server',
@@ -396,6 +431,7 @@ any ['get', 'post'] => '/config/site/' => require_role 'config' => sub {
             unless user_has_role 'config_write';
         $config->smtp_relayhost(body_parameters->get('smtp_relayhost'));
         $config->internal_networks(body_parameters->get('internal_networks'));
+        $config->monitoring_hosts(body_parameters->get('monitoring_hosts'));
         $config->wazuh_manager(body_parameters->get('wazuh_manager'));
         if (process sub { $config->insert_or_update })
         {

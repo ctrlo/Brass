@@ -152,6 +152,22 @@ get 'api/server/' => sub {
     });
 };
 
+get 'api/servertype/' => sub {
+    my $user = var 'api_user'
+        or error __"Authentication required";
+
+    my $return = $cdb->run_servertype(
+        action => query_parameters->get('action'),
+        name   => query_parameters->get('name'),
+    );
+
+    content_type 'application/json';
+    encode_json({
+        "is_error" => 0,
+        "result"   => encode_json($return),
+    });
+};
+
 get 'api/site/' => sub {
     my $user = var 'api_user'
         or error __"Authentication required";

@@ -6,8 +6,12 @@ use warnings;
 
 use Log::Report;
 use Net::CIDR;
+use Moo;
 
-use base 'DBIx::Class::Core';
+extends 'DBIx::Class::Core';
+with 'Brass::Role::MonitoringHosts';
+
+sub BUILDARGS { $_[2] || {} }
 
 __PACKAGE__->load_components("+Brass::DBIC");
 
@@ -21,6 +25,8 @@ __PACKAGE__->add_columns(
   "smtp_relayhost",
   { data_type => "text", is_nullable => 1 },
   "wazuh_manager",
+  { data_type => "text", is_nullable => 1 },
+  "monitoring_hosts",
   { data_type => "text", is_nullable => 1 },
 );
 
@@ -39,6 +45,8 @@ sub validate
         Net::CIDR::cidrvalidate($range)
             or error __x"Invalid IP range restriction: {range}", range => $range;
     }
+
+    $self->validate_monitoring_hosts;
 }
 
 1;

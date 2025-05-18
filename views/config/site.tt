@@ -14,6 +14,10 @@
                 <label for="internal_networks">Internal networks</label>
                 <textarea name="internal_networks" id="internal_networks" class="form-control" rows="5">[% config.internal_networks | html %]</textarea>
             </div>
+            <div class="form-group">
+                <label for="monitoring_hosts">Monitoring hosts</label>
+                <textarea name="monitoring_hosts" id="monitoring_hosts" class="form-control" rows="5">[% config.monitoring_hosts | html %]</textarea>
+            </div>
             [% IF user.has_permission('config_write') %]
                 <button type="submit" name="save" value="save" class="btn btn-default">Save</button>
             [% END %]

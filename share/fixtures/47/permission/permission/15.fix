@@ -1,0 +1,6 @@
+$HASH1 = {
+           description
+                  => 'User administrator',
+           id     => 15,
+           name   => 'user_admin'
+         };
