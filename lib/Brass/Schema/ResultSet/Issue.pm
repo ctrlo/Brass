@@ -57,6 +57,7 @@ sub statistics
 
     my @opened = map {
         +{
+            id     => $_->get_column('id'),
             title  => $_->get_column('title'),
             opened => $formatter->parse_datetime($_->get_column('opened')),
         }

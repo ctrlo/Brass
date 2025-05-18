@@ -6,7 +6,7 @@
 
 <ul>
     [% FOREACH issue IN statistics.new_incidents %]
-        <li>[% issue.title | html %] (opened [% issue.opened.ymd %])</li>
+        <li><a href="/issue/[% issue.id %]">[% issue.title | html %]</a> (opened [% issue.opened.ymd %])</li>
     [% END %]
 </ul>
 
