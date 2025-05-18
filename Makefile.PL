@@ -24,6 +24,7 @@ WriteMakefile(
         'Crypt::CBC'                 => 0,
         'Crypt::JWT'                 => 0,
         'Data::ICal'                 => 0,
+        'Data::Validate::IP'         => 0,
         'DateTime'                   => 0,
         'DateTime::Format::ICal'     => 0,
         'DBIx::Class'                => 0,
