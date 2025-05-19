@@ -53,6 +53,13 @@ has datetime => (
     isa => Maybe[DateAndTime],
 );
 
+sub is_approved
+{   my $self = shift;
+    my $identifier = $self->_rset->identifier
+        or return;
+    $identifier eq 'approved';
+}
+
 sub _build__rset
 {   my $self = shift;
     $self->schema->resultset('Status')->find($self->id);

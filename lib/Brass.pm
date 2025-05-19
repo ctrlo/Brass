@@ -67,6 +67,7 @@ Brass::CurrentUser->instance; # This singleton class always contains the current
 my $password_generator = CtrlO::Crypt::XkcdPassword->new;
 
 schema->resultset('Issuetype')->populate;
+schema->resultset('Status')->populate;
 
 sub _update_csrf_token
 {   session csrf_token => Session::Token->new(length => 32)->get;
@@ -816,14 +817,26 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
             return $issue->id if param 'ajax';
             forwardHome({ success => "The issue has been $action successfully" }, "issue/$id" );
         }
-        if (param 'comment_add')
+        if (body_parameters->get('comment_add') || body_parameters->get('approve'))
         {
             # Allow any reader to add a comment
-            $issue->comment_add(text => param('comment'), user_id => logged_in_user->id);
-            $issue->send_notifications(
-                uri_base          => request->uri_base,
-                logged_in_user_id => logged_in_user->id,
-            );
+            if (my $comment = param 'comment')
+            {
+                $issue->comment_add(text => $comment, user_id => logged_in_user->id);
+                $issue->send_notifications(
+                    uri_base          => request->uri_base,
+                    logged_in_user_id => logged_in_user->id,
+                );
+            }
+            if (body_parameters->get('approve'))
+            {
+                my $approved = $statuses->approved;
+                $issue->set_status($approved->id);
+                if (process sub { $issue->write })
+                {
+                    forwardHome({ success => "The issue has been approved" }, "issue/$id" );
+                }
+            }
         }
         if (param 'attach')
         {

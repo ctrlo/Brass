@@ -35,7 +35,7 @@
                         [% END %]
                     </select>
                 </div>
-                [% UNLESS user.has_permission('issue_write_all') OR user.has_permission('issue_write_project') %][% readonly = "readonly" %][% END %]
+                [% IF NOT issue.user_can_write(user) %][% readonly = "readonly" %][% END %]
                 <div class="form-group">
                     <label for="type">Type</label>
                     <select class="form-control issuetype" id="type" name="type">
@@ -222,6 +222,9 @@
                     <div class="form-group">
                         [% IF issue.id %]
                             <button type="submit" name="comment_add" value="submit" class="btn btn-default">Add comment</button>
+                        [% END %]
+                        [% IF issue.id AND issue.user_can_write(user) %]
+                            <button type="submit" name="approve" value="submit" class="btn btn-default">Approve</button>
                         [% END %]
                     </div>
                 </form>

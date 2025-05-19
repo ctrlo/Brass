@@ -32,11 +32,19 @@ has all => (
 
 sub _build_all
 {   my $self = shift;
-    my $status_rs = $self->schema->resultset('Status')->search;
+    my $status_rs = $self->schema->resultset('Status')->visible;
     $status_rs->result_class('Brass::Issue::Status');
     my @all = $status_rs->all;
     \@all;
 }
 
-1;
+has approved => (
+    is => 'lazy',
+);
 
+sub _build_approved
+{   my $self = shift;
+    $self->schema->resultset('Status')->search({ identifier => 'approved' })->next;
+}
+
+1;

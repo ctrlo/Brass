@@ -196,7 +196,7 @@ has opened => (
 
 sub _build_opened
 {   my $self = shift;
-    my ($status) = $self->schema->resultset('IssueStatus')->search({
+    my ($status) = $self->schema->resultset('IssueStatus')->visible->search({
         issue => $self->id,
     },{
         rows     => 1,
@@ -211,7 +211,7 @@ has status => (
     lazy    => 1,
     builder => sub {
         my $self = shift;
-        my ($status) = $self->schema->resultset('IssueStatus')->search({
+        my ($status) = $self->schema->resultset('IssueStatus')->visible->search({
             issue => $self->id,
         },{
             rows     => 1,
@@ -534,7 +534,7 @@ sub write
         success_description     => $self->success_description,
         reference               => $self->reference,
         type                    => ($self->type && $self->type->id),
-        project                 => $self->project->id,
+        project                 => $self->project && $self->project->id,
         owner                   => $self->set_owner,
         author                  => $self->set_author,
         approver                => $self->set_approver,
@@ -548,7 +548,7 @@ sub write
         $self->_set__rset($self->schema->resultset('Issue')->create($values));
         $self->_set_id($self->_rset->id);
     }
-    if ($self->status_changed)
+    if ($self->status_changed || $self->status->is_approved)
     {
         # Status changed, write
         $self->schema->resultset('IssueStatus')->create({
