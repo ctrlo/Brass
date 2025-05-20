@@ -832,7 +832,7 @@ any ['get', 'post'] => '/issue/?:id?' => require_any_role [qw(issue_read issue_r
             {
                 my $approved = $statuses->approved;
                 $issue->set_status($approved->id);
-                if (process sub { $issue->write })
+                if (process sub { $issue->write(logged_in_user->id) })
                 {
                     forwardHome({ success => "The issue has been approved" }, "issue/$id" );
                 }
