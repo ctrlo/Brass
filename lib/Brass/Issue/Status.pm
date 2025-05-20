@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass::Issue::Status;
 
+use HTML::Entities;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 use MooX::Types::MooseLike::DateTime qw/DateAndTime/;
@@ -63,6 +64,11 @@ sub is_approved
 sub _build__rset
 {   my $self = shift;
     $self->schema->resultset('Status')->find($self->id);
+}
+
+sub as_html
+{   my $self = shift;
+    'Status <strong>'.encode_entities($self->name).'</strong> by '.encode_entities($self->user).' at '.$self->datetime;
 }
 
 sub as_string

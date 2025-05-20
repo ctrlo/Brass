@@ -190,6 +190,19 @@ has project => (
     },
 );
 
+has activity => (
+    is => 'lazy',
+);
+
+sub _build_activity
+{   my $self = shift;
+    my @items = @{$self->status_history};
+    push @items, @{$self->priority_history};
+    push @items, @{$self->files};
+    push @items, @{$self->comments};
+    [sort { $a->datetime <=> $b->datetime } @items];
+}
+
 has opened => (
     is => 'lazy',
 );
@@ -332,8 +345,6 @@ sub _build_priority_history
     },{
         order_by => { -desc => 'datetime' },
     })->all;
-    # Shift one off, which will be the current status
-    shift @history;
     [ map {
         Brass::Issue::Priority->new(
             id          => $_->get_column('priority'),

@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass::Issue::Comment;
 
+use HTML::Entities;
 use HTML::FromText;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
@@ -50,6 +51,11 @@ has datetime => (
 sub author
 {   my $self = shift;
     $self->users->user($self->set_author);
+}
+
+sub as_html
+{   my $self = shift;
+    '<strong>By '.encode_entities($self->author).'</strong> ('.$self->datetime.')<br>'.$self->text_html_links;
 }
 
 sub inflate_result {

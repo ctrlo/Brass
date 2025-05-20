@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass::Issue::Priority;
 
+use HTML::Entities;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 use MooX::Types::MooseLike::DateTime qw/DateAndTime/;
@@ -56,6 +57,11 @@ has user => (
 sub _build__rset
 {   my $self = shift;
     $self->schema->resultset('Priority')->find($self->id);
+}
+
+sub as_html
+{   my $self = shift;
+    'Priority <strong>'.encode_entities($self->name).'</strong> by '.encode_entities($self->user).' at '.$self->datetime;
 }
 
 sub as_string

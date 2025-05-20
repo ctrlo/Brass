@@ -6,6 +6,8 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
+use HTML::Entities;
+
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
 __PACKAGE__->table("file");
@@ -46,5 +48,10 @@ __PACKAGE__->belongs_to(
   { id => "issue" },
   { is_deferrable => 1, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
+
+sub as_html
+{   my $self = shift;
+    '<a href="/file/'.$self->id.'">'.encode_entities($self->name).'</a> uploaded by '.encode_entities($self->uploaded_by->name).' at '.$self->datetime;
+}
 
 1;

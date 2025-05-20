@@ -168,55 +168,20 @@
         </div>
         [% IF issue.id %]
             <div class="col-md-6">
+                <div class="form-group">
+                    <h3>Activity</h3>
+                    [% FOR item IN issue.activity %]
+                    <div class="well well-sm">
+                        [% item.as_html %]
+                    </div>
+                    [% END %]
+                </div>
                 <form method="post">
                     <input type="hidden" name="csrf_token" value="[% csrf_token %]">
-                    <div class="form-group">
-                        <label for="comment">Statuses</label>
-                        [% FOR status IN issue.status_history %]
-                        <div class="well well-sm">
-                            <strong>
-                                [% status %]
-                            </strong><br />[% comment.text_html_links %]
-                            By [% status.user | html_entity %] ([% status.datetime %])
-                        </div>
-                        [% END %]
-                    </div>
-                    [% IF issue.priority_history.size %]
-                        <div class="form-group">
-                            <label for="comment">Priority history</label>
-                            [% FOR priority IN issue.priority_history %]
-                            <div class="well well-sm">
-                                <strong>
-                                    [% priority %]
-                                </strong>
-                                By [% priority.user | html_entity %] ([% priority.datetime %])
-                            </div>
-                            [% END %]
-                        </div>
-                    [% END %]
-                    <div class="form-group">
-                        <label for="attachments">Attachments</label>
-                        [% FOR file IN issue.files %]
-                        <div class="well well-sm">
-                            <strong>
-                                [% file.datetime %]
-                            </strong><br />
-                            <a href="/file/[% file.id %]">[% file.name | html_entity %]</a>
-                        </div>
-                        [% END %]
-                    </div>
                     <div class="form-group">
                         <a href="" data-toggle="modal" data-target="#modal_attach" class="btn btn-default">Attach file...</a>
                     </div>
                     <div class="form-group">
-                        <label for="comment">Comments</label>
-                        [% FOR comment IN issue.comments %]
-                        <div class="well well-sm">
-                            <strong>
-                                By [% comment.author | html_entity %] ([% comment.datetime %])
-                            </strong><br />[% comment.text_html_links %]
-                        </div>
-                        [% END %]
                         <textarea name="comment" id="comment" class="form-control" rows="3"></textarea>
                     </div>
                     <div class="form-group">
