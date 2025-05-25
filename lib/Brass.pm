@@ -107,9 +107,6 @@ hook before => sub {
 
     response_header "X-Frame-Options" => "DENY"; # Prevent clickjacking
 
-    my $db = Brass::DocDB->new(schema => schema('doc'), schema_brass => schema);
-    $db->setup;
-
     if ($user->user && $user->user->has_permission('user_admin'))
     {
         my $app = schema->resultset('App')->next;
