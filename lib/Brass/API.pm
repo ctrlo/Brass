@@ -44,9 +44,10 @@ fatal_handler sub {
 };
 
 hook before => sub {
-    (my $request_token = request->header('Authorization')) =~ s/^Bearer\s+(.*)/$1/;
 
     return unless request->uri =~ m!^/api/!i;
+
+    (my $request_token = request->header('Authorization')) =~ s/^Bearer\s+(.*)/$1/;
 
     # Apache requires following config to passthrough auth header:
     # SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
