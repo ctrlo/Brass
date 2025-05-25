@@ -488,10 +488,11 @@ sub inflate_result {
         schema      => $schema,
     );
 
-    my $stat   = $prefetch->{issue_statuses}->[0]->[1]->{status}->[0];
+    # Requires correlated current status to have been retrieved as part of
+    # query
     my $status = Brass::Issue::Status->new(
-        id          => $stat->{id},
-        name        => $stat->{name},
+        id          => $data->{current_status_id},
+        name        => $data->{current_status_name},
         schema      => $schema,
     );
 

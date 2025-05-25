@@ -106,6 +106,12 @@ has sort => (
 sub _build_all
 {   my $self = shift;
     my $search = $self->filtering;
+
+    # Status needs to be converted to a having clause, in order to retrieve the
+    # current status (which excludes hidden statuses). The retrieval is done
+    # using a correlated query.
+    my $status_search = delete $search->{'issue_statuses.status'};
+
     $search->{'issuestatus_later.datetime'} = undef;
     $search->{'issuepriority_later.datetime'} = undef;
     my $sort = $self->sort && $self->sort eq 'opened'
@@ -118,6 +124,38 @@ sub _build_all
     my $issues_rs = $self->schema->resultset('Issue')->search(
         $search
     ,{
+        '+select' => [
+            {
+                "" => $self->schema->resultset('IssueStatus')->search({
+                    'issue_status_alias.id' => {'=' => $self->schema->resultset('Issue')
+                        ->correlate('issue_statuses')
+                        ->search({ 'status.visible' => 1 },{ join => 'status' })
+                        ->get_column('id')
+                        ->max_rs->as_query}
+                },{
+                    alias => 'issue_status_alias', # Prevent conflict with other "me" table
+                    join  => 'status',
+                })->get_column('status.id')->max_rs->as_query,
+                -as => 'current_status_id',
+            },
+            {
+                "" => $self->schema->resultset('IssueStatus')->search({
+                    'issue_status_alias.id' => {'=' => $self->schema->resultset('Issue')
+                        ->correlate('issue_statuses')
+                        ->search({ 'status.visible' => 1 },{ join => 'status' })
+                        ->get_column('id')
+                        ->max_rs->as_query}
+                },{
+                    alias => 'issue_status_alias', # Prevent conflict with other "me" table
+                    join  => 'status',
+                })->get_column('status.name')->max_rs->as_query,
+                -as => 'current_status_name',
+            },
+        ],
+        '+as' => [
+            'current_status_id',
+            'current_status_name',
+        ],
         join => [
             'type',
             'issue_tags',
@@ -139,6 +177,9 @@ sub _build_all
             },
         ],
         order_by => $sort,
+        having => {
+            current_status_id => $status_search,
+        },
     });
     $issues_rs->result_class('Brass::Issue');
     my @all = $issues_rs->all;
