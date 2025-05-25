@@ -98,7 +98,7 @@ hook before => sub {
     # Hack to prevent Host Header Injection attacks. Ideally the host name
     # would be overridden, but this is not too easy as DPAE extracts it
     # directly from the submitted host for the password reset email
-    error __x"Requested host name {host} does not match server name {server}",
+    report ERROR => __x"Requested host name {host} does not match server name {server}",
         host => request->base->host, server => hostname
             if hostname ne request->base->host;
 
