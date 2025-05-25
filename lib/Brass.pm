@@ -28,7 +28,6 @@ use Brass::Config::UAD;
 use Brass::Config::UADs;
 use Brass::CurrentUser;
 use Brass::Docs;
-use Brass::DocDB;
 use Brass::Image;
 use Brass::Issue::Priorities;
 use Brass::Issue::Projects;
