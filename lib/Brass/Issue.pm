@@ -463,15 +463,17 @@ sub send_notifications
 
         next if !$person || $person->deleted;
 
+        my $subject = $options{is_new} ? 'New ticket' : 'Ticket updated';
+        $subject .= ": ".$self->title;
+        my $data = $options{type} eq 'comment'
+            ? "A comment has been added to a ticket that you are involved in:"
+            : "A ticket that you are involved in has been updated:";
+        $data .= "\n\n$options{uri_base}/issue/$id";
         my $msg = Mail::Message->build(
             To             => $person->email,
             'Content-Type' => 'text/plain',
-            Subject        => $options{is_new} ? 'New ticket created' : 'Ticket updated',
-            data           => <<__PLAIN,
-A ticket that you are involved in has been updated:
-
-$options{uri_base}/issue/$id
-__PLAIN
+            Subject        => $subject,
+            data           => $data,
         )->send(via => 'sendmail');
     }
 }
