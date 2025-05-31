@@ -327,7 +327,8 @@ any ['get', 'post'] => '/config/servertype/?:id?' => require_role 'config' => su
 
     if (defined $id)
     {
-        my $servertype = $schema->resultset('Servertype')->find($id);
+        my $servertype = $schema->resultset('Servertype')->find($id)
+            || $schema->resultset('Servertype')->new({});
         if (param 'save')
         {
             die "No permission to update server type"
@@ -335,8 +336,10 @@ any ['get', 'post'] => '/config/servertype/?:id?' => require_role 'config' => su
             $servertype->name(param 'name');
             $servertype->description(param 'description');
             $servertype->monitoring_hosts(param 'monitoring_hosts');
-            $servertype->update;
-            redirect '/config/servertype';
+            if (process sub { $servertype->insert_or_update })
+            {
+                forwardHome({ success => "The server type has been saved successfully" }, "config/servertype" );
+            }
         }
         if (param 'delete')
         {
