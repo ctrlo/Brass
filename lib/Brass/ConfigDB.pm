@@ -21,6 +21,7 @@ use Brass::Actions;
 use Brass::Schema;
 use Config::IniFiles;
 use Crypt::CBC;
+use Crypt::PK::Ed25519;
 use Crypt::JWT qw(encode_jwt);
 use DateTime;
 use File::HomeDir;
@@ -146,18 +147,18 @@ sub _run_remote
     $type or error __"Please provide type of request with --type";
     $action or error __"Please specify action with --action";
 
-    my $sshfile = File::HomeDir->my_home."/.ssh/id_ecdsa";
+    my $sshfile = File::HomeDir->my_home."/.ssh/id_ed25519";
     # Use this to generate required SSH key format
-    # ssh-keygen -t ecdsa -b 521 -m pem
+    # ssh-keygen -t ed25519 -a 100 -m pem
     # Use this to convert existing SSH key to PEM:
     # ssh-keygen -p -f path/to/your/key -m pem
-    my $sshkey = Crypt::PK::ECC->new($sshfile, $sshpass);
+    my $sshkey = Crypt::PK::Ed25519->new($sshfile, $sshpass);
 
     my $jws_token = encode_jwt(
         payload => {
             passphrase => $passphrase,
         },
-        alg => 'ES256',
+        alg => 'EdDSA',
         key => $sshkey,
         extra_headers => {
             kid => $email,

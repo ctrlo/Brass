@@ -24,7 +24,7 @@ use Brass::Actions ();
 use Brass::ConfigDB;
 use Crypt::Blowfish;
 use Crypt::JWT qw(decode_jwt);
-use Crypt::PK::ECC;
+use Crypt::PK::Ed25519;
 use Dancer2 appname => 'Brass';
 use Dancer2::Plugin::DBIC;
 use Dancer2::Plugin::LogReport;
@@ -58,7 +58,7 @@ hook before => sub {
     my @keys;
     foreach my $key (schema->resultset('User')->keys->all)
     {
-        my $pubkey = Crypt::PK::ECC->new(\$key->api_key);
+        my $pubkey = Crypt::PK::Ed25519->new(\$key->api_key);
         my $jwk_hash = $pubkey->export_key_jwk('public', 1);
         $jwk_hash->{kid} = $key->username;
         push @keys, $jwk_hash;
