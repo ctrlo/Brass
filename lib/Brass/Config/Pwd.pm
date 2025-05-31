@@ -209,6 +209,9 @@ sub delete
     $self->schema->resultset('ServerPw')->search({
         pw_id => $self->id,
     })->delete;
+    $self->schema->resultset('PwServertype')->search({
+        pw_id => $self->id,
+    })->delete;
     $self->_rset->delete;
     $guard->commit;
 }
