@@ -27,7 +27,7 @@
 [% ELSE %]
     <p>
         [% IF user.has_permission('config_write') %]
-            <a href="/config/server/0" class="btn btn-default">New server type</a>
+            <a href="/config/servertype/0" class="btn btn-default">New server type</a>
         [% END %]
     </p>
     <table class="table table-striped">
