@@ -118,6 +118,10 @@ my @types_other_security = (
         name       => 'Customer security-related request',
     },
     {
+        identifier => 'other_general',
+        name       => 'Other general security-related improvement',
+    },
+    {
         identifier => 'data_deletion',
         name       => 'Data deletion action',
     },
