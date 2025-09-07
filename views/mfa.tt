@@ -1,0 +1,89 @@
+<h1 class="mb-3">Multi-factor Authentication</h1>
+
+<form method="post">
+    <input type="hidden" name="csrf_token" value="[% csrf_token %]">
+    [% IF setup_mfa == "sms" AND user.need_mobile_verification %]
+        <div class="mb-3">
+            <p class="lead">
+                We now need to validate your mobile number. We have sent you a
+                verification token via SMS. Please enter the token below or if
+                you did not receive the token, please click the “Not received”
+                button.
+            </p>
+            <label class="form-label" for="token">Enter verification token:</label>
+            <input class="form-control" type="text" name="token">
+        </div>
+        <button id="sms-not-received" type="submit" class="btn btn-danger mt-2" name="sms-not-received" value="1">Not received</button>
+    [% ELSIF setup_mfa == "sms" %]
+        <div class="mb-3">
+            <p class="lead">
+                In order to contiue, it is required to set up multi-factor
+                authentication using SMS. A mobile telephone number will be
+                required to deliver the SMS text messages to.
+            </p>
+            <label class="form-label" for="mobile">Mobile telephone number:</label>
+            <input class="form-control" type="text" name="mobile" placeholder="+1738378378" value="[% user.mobile | html %]">
+            <p class="small mt-3">
+                By entering your number, you agree to receive mobile messages
+                from this site at the phone number provided. Message
+                frequency varies. Message and data rates may apply. Carriers
+                are not liable for any delays or undelivered messages, Reply
+                STOP to opt-out. View our Privacy Policy.
+            </p>
+        </div>
+    [% ELSIF setup_mfa == "otp" %]
+        <div class="col-md-8">
+            <p class="lead">
+                In order to continue you will need to set up an authentication app
+                that supports TOTP.
+
+                If you do not have an authentication app available, please search
+                your relevant device app store or go directly to one of these links:
+            </p>
+
+            <h4>Apple - App Store</h4>
+            <ul>
+                <li><a href="https://apps.apple.com/gb/app/microsoft-authenticator/id983156458">Microsoft Authenticator</a></li>
+                <li><a href="https://apps.apple.com/gb/app/google-authenticator/id388497605">Google Authenticator</a></li>
+            </ul>
+
+            <h4>Google - Play Store</h4>
+            <ul>
+                <li><a href="https://play.google.com/store/apps/details?id=com.azure.authenticator&hl=en&gl=US">Microsoft Authenticator</a></li>
+                <li><a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en&gl=US">Google Authenticator</a></li>
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <img src="/images/appstore.png" class="img-responsive">
+        </div>
+
+        <p class="lead">
+            Use the following QR code or key to set up your authenticator application.
+        </p>
+
+        <h6>Key as QR code</h6>
+        <img src="data:image/png;base64,[% qr | html %]" alt="QR code" />
+        <h6>Key as text</h6>
+        <p>[% key | html %]</p>
+        <div class="mb-3">
+            <label class="form-label" for="get_key">Enter authentication token:</label>
+            <input class="form-control" type="text" name="get_key" placeholder="958384">
+        </div>
+    [% ELSIF get_code %]
+        <div class="mb-3">
+            [% IF mfa_type == "sms" %]
+                <p>We have sent an SMS text message to your registered mobile number.</p>
+            [% ELSIF mfa_type == "otp" %]
+                <p>Please use your One-time Password application to generate an MFA code.</p>
+            [% END %]
+            <label class="form-label" for="token">Enter token:</label>
+            <input class="form-control" type="text" name="token">
+        </div>
+    [% ELSE %]
+        <p>Invalid action</p>
+    [% END %]
+
+    [% UNLESS choose_mfa %]
+        <button id="submit-login" type="submit" class="btn btn-primary mt-2" name="submit-login" value="submit">Submit</button>
+    [% END %]
+</form>

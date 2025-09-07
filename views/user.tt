@@ -14,6 +14,14 @@
                 <label for="username">Username</label>
                 <input type="text" class="form-control" id="username" name="username" value="[% u.username | html %]">
             </div>
+            <div class="form-group">
+                <label for="topic">Multi-factor Authentication</label>
+                <select class="form-control" id="mfa_type" name="mfa_type">
+                    <option value="" [% IF NOT u.mfa_type %]selected[% END %]>No multi-factor authentication</option>
+                    <option value="otp" [% IF u.mfa_type == "otp" %]selected[% END %]>One-type password (OTP)</option>
+                    <option value="sms" [% IF u.mfa_type == "sms" %]selected[% END %]>SMS</option>
+                </select>
+            </div>
 
             <div class="form-group">
                 <label>Permissions</label>

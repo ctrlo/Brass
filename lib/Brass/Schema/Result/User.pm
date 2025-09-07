@@ -1,98 +1,26 @@
 use utf8;
 package Brass::Schema::Result::User;
 
-=head1 NAME
-
-Brass::Schema::Result::User
-
-=cut
-
 use strict;
 use warnings;
+use utf8;
 
 use base 'DBIx::Class::Core';
 
-=head1 COMPONENTS LOADED
+use Authen::OATH;
+use Convert::Base32 qw/encode_base32 decode_base32/;
+use Cpanel::JSON::XS;
+use HTTP::Request::Common;
+use Imager::Color;
+use Imager::QRCode;
+use Log::Report;
+use LWP::UserAgent;
+use MIME::Base64 qw/decode_base64 encode_base64/;
+use URI::Escape qw/uri_escape/;
 
-=over 4
-
-=item * L<DBIx::Class::InflateColumn::DateTime>
-
-=back
-
-=cut
-
-__PACKAGE__->load_components("InflateColumn::DateTime");
-
-=head1 TABLE: C<user>
-
-=cut
+__PACKAGE__->load_components("InflateColumn::DateTime", "+Brass::DBIC");
 
 __PACKAGE__->table("user");
-
-=head1 ACCESSORS
-
-=head2 id
-
-  data_type: 'integer'
-  is_auto_increment: 1
-  is_nullable: 0
-
-=head2 username
-
-  data_type: 'varchar'
-  is_nullable: 0
-  size: 128
-
-=head2 firstname
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 128
-
-=head2 surname
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 128
-
-=head2 email
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 128
-
-=head2 deleted
-
-  data_type: 'datetime'
-  datetime_undef_if_invalid: 1
-  is_nullable: 1
-
-=head2 password
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 128
-
-=head2 pwchanged
-
-  data_type: 'datetime'
-  datetime_undef_if_invalid: 1
-  is_nullable: 1
-
-=head2 pwresetcode
-
-  data_type: 'char'
-  is_nullable: 1
-  size: 32
-
-=head2 lastlogin
-
-  data_type: 'datetime'
-  datetime_undef_if_invalid: 1
-  is_nullable: 1
-
-=cut
 
 __PACKAGE__->add_columns(
   "id",
@@ -137,29 +65,32 @@ __PACKAGE__->add_columns(
   { data_type => "integer", default_value => 0, is_nullable => 0 },
   "api_key",
   { data_type => "text", is_nullable => 1 },
+  # All the following for MFA
+  "mfa_type",
+  { data_type => "char", is_nullable => 1, size => 3 },
+  "mobile",
+  { data_type => "text", is_nullable => 1 },
+  "mobile_verified",
+  { data_type => "smallint", default_value => 0, is_nullable => 0 },
+  "mfa_secret",
+  { data_type => "text", is_nullable => 1 },
+  "mfa_sms_token",
+  { data_type => "text", is_nullable => 1 },
+  "mfa_sms_created",
+  {data_type => "datetime", datetime_undef_if_invalid => 1, is_nullable => 1 },
+  "mfa_token_previous",
+  { data_type => "text", is_nullable => 1 },
+  "mfa_token_previous_used",
+  {data_type => "datetime", datetime_undef_if_invalid => 1, is_nullable => 1 },
+  "mfa_token_previous_key",
+  { data_type => "text", is_nullable => 1 },
+  "mfa_lastfail",
+  {data_type => "datetime", datetime_undef_if_invalid => 1, is_nullable => 1 },
+  "mfa_failcount",
+  { data_type => "integer", default_value => 0, is_nullable => 0 },
 );
 
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</id>
-
-=back
-
-=cut
-
 __PACKAGE__->set_primary_key("id");
-
-=head1 RELATIONS
-
-=head2 comments
-
-Type: has_many
-
-Related object: L<Brass::Schema::Result::Comment>
-
-=cut
 
 __PACKAGE__->has_many(
   "comments",
@@ -168,28 +99,12 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 issue_approvers
-
-Type: has_many
-
-Related object: L<Brass::Schema::Result::Issue>
-
-=cut
-
 __PACKAGE__->has_many(
   "issue_approvers",
   "Brass::Schema::Result::Issue",
   { "foreign.approver" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
-
-=head2 issue_authors
-
-Type: has_many
-
-Related object: L<Brass::Schema::Result::Issue>
-
-=cut
 
 __PACKAGE__->has_many(
   "issue_authors",
@@ -198,28 +113,12 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 issue_owners
-
-Type: has_many
-
-Related object: L<Brass::Schema::Result::Issue>
-
-=cut
-
 __PACKAGE__->has_many(
   "issue_owners",
   "Brass::Schema::Result::Issue",
   { "foreign.owner" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
-
-=head2 issue_priorities
-
-Type: has_many
-
-Related object: L<Brass::Schema::Result::IssuePriority>
-
-=cut
 
 __PACKAGE__->has_many(
   "issue_priorities",
@@ -228,28 +127,12 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 issue_statuses
-
-Type: has_many
-
-Related object: L<Brass::Schema::Result::IssueStatus>
-
-=cut
-
 __PACKAGE__->has_many(
   "issue_statuses",
   "Brass::Schema::Result::IssueStatus",
   { "foreign.user" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
-
-=head2 user_permissions
-
-Type: has_many
-
-Related object: L<Brass::Schema::Result::UserPermission>
-
-=cut
 
 __PACKAGE__->has_many(
   "docreads",
@@ -272,28 +155,12 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 user_projects
-
-Type: has_many
-
-Related object: L<Brass::Schema::Result::UserProject>
-
-=cut
-
 __PACKAGE__->has_many(
   "user_projects",
   "Brass::Schema::Result::UserProject",
   { "foreign.user" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
-
-=head2 user_servertypes
-
-Type: has_many
-
-Related object: L<Brass::Schema::Result::UserServertype>
-
-=cut
 
 __PACKAGE__->has_many(
   "user_servertypes",
@@ -302,28 +169,12 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 user_pws
-
-Type: has_many
-
-Related object: L<Brass::Schema::Result::Pw>
-
-=cut
-
 __PACKAGE__->has_many(
   "pws",
   "Brass::Schema::Result::Pw",
   { "foreign.user_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
-
-=head2 user_topics
-
-Type: has_many
-
-Related object: L<Brass::Schema::Result::UserTopic>
-
-=cut
 
 __PACKAGE__->has_many(
   "user_topics",
@@ -454,6 +305,203 @@ sub issue_permissions
 {   my $self = shift;
     my @perms = grep { $_->permission->name =~ /issue_/ } $self->user_permissions;
     join ', ', map { $_->permission->description } @perms;
+}
+
+# All the following for MFA
+
+sub need_mfa
+{   my $self = shift;
+    !! $self->mfa_type;
+}
+
+sub seed_key
+{   my $self = shift;
+    my $len_secret_bytes = 26;
+    open my $RNG, '<', '/dev/urandom'
+        or panic "Cannot open /dev/urandom for reading";
+    sysread $RNG, my $secret_bytes, $len_secret_bytes
+        or panic "Cannot read $len_secret_bytes from /dev/urandom";
+    close $RNG
+        or panic "Cannot close /dev/urandom";
+    encode_base32($secret_bytes);
+}
+
+sub key_qr_base64
+{   my ($self, $key) = @_;
+    my $qrcode = Imager::QRCode->new(
+        size          => 10,
+        margin        => 2,
+        version       => 1,
+        level         => 'M',
+        casesensitive => 1,
+        lightcolor    => Imager::Color->new(255, 255, 255),
+        darkcolor     => Imager::Color->new(0, 0, 0),
+    );
+    my $uri = "otpauth://totp/Brass".uri_escape($self->username)."?secret=".uri_escape($key || $self->mfa_secret)."&issuer=Brass";
+    my $img = $qrcode->plot($uri);
+    my $string;
+    open my $fh, ">", \$string;
+    $img->write(fh => $fh, type => 'png')
+        or panic "Failed to write QR image";
+    encode_base64 $string;
+}
+
+sub check_token
+{   my ($self, $token, $secret) = @_;
+    if ($self->mfa_type eq 'sms')
+    {
+        return 0 if !$self->mfa_sms_token; # Safety check in case both blank
+        return 0 if $self->mfa_sms_created < DateTime->now->subtract(minutes => 15);
+        return $token eq $self->mfa_sms_token;
+    }
+    else {
+        my $oath = Authen::OATH->new;
+        my $otp = $oath->totp(decode_base32 ($self->mfa_secret || $secret));
+        return $otp eq $token;
+    }
+}
+
+# Whether the user has recently verified MFA
+sub recent_mfa
+{   my ($self, $key_from_cookie) = @_;
+    return 0 unless $key_from_cookie
+        && $self->mfa_token_previous_used
+        && ("$key_from_cookie" eq $self->mfa_token_previous_key);
+
+    return 1 if $self->mfa_token_previous_used > DateTime->now->subtract(days => 7);
+    return 0;
+}
+
+sub send_mfa_sms
+{   my $self = shift;
+
+    my $code = Session::Token->new(alphabet => [0..9], length => 6)->get;
+    $self->update({ mfa_sms_token => $code, mfa_sms_created => DateTime->now });
+    # Force utf-8 in SMS message - needed to route Chinese SMS via correct
+    # route (advised by Twilio)
+    my $message = __x"“{code}” is your Brass access code", code => $code;
+
+    send_sms($self->mobile, $message);
+}
+
+sub need_mfa_setup
+{   my $self = shift;
+    return 0 if ($self->mfa_type eq 'otp' && $self->mfa_secret)
+        || ($self->mfa_type eq 'sms' && $self->mobile && $self->mobile_verified);
+    return 1;
+}
+
+sub need_mobile_verification
+{   my $self = shift;
+    # Need to use validate_mobile() here, otherwise this object may be used
+    # when it has an invalid mobile number (following an unsuccessful
+    # submission and validate error)
+    if ($self->mobile && validate_mobile($self->mobile) && !$self->mobile_verified)
+    {
+        $self->send_mfa_sms;
+        return 1;
+    }
+    return 0;
+}
+
+sub verify_mobile
+{   my ($self, $token) = @_;
+    if ($token eq $self->mfa_sms_token)
+    {
+        $self->update({ mobile_verified => 1 });
+        return 1;
+    }
+    else {
+        $self->update({ mobile => undef });
+        return 0;
+    }
+}
+
+sub reset_mfa
+{   my $self = shift;
+    $self->update({
+        mobile                  => undef,
+        mfa_secret              => undef,
+        mfa_sms_token           => undef,
+        mfa_sms_created         => undef,
+        mfa_token_previous      => undef,
+        mfa_token_previous_used => undef,
+        mfa_token_previous_key  => undef,
+        mfa_failcount           => 0,
+    });
+}
+
+sub validate_mobile
+{   my $mobile = shift;
+    $mobile =~ /^\+[0-9]{4,}$/;
+}
+
+sub send_sms
+{   my ($to, $body) = @_;
+
+    # XXX Obtain this info from config
+    my $sms_config = {
+        from => {
+            default => "Brass",
+            us      => "+1xxx",
+        },
+        password => "",
+        url      => "https://api.bulksms.com/v1/messages",
+        username => "",
+    };
+
+    my $url = $sms_config->{url}
+        or panic "SMS url not defined";
+    my $username = $sms_config->{username}
+        or panic "SMS username not defined";
+    my $password = $sms_config->{password}
+        or panic "SMS password not defined";
+    my $senders = $sms_config->{from}
+        or panic "SMS sender configuration not defined";
+    ref $senders eq 'HASH'
+        or panic "SMS sender configuration not an object";
+
+    my $ua = LWP::UserAgent->new;
+    $ua->timeout(10);
+
+    my $from = $to =~ /^\+1/ ? $senders->{us} : $senders->{default};
+
+    my $json = Cpanel::JSON::XS->new->utf8->encode({
+        from     => $from,
+        to       => $to,
+        body     => "$body",
+        encoding => 'UNICODE',
+    });
+    my $request = POST $url, 'Content-Type' => 'application/json', Content => $json;
+
+    $request->authorization_basic($username, $password);
+
+    my $response = $ua->request($request);
+
+    my $return = try { decode_json $response->decoded_content };
+
+    $return
+        or panic "Failed to send SMS message - unknown response";
+
+    # Assume that hash return means failed sending (success should return array
+    # for each message status, see below)
+    panic __x"Failed to send SMS message: {title} ({err})",
+        title => $return->{title}, err => $return->{detail}
+            if ref $return eq 'HASH';
+
+    # See https://www.bulksms.com/developer/json/v1/#tag/Message%2Fpaths%2F~1messages%2Fpost
+    # (type should be ACCEPTED on submission and will subsequently change)
+    # Status of the first message
+    $return->[0]->{status}->{type} eq 'ACCEPTED'
+        or panic __"Failed to send SMS message - unknown reason";
+}
+
+sub validate
+{   my $self = shift;
+
+    !$self->mobile || validate_mobile($self->mobile)
+        or error __x"The mobile number {number} is invalid. Please enter as international format (e.g. +1444555666)",
+            number => $self->mobile;
 }
 
 1;

@@ -1,0 +1,6 @@
+$HASH1 = {
+           description
+                  => 'User receives brass reports',
+           id     => 16,
+           name   => 'reports'
+         };
