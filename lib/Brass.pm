@@ -97,9 +97,9 @@ hook before => sub {
     # Hack to prevent Host Header Injection attacks. Ideally the host name
     # would be overridden, but this is not too easy as DPAE extracts it
     # directly from the submitted host for the password reset email
-    #report ERROR => __x"Requested host name {host} does not match server name {server}",
-    #    host => request->base->host, server => hostname
-    #        if hostname ne request->base->host;
+    report ERROR => __x"Requested host name {host} does not match server name {server}",
+        host => request->base->host, server => hostname
+            if hostname ne request->base->host;
 
     my $user = Brass::CurrentUser->instance;
     $user->user(logged_in_user);
