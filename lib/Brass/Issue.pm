@@ -562,7 +562,7 @@ sub write
         $self->_set__rset($self->schema->resultset('Issue')->create($values));
         $self->_set_id($self->_rset->id);
     }
-    if ($self->status_changed || $self->status->is_approved)
+    if ($self->status_changed || ($self->status && $self->status->is_approved))
     {
         # Status changed, write
         $self->schema->resultset('IssueStatus')->create({
