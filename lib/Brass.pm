@@ -1083,8 +1083,9 @@ any ['get', 'post'] => '/docreadstatus' => require_role user_admin => sub {
 get '/doc' => require_role doc => sub {
 
     my $schema  = schema('doc');
+    my $user    = logged_in_user;
     my $docs    = Brass::Docs->new(schema => $schema, schema_brass => schema);
-    my @topics  = Brass::Topics->new(schema => $schema)->all;
+    my @topics  = grep $user->has_topic_permission($_->id, 'doc'), Brass::Topics->new(schema => $schema)->all;
     my $topic_id = param('topic') || session('topic') || $topics[0]->id;
     session 'topic', $topic_id;
     template 'doc' => {

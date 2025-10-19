@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package Brass::Docs;
 
 use Brass::Doc;
+use Log::Report;
 use Moo;
 use MooX::Types::MooseLike::Base qw(:all);
 
@@ -49,6 +50,15 @@ sub clear
 
 sub topic
 {   my ($self, $id) = @_;
+    my $user = Brass::CurrentUser->instance->user
+        or panic "logged_in_user not set for user_can";
+    # First check for required global permission
+    my $permission = 'doc';
+    $user->has_permission($permission)
+        or error __"You do not have permission to documents";
+    # Now check for access to this topic
+    $user->has_topic_permission($id, $permission)
+        or error __"You do not have access to this topic";
     grep { $_->topic == $id } @{$self->all};
 }
 
