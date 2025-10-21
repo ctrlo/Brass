@@ -14,10 +14,15 @@ has dancer_config => (
     required => 1,
 );
 
+sub brass_config
+{   my $self = shift;
+    $self->dancer_config->{brass};
+}
+
 sub sms_config
 {   my $self = shift;
 
-    my $sms_config = $self->dancer_config;
+    my $sms_config = $self->brass_config->{sms_config};
 
     my $username = $sms_config->{username}
         or panic "SMS username not defined";

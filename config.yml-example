@@ -23,6 +23,11 @@ template: "template_toolkit"
 session: "YAML"
 
 brass:
+  sms_config:
+    username: myuser
+    password: mypass
+    from:
+      default: Brass
   file_upload: "/var/lib/brass"
   tex: "/var/lib/brass/tex"
   company: 'Ctrl O'
