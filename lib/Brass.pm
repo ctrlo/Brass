@@ -774,7 +774,7 @@ any ['get', 'post'] => '/config/cert/?:id?' => require_role 'config' => sub {
     template 'config/cert' => $params;
 };
 
-any ['get'] => '/calendar/' => require_any_role [qw(config)] => sub {
+any ['get'] => '/calendar/' => require_any_role [qw(calendar_write)] => sub {
 
     my $schema  = schema;
 
@@ -786,7 +786,7 @@ any ['get'] => '/calendar/' => require_any_role [qw(config)] => sub {
     };
 };
 
-any ['get', 'post'] => '/calendar/:id/' => require_any_role [qw(config)] => sub {
+any ['get', 'post'] => '/calendar/:id/' => require_any_role [qw(calendar_write)] => sub {
 
     my $schema  = schema;
     my $users   = Brass::Users->new(schema => schema); # Default schema
