@@ -29,6 +29,10 @@ my @types_vulnerability = (
         name       => 'Critical software patch',
     },
     {
+        identifier => 'patch_other',
+        name       => 'Routine software patches and upgrades',
+    },
+    {
         identifier => 'capacity_change',
         name       => 'Capacity change',
     },
