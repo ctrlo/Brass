@@ -26,7 +26,7 @@ use Brass::Config::Server;
 use Brass::Config::Servers;
 use Brass::Config::UAD;
 use Brass::Config::UADs;
-use Brass::CurrentUser;
+use Brass::Context;
 use Brass::Docs;
 use Brass::Image;
 use Brass::Issue::Priorities;
@@ -62,7 +62,7 @@ our $VERSION = '0.1';
 schema->storage->debugobj(new Log::Report::DBIC::Profiler);
 schema->storage->debug(1);
 
-Brass::CurrentUser->instance; # This singleton class always contains the current user making the request
+my $context = Brass::Context->instance(dancer_config => config);
 
 my $password_generator = CtrlO::Crypt::XkcdPassword->new;
 
@@ -102,12 +102,12 @@ hook before => sub {
         host => request->base->host, server => hostname
             if hostname ne request->base->host;
 
-    my $user = Brass::CurrentUser->instance;
-    $user->user(logged_in_user);
+    my $current_user = logged_in_user;
+    $context->current_user($current_user);
 
     response_header "X-Frame-Options" => "DENY"; # Prevent clickjacking
 
-    if ($user->user && $user->user->has_permission('user_admin'))
+    if ($current_user && $current_user->user->has_permission('user_admin'))
     {
         my $app = schema->resultset('App')->next;
         my $last_run = $app && $app->status_last_run;
@@ -122,10 +122,10 @@ hook before => sub {
     }
 
     # MFA needed before access?
-    if (my $this_user = $user->user)
+    if ($current_user)
     {
         redirect '/mfa/' if request->uri !~ m!^/(mfa/|logout)$!
-            && $this_user->need_mfa && !$this_user->recent_mfa(cookie 'MFATOKEN');
+            && $current_user->need_mfa && !$current_user->recent_mfa(cookie 'MFATOKEN');
     }
 };
 

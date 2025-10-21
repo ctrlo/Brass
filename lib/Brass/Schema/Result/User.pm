@@ -8,6 +8,7 @@ use utf8;
 use base 'DBIx::Class::Core';
 
 use Authen::OATH;
+use Brass::Context;
 use Convert::Base32 qw/encode_base32 decode_base32/;
 use Cpanel::JSON::XS;
 use HTTP::Request::Common;
@@ -439,42 +440,20 @@ sub validate_mobile
 sub send_sms
 {   my ($to, $body) = @_;
 
-    # XXX Obtain this info from config
-    my $sms_config = {
-        from => {
-            default => "Brass",
-            us      => "+1xxx",
-        },
-        password => "",
-        url      => "https://api.bulksms.com/v1/messages",
-        username => "",
-    };
-
-    my $url = $sms_config->{url}
-        or panic "SMS url not defined";
-    my $username = $sms_config->{username}
-        or panic "SMS username not defined";
-    my $password = $sms_config->{password}
-        or panic "SMS password not defined";
-    my $senders = $sms_config->{from}
-        or panic "SMS sender configuration not defined";
-    ref $senders eq 'HASH'
-        or panic "SMS sender configuration not an object";
+    my $sms_config = Brass::Context->sms_config;
 
     my $ua = LWP::UserAgent->new;
     $ua->timeout(10);
 
-    my $from = $to =~ /^\+1/ ? $senders->{us} : $senders->{default};
-
     my $json = Cpanel::JSON::XS->new->utf8->encode({
-        from     => $from,
+        from     => $sms_config->{from},
         to       => $to,
         body     => "$body",
         encoding => 'UNICODE',
     });
-    my $request = POST $url, 'Content-Type' => 'application/json', Content => $json;
+    my $request = POST $sms_config->{url}, 'Content-Type' => 'application/json', Content => $json;
 
-    $request->authorization_basic($username, $password);
+    $request->authorization_basic($sms_config->{username}, $sms_config->{password});
 
     my $response = $ua->request($request);
 

@@ -691,7 +691,7 @@ sub _version_compare
 
 sub user_can
 {   my ($self, $permission) = @_;
-    my $user = Brass::CurrentUser->instance->user
+    my $user = Brass::Context->instance->current_user
         or panic "logged_in_user not set for user_can";
     $permission =~ /^(read|publish|save|record)$/
         or panic "Invalid permission $permission passed to user_can";
@@ -719,7 +719,7 @@ sub send
         created => DateTime->now,
     });
 
-    my $user = Brass::CurrentUser->instance->user;
+    my $user = Brass::Context->instance->current_user;
     my $name = $user->firstname.' '.$user->surname;
     my $from = $params{from}
         or error "Sender email address not configured";

@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package Brass::Docs;
 
+use Brass::Context;
 use Brass::Doc;
 use Log::Report;
 use Moo;
@@ -50,7 +51,7 @@ sub clear
 
 sub topic
 {   my ($self, $id) = @_;
-    my $user = Brass::CurrentUser->instance->user
+    my $user = Brass::Context->instance->current_user
         or panic "logged_in_user not set for user_can";
     # First check for required global permission
     my $permission = 'doc';

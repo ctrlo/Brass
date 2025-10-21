@@ -6,7 +6,6 @@ use warnings;
 
 use base 'DBIx::Class::Core';
 
-use Brass::CurrentUser;
 use Data::ICal               ();
 use Data::ICal::Entry::Event ();
 use Data::ICal::Entry::Alarm::Display;
