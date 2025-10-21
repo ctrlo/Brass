@@ -440,7 +440,7 @@ sub validate_mobile
 sub send_sms
 {   my ($to, $body) = @_;
 
-    my $sms_config = Brass::Context->sms_config;
+    my $sms_config = Brass::Context->instance->sms_config;
 
     my $ua = LWP::UserAgent->new;
     $ua->timeout(10);

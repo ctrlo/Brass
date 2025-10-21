@@ -107,7 +107,7 @@ hook before => sub {
 
     response_header "X-Frame-Options" => "DENY"; # Prevent clickjacking
 
-    if ($current_user && $current_user->user->has_permission('user_admin'))
+    if ($current_user && $current_user->has_permission('user_admin'))
     {
         my $app = schema->resultset('App')->next;
         my $last_run = $app && $app->status_last_run;
