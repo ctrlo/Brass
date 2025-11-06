@@ -39,7 +39,7 @@ fatal_handler sub {
     status $is_exception ? 'Internal Server Error' : 'Bad Request';
     $dsl->send_as(JSON => {
         is_error => \1,
-        message  => $is_exception ? 'An unexexpected error has occurred' : $msg->toString },
+        message  => $is_exception ? 'An unexpected error has occurred' : $msg->toString },
     { content_type => 'application/json; charset=UTF-8' });
 };
 
