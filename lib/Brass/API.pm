@@ -90,6 +90,7 @@ get 'api/pwd/' => sub {
         or error __"Need passphrase for retrieving and setting passwords";
 
     my $pass = $cdb->run_pwd(
+        user      => $user,
         server    => query_parameters->get('server'),
         pass      => query_parameters->get('pass'),
         action    => query_parameters->get('action'),
