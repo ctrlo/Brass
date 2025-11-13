@@ -299,9 +299,10 @@ sub e_release
                 $notes .= " - $subject";
             }
         }
-        elsif ($plain =~ /^transaction id:\h+(.*)/im)
+        elsif ($plain =~ /^transaction id:\h+(\S+)/im)
         {
             # Github: Transaction ID: CH_1IQGPWEQSQ43IHHXDVFVRSUB
+            # Paypal: Transaction ID: 0B503246AY333853Y View payment status
             $notes = $1;
         }
         elsif ($plain =~ /^service:\h*(.*)$/im)
