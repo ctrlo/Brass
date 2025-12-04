@@ -49,8 +49,8 @@ my $issues           = Brass::Issues->new(schema => $schema, users => $users);
 my $statuses         = Brass::Issue::Statuses->new(schema => $schema);
 my $priorities       = Brass::Issue::Priorities->new(schema => $schema);
 my @filter_status    = map { $_->id } grep { $_->name =~ /(new|open)/i } @{$statuses->all};
-my @filter_priority  = map { $_->id } grep { $_->alert_frequency == 1 } @{$priorities->all};
-push @filter_priority, map { $_->id } grep { $_->alert_frequency == 7 } @{$priorities->all}
+my @filter_priority  = map { $_->id } grep { $_->alert_frequency && $_->alert_frequency == 1 } @{$priorities->all};
+push @filter_priority, map { $_->id } grep { $_->alert_frequency && $_->alert_frequency == 7 } @{$priorities->all}
     if DateTime->now->day_of_week == 1;
 my $filtering = {
     status   => \@filter_status,
