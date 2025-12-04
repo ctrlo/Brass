@@ -250,6 +250,7 @@
                         <option value="security_incident" [% IF filtering.security == "security_incident" %]selected[% END %]>Security incidents</option>
                         <option value="corrective_action" [% IF filtering.security == "corrective_action" %]selected[% END %]>Corrective Actions</option>
                         <option value="vulnerability" [% IF filtering.security == "vulnerability" %]selected[% END %]>Preventative Actions</option>
+                        <option value="scan" [% IF filtering.security == "scan" %]selected[% END %]>Vulnerability scans</option>
                         <option value="patch" [% IF filtering.security == "patch" %]selected[% END %]>Critical Patches</option>
                         <option value="code_review" [% IF filtering.security == "code_review" %]selected[% END %]>Code Reviews</option>
                         <option value="pentest" [% IF filtering.security == "pentest" %]selected[% END %]>Penetration Testing</option>

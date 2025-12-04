@@ -59,6 +59,8 @@ has filtering => (
                 if $sec eq 'patch';
             $return->{'type.identifier'} = 'code_review'
                 if $sec eq 'code_review';
+            $return->{'type.identifier'} = 'scan'
+                if $sec eq 'scan';
             $return->{'type.identifier'} = 'pentest'
                 if $sec eq 'pentest';
             $return->{'type.identifier'} = ['capacity_change', 'capacity_fail']
