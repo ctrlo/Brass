@@ -45,6 +45,12 @@ has name => (
     builder => sub { $_[0]->_rset && $_[0]->_rset->name; },
 );
 
+has alert_frequency => (
+    is      => 'rw',
+    lazy    => 1,
+    builder => sub { $_[0]->_rset && $_[0]->_rset->alert_frequency; },
+);
+
 has datetime => (
     is  => 'rw',
     isa => Maybe[DateAndTime],
@@ -77,9 +83,10 @@ sub as_integer
 sub inflate_result {
     my $data = $_[2];
     $_[0]->new(
-        id          => $data->{id},
-        name        => $data->{name},
-        schema      => $_[1]->schema,
+        id              => $data->{id},
+        name            => $data->{name},
+        alert_frequency => $data->{alert_frequency},
+        schema          => $_[1]->schema,
     );
 }
 
