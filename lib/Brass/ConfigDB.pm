@@ -288,9 +288,9 @@ sub run_pwd
         'me.type'     => $action,
     })->next;
 
-    $pw_rs ||= $server->new_related('pws', {
-        'me.username' => $username,
-        'me.type'     => $action,
+    $pw_rs ||= $server_rs->new_related('pws', {
+        'username' => $username,
+        'type'     => $action,
     });
 
     my $cipher = Crypt::CBC->new(
@@ -315,6 +315,7 @@ sub run_pwd
     elsif (!$pw_rs->in_storage)
     {
         $pass = randompw();
+        $pw_rs->insert;
     }
 
     if (defined $pass)
