@@ -30,7 +30,7 @@ my @types_vulnerability = (
     },
     {
         identifier => 'patch_other',
-        name       => 'Routine software patches and upgrades',
+        name       => 'Other software patches, upgrades and vulnerabilities',
     },
     {
         identifier => 'capacity_change',
