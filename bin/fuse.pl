@@ -305,6 +305,11 @@ sub e_release
             # Paypal: Transaction ID: 0B503246AY333853Y View payment status
             $notes = $1;
         }
+        elsif ($plain =~ /^order id\h+(\S+)/im)
+        {
+            # Paypal: Order ID 86204665
+            $notes = $1;
+        }
         elsif ($plain =~ /^service:\h*(.*)$/im)
         {
             $notes = $1;
