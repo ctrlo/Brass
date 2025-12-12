@@ -69,7 +69,7 @@ sub tree
                 status => $status,
                 %$dir_template,
             }
-        } $docs->topic($topic_id)
+        } $docs->topic($topic_id, override => 1)
     };
     $files->{'.'} = $dir_template;
     return $files;
