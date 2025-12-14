@@ -127,7 +127,7 @@ my @types_other_security = (
     },
     {
         identifier => 'data_deletion',
-        name       => 'Data deletion action',
+        name       => 'Data deletion/destruction/disposal action',
     },
     {
         identifier => 'phishing',
