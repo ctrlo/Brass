@@ -236,17 +236,24 @@ sub _run_remote
         'Content-type' => 'application/json',
         Content        => $data,
     ) if $data;
+
     my $response = $ua->get($url, %content);
 
-    my $decoded = decode_json $response->decoded_content;
-    error $decoded->{message} if $decoded->{is_error};
-    if ($action eq 'metadata' || $action eq 'summary' || $type eq 'site' || $type eq 'servertype') # double-encoded
+    if ($response->is_success)
     {
-        return undef if !$decoded->{result}; # No metadata
-        return decode_json $decoded->{result};
+        my $decoded = decode_json $response->decoded_content;
+        error $decoded->{message} if $decoded->{is_error};
+        if ($action eq 'metadata' || $action eq 'summary' || $type eq 'site' || $type eq 'servertype') # double-encoded
+        {
+            return undef if !$decoded->{result}; # No metadata
+            return decode_json $decoded->{result};
+        }
+        else {
+            return $decoded->{result};
+        }
     }
     else {
-        return $decoded->{result};
+        error $response->status_line;
     }
 }
 
