@@ -4,6 +4,7 @@ The Ctrl-O management system.
 
 ## Producing Latex documents
 
+Install these packages: `texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-xetex`
 These links required:
 
 ```
