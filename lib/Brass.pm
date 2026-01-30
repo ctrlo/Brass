@@ -263,7 +263,7 @@ any ['get', 'post'] => '/mfa/' => require_login sub {
             }
         }
         $user->send_mfa_sms
-            if $user->need_mfa eq 'sms';
+            if $user->mfa_type eq 'sms';
         $params->{mfa_type} = $user->mfa_type;
         $params->{get_code} = 1;
     }
