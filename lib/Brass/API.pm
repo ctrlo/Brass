@@ -100,7 +100,7 @@ get 'api/pwd/' => sub {
 
     content_type 'application/json';
     encode_json({
-        "is_error" => 0,
+        "is_error" => \0,
         "result"   => $pass,
     });
 };
@@ -117,7 +117,7 @@ get 'api/cert/' => sub {
 
     content_type 'application/json';
     encode_json({
-        "is_error" => 0,
+        "is_error" => \0,
         "result"   => encode_json($return),
     });
 };
@@ -149,7 +149,7 @@ get 'api/server/' => sub {
 
     content_type 'application/json';
     encode_json({
-        "is_error" => 0,
+        "is_error" => \0,
         "result"   => $return,
     });
 };
@@ -165,7 +165,7 @@ get 'api/servertype/' => sub {
 
     content_type 'application/json';
     encode_json({
-        "is_error" => 0,
+        "is_error" => \0,
         "result"   => encode_json($return),
     });
 };
@@ -180,7 +180,7 @@ get 'api/site/' => sub {
 
     content_type 'application/json';
     encode_json({
-        "is_error" => 0,
+        "is_error" => \0,
         "result"   => encode_json($return),
     });
 };

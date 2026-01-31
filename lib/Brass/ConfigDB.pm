@@ -239,10 +239,9 @@ sub _run_remote
 
     my $response = $ua->get($url, %content);
 
+    my $decoded = decode_json $response->decoded_content;
     if ($response->is_success)
     {
-        my $decoded = decode_json $response->decoded_content;
-        error $decoded->{message} if $decoded->{is_error};
         if ($action eq 'metadata' || $action eq 'summary' || $type eq 'site' || $type eq 'servertype') # double-encoded
         {
             return undef if !$decoded->{result}; # No metadata
@@ -253,6 +252,8 @@ sub _run_remote
         }
     }
     else {
+        error $decoded->{message}
+            if $decoded && $decoded->{is_error};
         error $response->status_line;
     }
 }
