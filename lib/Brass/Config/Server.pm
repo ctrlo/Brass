@@ -75,6 +75,12 @@ has metadata => (
     },
 );
 
+sub metadata_formatted
+{   my $self = shift;
+    my $json = Cpanel::JSON::XS->new->pretty(1);
+    $json->encode($json->decode($self->metadata));
+}
+
 has update_datetime => (
     is      => 'ro',
     isa     => Maybe[DateAndTime],

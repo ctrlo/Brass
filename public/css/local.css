@@ -65,3 +65,7 @@ th > a {
 .user_report dd {
     margin-left: 350px;
 }
+
+.fixed-width {
+    font-family: monospace;
+}

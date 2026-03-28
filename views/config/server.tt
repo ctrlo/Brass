@@ -26,7 +26,7 @@
                 </div>
                 <div class="form-group">
                     <label for="metadata">Metadata (JSON)</label>
-                    <input type="text" class="form-control" id="metadata" name="metadata" value="[% server.metadata | html %]">
+                    <textarea name="metadata" id="metadata" class="form-control fixed-width" rows="10">[% server.metadata_formatted | html %]</textarea>
                 </div>
                 <div class="form-group">
                     <label for="sites">Sites</label>
