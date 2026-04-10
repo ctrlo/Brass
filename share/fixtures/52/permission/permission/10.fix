@@ -1,0 +1,6 @@
+$HASH1 = {
+           description
+                  => 'User can view configuration information',
+           id     => 10,
+           name   => 'config'
+         };

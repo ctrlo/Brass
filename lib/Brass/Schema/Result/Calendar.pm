@@ -36,6 +36,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "attendees",
   { data_type => "text", is_nullable => 1 },
+  "attendees_optional",
+  { data_type => "text", is_nullable => 1 },
   "html",
   { data_type => "text", is_nullable => 1 },
   "user_id",
@@ -85,12 +87,14 @@ sub send
         or error __"Please enter a location";
     my %attendees = map { $_ => 1 } grep $_, split /\s+/, $self->attendees
         or error __"Please provide at least one attendee";
+    my %attendees_optional = map { $_ => 1 } grep $_, split /\s+/, $self->attendees_optional;
     my $me = $self->user;
 
     $self->update({ sequence => $self->sequence + 1 });
 
     $attendees{$me->email} = 1;
     my @attendees = keys %attendees;
+    my @attendees_optional = keys %attendees_optional;
 
     my $calendar = Data::ICal->new(auto_uid => 1);
     my $method   = $is_cancelled ? 'CANCEL' : 'REQUEST';
@@ -119,6 +123,8 @@ sub send
     $event->add_property(attendee => [ $mailto, { ROLE => 'REQ-PARTICIPANT', PARTSTAT => 'NEEDS-ACTION', RSVP => 'TRUE', CN => $me->name } ] );
     $event->add_property(attendee => [ "mailto:$_", {RSVP=>'TRUE', ROLE => 'REQ-PARTICIPANT', PARTSTAT => 'NEEDS-ACTION'}])
         foreach @attendees;
+    $event->add_property(attendee => [ "mailto:$_", {RSVP=>'TRUE', ROLE => 'OPT-PARTICIPANT', PARTSTAT => 'NEEDS-ACTION'}])
+        foreach @attendees_optional;
 
     $event->add_property(location     => [$self->location, { LANGUAGE => 'en-US' }]);
     $event->add_property('x-alt-desc' => ['<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 3.2//EN""><HTML><BODY>\n<a href="'.$self->location.'">Join meeting</a>\n</BODY></HTML>', {FMTTYPE=> 'text/html'}]);
@@ -171,6 +177,8 @@ sub send
         'Content-Type' => $content_type,
         attach         => \@parts,
     );
+    $message{Cc} = join(', ', @attendees_optional)
+        if @attendees_optional;
 
     Mail::Message->build(
         %message,

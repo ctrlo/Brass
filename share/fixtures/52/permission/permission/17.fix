@@ -1,0 +1,6 @@
+$HASH1 = {
+           description
+                  => 'User receives notification of all new issues',
+           id     => 17,
+           name   => 'new_issue_alert'
+         };

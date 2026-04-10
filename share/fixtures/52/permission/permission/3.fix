@@ -1,0 +1,6 @@
+$HASH1 = {
+           description
+                  => 'User can save drafts',
+           id     => 3,
+           name   => 'doc_save'
+         };

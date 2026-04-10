@@ -1,0 +1,6 @@
+$HASH1 = {
+           description
+                  => 'User can view all issues for certain projects',
+           id     => 9,
+           name   => 'issue_read_project'
+         };

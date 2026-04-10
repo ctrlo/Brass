@@ -8,6 +8,6 @@ use base 'DBIx::Class::Schema';
 
 __PACKAGE__->load_namespaces;
 
-our $VERSION = 51;
+our $VERSION = 52;
 
 1;

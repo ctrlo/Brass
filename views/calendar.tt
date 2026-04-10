@@ -28,6 +28,10 @@
                 <textarea class="form-control" id="attendees" name="attendees" rows="5" style="font-family: monospace;">[% calendar.attendees | html %]</textarea>
             </div>
             <div class="form-group">
+                <label for="attendees_optional">Optional attendees (one per line)</label>
+                <textarea class="form-control" id="attendees_optional" name="attendees_optional" rows="5" style="font-family: monospace;">[% calendar.attendees_optional | html %]</textarea>
+            </div>
+            <div class="form-group">
                 <label for="html">HTML body (optional)</label>
                 <textarea id="html" name="html" style="height:300px">[% calendar.html | html %]</textarea>
             </div>
