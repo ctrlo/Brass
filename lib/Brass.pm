@@ -810,6 +810,7 @@ any ['get', 'post'] => '/calendar/:id/' => require_any_role [qw(calendar_write)]
         $calendar->description(body_parameters->get('description'));
         $calendar->location(body_parameters->get('location'));
         $calendar->attendees(body_parameters->get('attendees'));
+        $calendar->attendees_optional(body_parameters->get('attendees_optional'));
         $calendar->html(body_parameters->get('html'));
         $calendar->user_id(logged_in_user->id);
         # Go back to same page with invite details, in case wanting to send again
