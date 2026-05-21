@@ -60,7 +60,7 @@ hook before => sub {
     {
         my $pubkey = Crypt::PK::Ed25519->new(\$api_key->key);
         my $jwk_hash = $pubkey->export_key_jwk('public', 1);
-        $jwk_hash->{kid} = $api_key->user->username;
+        $jwk_hash->{kid} = $api_key->key_id;
         push @keys, $jwk_hash;
     }
 
@@ -76,7 +76,15 @@ hook before => sub {
         error __x"Unable to authenticate: {err}", err => $err;
     }
 
-    var api_user => schema->resultset('User')->search({ username => $header->{kid} })->next;
+    # Search both custom key IDs and normal usernames
+    my $user = schema->resultset('User')->search([
+        kid      => $header->{kid},
+        username => $header->{kid},
+    ],{
+        join => 'api_keys',
+    })->next
+        or error "Unable to find user of authenticated key";
+    var api_user => $user;
     var payload  => $client;
 };
 
