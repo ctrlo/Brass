@@ -51,7 +51,7 @@ WriteMakefile(
         'Sys::Hostname'              => 0,
         'Term::ReadKey'              => 0,
         'Test::More'                 => 0,
-        'Text::Markdown'             => 0,
+        'Text::MultiMarkdown'        => 0,
         'URI'                        => 0,
         'URI::Escape'                => 0,
         'URI::QueryParam'            => 0,

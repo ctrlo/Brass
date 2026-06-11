@@ -47,7 +47,7 @@ use Lingua::EN::Numbers::Ordinate;
 use Log::Report::DBIC::Profiler;
 use Session::Token;
 use Sys::Hostname;
-use Text::Markdown qw/markdown/;
+use Text::MultiMarkdown qw/markdown/;
 use URI::Escape qw/uri_escape_utf8 uri_unescape/;
 
 use Dancer2;
