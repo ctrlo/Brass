@@ -83,8 +83,7 @@ sub send
     $end->set_time_zone($offset);
     my $description = $self->description
         or error __"Please enter a description";
-    my $location = $self->location
-        or error __"Please enter a location";
+    my $location = $self->location;
     my %attendees = map { $_ => 1 } grep $_, split /\s+/, $self->attendees
         or error __"Please provide at least one attendee";
     my %attendees_optional = map { $_ => 1 } grep $_, split /\s+/, $self->attendees_optional;
@@ -106,7 +105,6 @@ sub send
     my $uid   = hostname . "-BRASS-" . $self->id;
     $event->add_properties(
         summary     => $self->description,
-        description => [$self->description, {LANGUAGE=>'en-US'} ],
         dtstart     => DateTime::Format::ICal->format_datetime($start),
         dtend       => DateTime::Format::ICal->format_datetime($end),
         dtstamp     => DateTime::Format::ICal->format_datetime($now),
@@ -126,8 +124,13 @@ sub send
     $event->add_property(attendee => [ "mailto:$_", {RSVP=>'TRUE', ROLE => 'OPT-PARTICIPANT', PARTSTAT => 'NEEDS-ACTION'}])
         foreach @attendees_optional;
 
-    $event->add_property(location     => [$self->location, { LANGUAGE => 'en-US' }]);
-    $event->add_property('x-alt-desc' => ['<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 3.2//EN""><HTML><BODY>\n<a href="'.$self->location.'">Join meeting</a>\n</BODY></HTML>', {FMTTYPE=> 'text/html'}]);
+    if ($location)
+    {
+        $event->add_property(location     => [$location, { LANGUAGE => 'en-US' }]);
+        $event->add_property('x-alt-desc' => [qq(<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 3.2//EN""><HTML><BODY>\n<a href="$location">Join meeting</a>\n</BODY></HTML>', {FMTTYPE=> 'text/html})]);
+        # Used by meeting room video equipment to auto-accept meetings:
+        $event->add_property('X-MICROSOFT-SKYPETEAMSMEETINGURL', $location);
+    }
 
     my $alarm = Data::ICal::Entry::Alarm::Display->new();
     $alarm->add_properties(
@@ -137,15 +140,28 @@ sub send
     $event->add_entry($alarm);
     $calendar->add_entry($event);
 
+    {
+        # Fix div spacing, see
+        # https://github.com/nigelm/html-formatter/issues/13
+        no warnings 'redefine';
+        *HTML::Formatter::div_start = sub {
+            shift->vspace(1);
+            return 1;
+        };
+    }
+
     my @parts;
     # Find out if the HTML is blank (need to strip tags)
     my $html = $is_cancelled ? '<p>This meeting has been canceled</p>' : $self->html;
     my $plain = HTML::FormatText->format_string($html);
     $plain =~ s/^\s+$//;
-    $html = '<a href="'.$self->location.'">Click here to join the meeting</a>'
-        if !$plain;
+    $html = qq(<a href="$location">Click here to join the meeting</a>)
+        if !$plain && $location;
 
-    $plain ||= "Join the meeting here: ".$self->location;
+    $plain ||= "Join the meeting here: $location"
+        if $location;
+
+    $event->add_property(description => [$plain, {LANGUAGE=>'en-US'} ]);
 
     push @parts, Mail::Message::Body::String->new(
         mime_type   => 'text/plain',
