@@ -1,0 +1,6 @@
+$HASH1 = {
+           description
+                  => 'User can read the calendar',
+           id     => 13,
+           name   => 'calendar_read'
+         };

@@ -1,0 +1,6 @@
+$HASH1 = {
+           description
+                  => 'User can publish documents',
+           id     => 2,
+           name   => 'doc_publish'
+         };

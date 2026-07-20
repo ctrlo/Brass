@@ -222,5 +222,10 @@ sub is_published
     !$self->minor && !$self->revision ? 1 : 0;
 }
 
+sub version_string
+{   my $self = shift;
+    "V".$self->major.".".$self->minor.".".$self->revision;
+}
+
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

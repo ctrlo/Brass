@@ -20,7 +20,7 @@
                 <input type="text" class="form-control" id="description" name="description" value="[% calendar.description | html %]">
             </div>
             <div class="form-group">
-                <label for="location">Location URL (e.g. Teams link)</label>
+                <label for="location">Teams link (optional)</label>
                 <input type="text" class="form-control" id="location" name="location" value="[% calendar.location | html %]">
             </div>
             <div class="form-group">
@@ -32,7 +32,7 @@
                 <textarea class="form-control" id="attendees_optional" name="attendees_optional" rows="5" style="font-family: monospace;">[% calendar.attendees_optional | html %]</textarea>
             </div>
             <div class="form-group">
-                <label for="html">HTML body (optional)</label>
+                <label for="html">Meeting details including access credentials</label>
                 <textarea id="html" name="html" style="height:300px">[% calendar.html | html %]</textarea>
             </div>
             [% UNLESS calendar.cancelled %]

@@ -56,11 +56,11 @@ hook before => sub {
 
     # Load all available keys
     my @keys;
-    foreach my $key (schema->resultset('User')->keys->all)
+    foreach my $api_key (schema->resultset('ApiKey')->all)
     {
-        my $pubkey = Crypt::PK::Ed25519->new(\$key->api_key);
+        my $pubkey = Crypt::PK::Ed25519->new(\$api_key->key);
         my $jwk_hash = $pubkey->export_key_jwk('public', 1);
-        $jwk_hash->{kid} = $key->username;
+        $jwk_hash->{kid} = $api_key->key_id;
         push @keys, $jwk_hash;
     }
 
@@ -76,7 +76,15 @@ hook before => sub {
         error __x"Unable to authenticate: {err}", err => $err;
     }
 
-    var api_user => schema->resultset('User')->keys->search({ username => $header->{kid} })->next;
+    # Search both custom key IDs and normal usernames
+    my $user = schema->resultset('User')->search([
+        kid      => $header->{kid},
+        username => $header->{kid},
+    ],{
+        join => 'api_keys',
+    })->next
+        or error "Unable to find user of authenticated key";
+    var api_user => $user;
     var payload  => $client;
 };
 

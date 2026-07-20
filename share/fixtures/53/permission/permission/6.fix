@@ -1,0 +1,6 @@
+$HASH1 = {
+           description
+                  => 'User can view all issues',
+           id     => 6,
+           name   => 'issue_read_all'
+         };

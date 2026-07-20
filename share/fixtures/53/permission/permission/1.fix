@@ -1,0 +1,6 @@
+$HASH1 = {
+           description
+                  => 'User can view documents',
+           id     => 1,
+           name   => 'doc'
+         };

@@ -9,7 +9,11 @@ use base qw(DBIx::Class::ResultSet);
 
 sub active
 {   my $self = shift;
-    $self->search({ cancelled => undef });
+    $self->search({
+        cancelled => undef,
+    },{
+        order_by => { -desc => 'me.start' },
+    });
 }
 
 1;
