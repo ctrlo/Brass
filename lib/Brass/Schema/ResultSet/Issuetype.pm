@@ -76,6 +76,10 @@ my @types_breach = (
         name       => 'Human error',
     },
     {
+        identifier => 'procedure',
+        name       => 'Failure of process or procedure',
+    },
+    {
         identifier => 'vulnerability',
         name       => 'Vulnerability in external software',
     },
