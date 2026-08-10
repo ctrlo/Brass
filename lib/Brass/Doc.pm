@@ -380,13 +380,14 @@ sub _version_add
     my $guard = $self->schema->txn_scope_guard;
     my $latest = $self->_latest;
 
+    my $new = 1; # Assume write new version
     my ($mimetype, $ext, $content, $content_blob);
     if ($options{text})
     {
         $options{text} =~ s/\r\n/\n/g;
         $options{text} =~ s/\r/\n/g;
         # Do not create new version if content hasn't changed
-        $options{new} = 0 if $latest && $options{text} eq $latest->version_content->content;
+        $new = 0 if $latest && $options{text} eq $latest->version_content->content;
         $mimetype = $options{tex}
             ? 'application/x-tex'
             : $options{markdown}
@@ -405,10 +406,6 @@ sub _version_add
         $content_blob = $options{file} or die "Missing file content";
         $ext          = $options{ext} or die "Missing file extension";
     }
-
-    # Never save over a published document. draft_for_review
-    # will be false if the latest document is published.published
-    $options{new} = 1 if !$self->draft_for_review;
 
     # Don't allow saving of signed unless something published
     die "Unable to save a signed file when no existing published doc exists"
@@ -430,13 +427,13 @@ sub _version_add
         # If so, update that instead
         if ($existing_signed)
         {
-            $options{new} = 0;
+            $new = 0;
             $latest = $existing_signed;
         }
     }
 
     my $version_new;
-    if ($options{new})
+    if ($new)
     {
         my $major = $signed
                   ? $self->published->major
